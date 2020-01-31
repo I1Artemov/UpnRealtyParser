@@ -1,0 +1,3 @@
+var point = [56.7601403419008,60.558858690692];
+
+        ymaps.ready(function () {
