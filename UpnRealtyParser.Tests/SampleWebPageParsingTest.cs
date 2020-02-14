@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using AngleSharp.Dom;
 using UpnRealtyParser.Business.Helpers;
 using Xunit;
 
@@ -15,7 +17,8 @@ namespace UpnRealtyParser.Tests
             string webPageText = getTextFromFile(TestDataPath, "01_RealFlatForSell2Rooms_webpage.txt");
 
             UpnApartmentParser parser = new UpnApartmentParser();
-            UpnFlat upnFlat = parser.GetUpnSellFlatFromPageText(webPageText);
+            List<IElement> fieldValueElements = parser.GetTdElementsFromWebPage(webPageText);
+            UpnFlat upnFlat = parser.GetUpnSellFlatFromPageText(fieldValueElements);
 
             Assert.Equal(2, upnFlat.RoomAmount);
             Assert.Equal(42, (int)Math.Floor(upnFlat.SpaceSum.Value));
@@ -27,6 +30,26 @@ namespace UpnRealtyParser.Tests
             Assert.Equal("Нет", upnFlat.Furniture);
             Assert.Equal("Чистая продажа", upnFlat.SellCondition);
             Assert.Equal(1690000, upnFlat.Price);
+            Assert.StartsWith("Продается двухкомнатная квартира на первом этаже", upnFlat.Description);
+        }
+
+        [Fact]
+        public void SingleFlat_HouseFilling_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "01_RealFlatForSell2Rooms_webpage.txt");
+
+            UpnHouseParser houseParser = new UpnHouseParser();
+            List<IElement> fieldValueElements = houseParser.GetTdElementsFromWebPage(webPageText);
+            UpnHouseInfo house = houseParser.GetUpnHouseFromPageText(fieldValueElements, webPageText);
+
+            Assert.Equal("Екатеринбург, Совхоз, Предельная 26", house.Address);
+            Assert.Equal("Хрущевка", house.HouseType);
+            Assert.Equal("Кирпич", house.WallMaterial);
+            Assert.Equal(1964, house.BuildYear);
+            Assert.Equal(2, house.MaxFloor);
+
+            Assert.Equal(56, (int)Math.Floor(house.Latitude.Value));
+            Assert.Equal(60, (int)Math.Floor(house.Longitude.Value));
         }
     }
 }

@@ -11,11 +11,7 @@ namespace UpnRealtyParser.Business.Helpers
     {
         private const string FlatTypeHeaderText = "Объект:";
         private const string RoomAmountHeaderText = "Количество комнат:";
-        private const string HouseAddressHeaderText = "Адрес:";
         private const string SpaceComponentsHeaderText = "Площадь (общая/жилая/кухни):";
-        private const string HouseTypeHeaderText = "Дом";
-        private const string BuildYearHeaderText = "Год постройки:";
-        private const string WallMaterialHeaderText = "Материал стен:";
         private const string FloorComponentsHeaderText = "Этаж:";
         private const string BathroomComponentsHeaderText = "Сан. узлы (совмещенных/раздельных):";
         private const string RenovationHeaderText = "Ремонт:";
@@ -48,23 +44,6 @@ namespace UpnRealtyParser.Business.Helpers
                 .Where(m => m.LocalName == "li" && m.ClassList.Contains("blue"));
         }
 
-        public List<IElement> GetTdElementsFromWebPage(string pageText)
-        {
-            pageText = pageText.Replace("windows-1251", "utf-8");
-
-            // Создаем объект AngleSharp для html-разметки
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            IConfiguration browsingConfig = Configuration.Default.WithCulture("ru-RU").WithLocaleBasedEncoding();
-            IBrowsingContext context = BrowsingContext.New(browsingConfig);
-            var htmlDocument = context.OpenAsync(req => req.Content(pageText));
-
-            List<IElement> fieldValueElements = htmlDocument.Result.All
-                .Where(m => m.LocalName == "td")
-                .ToList();
-
-            return fieldValueElements;
-        }
-
         /// <summary>
         /// Находит строки в table с нужным текстом и определяет, строки с какими номерами дадут информацию для полей
         /// </summary>
@@ -81,12 +60,12 @@ namespace UpnRealtyParser.Business.Helpers
             furnitureIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", FurnitureHeaderText)) + 1;
             sellConditionIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", SellConditionHeaderText)) + 1;
             priceIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", PriceHeaderText)) + 1;
-            descriptionIndex = priceIndex + 1;
+            if(priceIndex.HasValue && priceIndex > 0)
+                descriptionIndex = priceIndex + 1;
         }
 
-        public UpnFlat GetUpnSellFlatFromPageText(string pageText)
+        public UpnFlat GetUpnSellFlatFromPageText(List<IElement> fieldValueElements)
         {
-            List<IElement> fieldValueElements = GetTdElementsFromWebPage(pageText);
             fillFieldIndexes(fieldValueElements);
 
             UpnFlat upnFlat = new UpnFlat {CreationDateTime = DateTime.Now};
@@ -113,6 +92,7 @@ namespace UpnRealtyParser.Business.Helpers
             fillFlatSpaceComponents(upnFlat, fieldValueElements);
             fillFlatBathroomComponents(upnFlat, fieldValueElements);
             fillPrice(upnFlat, fieldValueElements);
+            fillAndClearDescription(upnFlat, fieldValueElements);
 
             return upnFlat;
         }
@@ -203,6 +183,22 @@ namespace UpnRealtyParser.Business.Helpers
             bool isPriceParsed = Int32.TryParse(priceValueText.Replace(".", ""), out int priceValue);
             if (isPriceParsed)
                 upnFlat.Price = priceValue;
+        }
+
+        private void fillAndClearDescription(UpnFlat upnFlat, List<IElement> fieldValueElements)
+        {
+            if (descriptionIndex.HasValue)
+                upnFlat.Description = fieldValueElements.ElementAtOrDefault(descriptionIndex.Value)?.InnerHtml;
+
+            // Очистка описания
+            if (!string.IsNullOrEmpty(upnFlat.Description))
+            {
+                upnFlat.Description = upnFlat.Description.Replace("<div bis_skin_checked=\"1\">", "");
+                upnFlat.Description = upnFlat.Description.Replace("<br>", "");
+                upnFlat.Description = upnFlat.Description.Replace("</div>", "");
+                upnFlat.Description = upnFlat.Description.Replace("\n", "");
+                upnFlat.Description = upnFlat.Description.Trim();
+            }
         }
     }
 }
