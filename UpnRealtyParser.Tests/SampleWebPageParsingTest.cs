@@ -51,5 +51,20 @@ namespace UpnRealtyParser.Tests
             Assert.Equal(56, (int)Math.Floor(house.Latitude.Value));
             Assert.Equal(60, (int)Math.Floor(house.Longitude.Value));
         }
+
+        [Fact]
+        public void GetSellFlatsLinksList_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "02_FlatsSellTable.txt");
+            UpnFlatLinksCollector linksCollector = new UpnFlatLinksCollector();
+
+            List<string> hrefs = linksCollector.GetLinksFromSinglePage(webPageText);
+            int? totalApartmentsAmount = linksCollector.GetTotalEntriesInTable(webPageText);
+            int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
+
+            Assert.Equal(31, hrefs.Count);
+            Assert.Equal(8384, totalApartmentsAmount);
+            Assert.Equal(280, totalTablePages);
+        }
     }
 }
