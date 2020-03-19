@@ -7,8 +7,14 @@ namespace UpnRealtyParser.Business.Helpers
 {
     public class UpnFlatLinksCollector : BaseHttpParser
     {
+        /// <summary>
+        /// Количество записей на страницу таблицы с перечнем квартир
+        /// </summary>
         public const int EntriesPerTablePage = 30;
 
+        /// <summary>
+        /// Всего записей в таблице с перечнем квартир
+        /// </summary>
         public int? GetTotalEntriesInTable(string pageText)
         {
             var htmlDocument = getPreparedHtmlDocument(pageText);
@@ -29,9 +35,15 @@ namespace UpnRealtyParser.Business.Helpers
             return totalValue;
         }
 
+        /// <summary>
+        /// Общее число страниц таблицы с перечнем квартир
+        /// </summary>
         public int GetMaxPagesInTable(int totalEntries) => 
             (int)Math.Ceiling((decimal)totalEntries / (decimal)EntriesPerTablePage);
 
+        /// <summary>
+        /// Собирает все URL на квартиры с текущей страницы таблицы с перечнем квартир
+        /// </summary>
         public List<string> GetLinksFromSinglePage(string pageText)
         {
             List<IElement> anchorElements = GetAnchorElementsFromWebPage(pageText);

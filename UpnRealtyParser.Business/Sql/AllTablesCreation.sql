@@ -67,3 +67,23 @@ CREATE INDEX idx_UpnFlatPhoto_FlatId ON [UpnFlatPhoto] ([FlatId]);
 CREATE INDEX idx_UpnFlatPhoto_RelationType ON [UpnFlatPhoto] ([RelationType]);
 
 -- TODO: Сделать UpnRentFlat
+
+-- Добавлено 19.03.2020 - таблицы со ссылками и состоянием работы парсера
+
+CREATE TABLE [PageLink] (
+	[Id] int IDENTITY(1,1),
+	[CreationDateTime] timestamp,
+	[LastCheckDateTime] timestamp,
+	[Href] nvarchar(max),
+	[LinkType] nvarchar(128),
+	[SiteName] nvarchar(128)
+);
+
+CREATE TABLE [ParsingState] (
+	[Id] bigint IDENTITY(1,1), --BIGINT!
+	[CreationDateTime] timestamp,
+	[SiteName] nvarchar(128),
+	[Description] nvarchar(256),
+	[Details] nvarchar(max),
+	[Status] nvarchar(256)
+);
