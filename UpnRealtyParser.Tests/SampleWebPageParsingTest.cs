@@ -61,10 +61,12 @@ namespace UpnRealtyParser.Tests
             List<string> hrefs = linksCollector.GetLinksFromSinglePage(webPageText);
             int? totalApartmentsAmount = linksCollector.GetTotalEntriesInTable(webPageText);
             int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
+            string pageUrlTemplate = linksCollector.GetTablePageSwitchLinkTemplate(webPageText);
 
             Assert.Equal(31, hrefs.Count);
             Assert.Equal(8384, totalApartmentsAmount);
             Assert.Equal(280, totalTablePages);
+            Assert.EndsWith("sid=5f94fedb5e9a42b9b9aef2fa1db71986&ag=0&vm=&id={0}&scn=6", pageUrlTemplate);
         }
     }
 }

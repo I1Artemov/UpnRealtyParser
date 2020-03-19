@@ -9,7 +9,7 @@ namespace UpnRealtyParser.Business.Helpers
 {
     public class BaseHttpParser
     {
-        public List<IElement> GetAnchorElementsFromWebPage(string pageText)
+        public List<IElement> GetApartmentAnchorElementsFromWebPage(string pageText)
         {
             Task<IDocument> htmlDocument = getPreparedHtmlDocument(pageText);
             List<IElement> anchorElements = htmlDocument.Result.All

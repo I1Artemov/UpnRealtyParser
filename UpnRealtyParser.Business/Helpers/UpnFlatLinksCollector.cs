@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using AngleSharp.Dom;
 
 namespace UpnRealtyParser.Business.Helpers
@@ -46,13 +47,32 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public List<string> GetLinksFromSinglePage(string pageText)
         {
-            List<IElement> anchorElements = GetAnchorElementsFromWebPage(pageText);
+            List<IElement> anchorElements = GetApartmentAnchorElementsFromWebPage(pageText);
 
             List<string> hrefs = anchorElements
                 .Select(x => x.Attributes.GetNamedItem("href").Value)
                 .ToList();
 
             return hrefs;
+        }
+
+        /// <summary>
+        /// Со страницы с перечнем квартир берет ссылку на 1-ую страницу таблицы и в ней id=1 заменяет на id={0}
+        /// </summary>
+        public string GetTablePageSwitchLinkTemplate(string pageText)
+        {
+            Task<IDocument> htmlDocument = getPreparedHtmlDocument(pageText);
+            string firstPageHref = htmlDocument.Result.All
+                .Where(m => m.LocalName == "a" &&
+                    m.Attributes.GetNamedItem("href")?.Value != null &&
+                    m.Attributes.GetNamedItem("href").Value.Contains("index.aspx?page=realty_eburg_flat_sale&ofdays=&sid="))
+                .Select(x => x.Attributes.GetNamedItem("href").Value)
+                .FirstOrDefault();
+
+            string pageSwitchUrlTemplate = Utils.ReplaceStrBetweenTwoStrings(firstPageHref, "&id=", "&scn=", "&id={0}");
+            pageSwitchUrlTemplate = pageSwitchUrlTemplate
+                .Replace("index.aspx?page=realty_eburg_flat_sale&", "https://upn.ru/realty_eburg_flat_sale.htm?");
+            return pageSwitchUrlTemplate;
         }
     }
 }
