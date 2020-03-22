@@ -66,7 +66,14 @@ namespace UpnRealtyParser.Tests
             Assert.Equal(31, hrefs.Count);
             Assert.Equal(8384, totalApartmentsAmount);
             Assert.Equal(280, totalTablePages);
-            Assert.EndsWith("sid=5f94fedb5e9a42b9b9aef2fa1db71986&ag=0&vm=&id={0}&scn=6", pageUrlTemplate);
+            Assert.EndsWith("sid=5f94fedb5e9a42b9b9aef2fa1db71986&ag=0&vm=1&id={0}&scn=6", pageUrlTemplate);
+        }
+
+        [Fact(Skip = "Действия с реальными данными")]
+        public void UpnSiteAgent_RealHttpTest()
+        {
+            UpnSiteAgent upnAgent = new UpnSiteAgent();
+            upnAgent.GatherLinksAndInsertInDb();
         }
     }
 }

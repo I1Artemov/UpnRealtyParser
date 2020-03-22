@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
+using System.Text;
 
 namespace UpnRealtyParser.Business.Helpers
 {
@@ -12,8 +13,9 @@ namespace UpnRealtyParser.Business.Helpers
         {
             const string mainTableUrl = "https://upn.ru/realty_eburg_flat_sale.htm";
 
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             string firstTablePageHtml;
-            using (WebClient client = new WebClient())
+            using (WebClient client = new WebClient { Encoding = Encoding.GetEncoding("windows-1251") })
             {
                 firstTablePageHtml = client.DownloadString(mainTableUrl);
             }
@@ -29,7 +31,7 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
                 string currentTablePageHtml;
-                using (WebClient client = new WebClient())
+                using (WebClient client = new WebClient { Encoding = Encoding.GetEncoding("windows-1251") })
                 {
                     currentTablePageHtml = client.DownloadString(currentTablePageUrl);
                 }

@@ -22,9 +22,12 @@ namespace UpnRealtyParser.Business.Helpers
             string totalEntriesText = htmlDocument.Result.All
                 .Where(m => m.LocalName == "div" && 
                             m.ClassName == "middle" &&
-                            m.GetAttribute("bis_skin_checked") != null)
+                            m.InnerHtml != null && m.InnerHtml.Contains("Объекты"))
                 .Select(m => m.InnerHtml)
                 .FirstOrDefault();
+
+            if (string.IsNullOrEmpty(totalEntriesText))
+                return 0;
 
             int pFrom = totalEntriesText.IndexOf("из ") + "из ".Length;
             if (pFrom < 0) return null;
@@ -69,9 +72,13 @@ namespace UpnRealtyParser.Business.Helpers
                 .Select(x => x.Attributes.GetNamedItem("href").Value)
                 .FirstOrDefault();
 
-            string pageSwitchUrlTemplate = Utils.ReplaceStrBetweenTwoStrings(firstPageHref, "&id=", "&scn=", "&id={0}");
-            pageSwitchUrlTemplate = pageSwitchUrlTemplate
-                .Replace("index.aspx?page=realty_eburg_flat_sale&", "https://upn.ru/realty_eburg_flat_sale.htm?");
+            int sidFrom = firstPageHref.IndexOf("&sid=") + "&sid=".Length;
+            int sidTo = firstPageHref.LastIndexOf("&ag=");
+
+            string sidValue = firstPageHref.Substring(sidFrom, sidTo - sidFrom);
+
+            string pageSwitchUrlTemplate =
+                "https://upn.ru/index.aspx?page=realty_eburg_flat_sale&ofdays=&sid=" + sidValue + "&ag=0&vm=1&id={0}&scn=6";
             return pageSwitchUrlTemplate;
         }
     }
