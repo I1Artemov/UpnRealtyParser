@@ -70,10 +70,22 @@ namespace UpnRealtyParser.Tests
         }
 
         [Fact(Skip = "Действия с реальными данными")]
-        public void UpnSiteAgent_RealHttpTest()
+        //[Fact]
+        public void UpnSiteAgent_LinksGatheringTest()
         {
             UpnSiteAgent upnAgent = new UpnSiteAgent();
-            upnAgent.GatherLinksAndInsertInDb();
+            string errorMessage = upnAgent.GatherLinksAndInsertInDb();
+        }
+
+        [Fact]
+        public void UpnSiteAgent_ApartmentGatheringTest()
+        {
+            UpnSiteAgent upnAgent = new UpnSiteAgent();
+            List<string> apartmentHrefs = new List<string> {
+                "/realty_eburg_flat_sale_info/30125886-2171.htm",
+                "/realty_eburg_flat_sale_info/20000573-2851.htm"
+            };
+            string errorMessage = upnAgent.ProcessAllApartmentsFromLinksInDb(apartmentHrefs, true);
         }
     }
 }

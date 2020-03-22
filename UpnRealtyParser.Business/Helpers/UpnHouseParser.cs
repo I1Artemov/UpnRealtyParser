@@ -37,7 +37,7 @@ namespace UpnRealtyParser.Business.Helpers
             UpnHouseInfo house = new UpnHouseInfo { CreationDateTime = DateTime.Now };
             fillFieldIndexes(fieldValueElements);
 
-            if (addressIndex.HasValue)
+            if (addressIndex.HasValue && addressIndex != 0)
                 house.Address = fieldValueElements.ElementAtOrDefault(addressIndex.Value)?.InnerHtml;
 
             // Очистка адреса от лишних тегов
@@ -47,7 +47,7 @@ namespace UpnRealtyParser.Business.Helpers
                 house.Address = house.Address.Replace(afterAddressPart, "");
             }
 
-            if (houseTypeIndex.HasValue)
+            if (houseTypeIndex.HasValue && houseTypeIndex != 0)
                 house.HouseType = fieldValueElements.ElementAtOrDefault(houseTypeIndex.Value)?.InnerHtml;
             if (wallMaterialIndex.HasValue)
                 house.WallMaterial = fieldValueElements.ElementAtOrDefault(wallMaterialIndex.Value)?.InnerHtml;
@@ -61,7 +61,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillHouseBuildYear(UpnHouseInfo house, List<IElement> fieldValueElements)
         {
-            if (!buildYearIndex.HasValue)
+            if (!buildYearIndex.HasValue || buildYearIndex == 0)
                 return;
 
             string buildYearText = fieldValueElements.ElementAtOrDefault(buildYearIndex.Value)?.InnerHtml;
@@ -74,7 +74,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillMaxFloor(UpnHouseInfo house, List<IElement> fieldValueElements)
         {
-            if (!floorComponentsIndex.HasValue)
+            if (!floorComponentsIndex.HasValue || floorComponentsIndex == 0)
                 return;
 
             string floorsText = fieldValueElements.ElementAtOrDefault(floorComponentsIndex.Value)?.InnerHtml;

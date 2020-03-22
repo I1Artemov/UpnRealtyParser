@@ -70,20 +70,20 @@ namespace UpnRealtyParser.Business.Helpers
 
             UpnFlat upnFlat = new UpnFlat {CreationDateTime = DateTime.Now};
 
-            if(flatTypeIndex.HasValue)
+            if(flatTypeIndex.HasValue && flatTypeIndex != 0)
                 upnFlat.FlatType = fieldValueElements.ElementAtOrDefault(flatTypeIndex.Value)?.InnerHtml;
-            if(redevelopmentTypeIndex.HasValue)
+            if(redevelopmentTypeIndex.HasValue && redevelopmentTypeIndex != 0)
                 upnFlat.RedevelopmentType = fieldValueElements.ElementAtOrDefault(redevelopmentTypeIndex.Value)?.InnerHtml;
-            if (renovationTypeIndex.HasValue)
+            if (renovationTypeIndex.HasValue && renovationTypeIndex != 0)
                 upnFlat.RenovationType = fieldValueElements.ElementAtOrDefault(renovationTypeIndex.Value)?.InnerHtml;
-            if (windowsTypeIndex.HasValue)
+            if (windowsTypeIndex.HasValue && windowsTypeIndex != 0)
                 upnFlat.WindowsType = fieldValueElements.ElementAtOrDefault(windowsTypeIndex.Value)?.InnerHtml;
-            if (furnitureIndex.HasValue)
+            if (furnitureIndex.HasValue && furnitureIndex != 0)
                 upnFlat.Furniture = fieldValueElements.ElementAtOrDefault(furnitureIndex.Value)?.InnerHtml;
-            if (sellConditionIndex.HasValue)
+            if (sellConditionIndex.HasValue && sellConditionIndex != 0)
                 upnFlat.SellCondition = fieldValueElements.ElementAtOrDefault(sellConditionIndex.Value)?.InnerHtml;
 
-            if (roomAmountIndex.HasValue) { 
+            if (roomAmountIndex.HasValue && roomAmountIndex != 0) { 
                 bool hasRoomAmount = Int32.TryParse(fieldValueElements.ElementAtOrDefault(roomAmountIndex.Value)?.InnerHtml, out int roomAmount);
                 if(hasRoomAmount) upnFlat.RoomAmount = roomAmount;
             }
@@ -102,7 +102,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private void fillFloorNumber(UpnFlat upnFlat, List<IElement> fieldValueElements)
         {
-            if (!floorComponentsIndex.HasValue)
+            if (!floorComponentsIndex.HasValue || floorComponentsIndex == 0)
                 return;
 
             string floorsText = fieldValueElements.ElementAtOrDefault(floorComponentsIndex.Value)?.InnerHtml;
@@ -120,7 +120,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private void fillFlatSpaceComponents(UpnFlat upnFlat, List<IElement> fieldValueElements)
         {
-            if (!spaceComponentsIndex.HasValue)
+            if (!spaceComponentsIndex.HasValue || spaceComponentsIndex == 0)
                 return;
 
             string spaceText = fieldValueElements.ElementAtOrDefault(spaceComponentsIndex.Value)?.InnerHtml;
@@ -150,7 +150,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private void fillFlatBathroomComponents(UpnFlat upnFlat, List<IElement> fieldValueElements)
         {
-            if (!bathroomComponentsIndex.HasValue)
+            if (!bathroomComponentsIndex.HasValue || bathroomComponentsIndex == 0)
                 return;
 
             string bathroomsText = fieldValueElements.ElementAtOrDefault(bathroomComponentsIndex.Value)?.InnerHtml;
@@ -169,7 +169,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private void fillPrice(UpnFlat upnFlat, List<IElement> fieldValueElements)
         {
-            if (!priceIndex.HasValue)
+            if (!priceIndex.HasValue || priceIndex == 0)
                 return;
 
             string priceText = fieldValueElements.ElementAtOrDefault(priceIndex.Value)?.InnerHtml;
@@ -187,7 +187,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillAndClearDescription(UpnFlat upnFlat, List<IElement> fieldValueElements)
         {
-            if (descriptionIndex.HasValue)
+            if (descriptionIndex.HasValue && descriptionIndex != 0)
                 upnFlat.Description = fieldValueElements.ElementAtOrDefault(descriptionIndex.Value)?.InnerHtml;
 
             // Очистка описания
