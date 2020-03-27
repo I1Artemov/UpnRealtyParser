@@ -1,32 +1,34 @@
 CREATE TABLE [UpnHouseInfo] (
     [Id] int IDENTITY(1,1),
-    [CreationDateTime] timestamp,
+    [CreationDateTime] datetime,
     [Address] nvarchar(max),
     [HouseType] nvarchar(256),
     [BuildYear] int,
     [WallMaterial] nvarchar(256),
     [MaxFloor] int,
     [Latitude] float,
-    [Longitude] float
+    [Longitude] float,
+	PRIMARY KEY ([Id])
 );
 
 CREATE TABLE [UpnAgency] (
     [Id] int IDENTITY(1,1),
-    [CreationDateTime] timestamp,
+    [CreationDateTime] datetime,
     [Name] nvarchar(max),
     [WorkTime] nvarchar(max),
     [CompanyPhone] nvarchar(max),
     [AgentPhone] nvarchar(max),
     [SiteUrl] nvarchar(max),
-    [Email] nvarchar(max)
+    [Email] nvarchar(max),
+	PRIMARY KEY ([Id])
 );
 
 CREATE TABLE [UpnFlat] (
     [Id] int IDENTITY(1,1),
-    [RemovalDate] timestamp,
-    [CreationDateTime] timestamp,
-    [PageCreationDateTime] timestamp,
-    [LastCheckDate] timestamp,
+    [RemovalDate] datetime,
+    [CreationDateTime] datetime,
+    [PageCreationDateTime] datetime,
+    [LastCheckDate] datetime,
     [UpnHouseInfoId] int,
     [UpnAgencyId] int,
     [FlatType] nvarchar(64),
@@ -46,6 +48,7 @@ CREATE TABLE [UpnFlat] (
     [IdOnSite] nvarchar(256),
     [SiteUrl] nvarchar(max),
     [SellCondition] nvarchar(256),
+	PRIMARY KEY ([Id]),
     CONSTRAINT FK_UpnFlat_UpnHouseInfo_HouseInfoId FOREIGN KEY ([UpnHouseInfoId])
         REFERENCES [UpnHouseInfo]([Id]),
     CONSTRAINT FK_UpnFlat_UpnAgency_UpnAgencyId FOREIGN KEY ([UpnAgencyId])
@@ -57,10 +60,11 @@ CREATE INDEX idx_UpnFlat_UpnAgencyId ON [UpnFlat] ([UpnAgencyId]);
 
 CREATE TABLE [UpnFlatPhoto] (
     [Id] int IDENTITY(1,1),
-    [CreationDateTime] timestamp,
+    [CreationDateTime] datetime,
     [RelationType] nvarchar(64),
     [FileName] nvarchar(max),
-    [FlatId] int -- Без Constraint
+    [FlatId] int, -- Без Constraint
+	PRIMARY KEY ([Id])
 );
 
 CREATE INDEX idx_UpnFlatPhoto_FlatId ON [UpnFlatPhoto] ([FlatId]);
@@ -72,18 +76,20 @@ CREATE INDEX idx_UpnFlatPhoto_RelationType ON [UpnFlatPhoto] ([RelationType]);
 
 CREATE TABLE [PageLink] (
 	[Id] int IDENTITY(1,1),
-	[CreationDateTime] timestamp,
-	[LastCheckDateTime] timestamp,
+	[CreationDateTime] datetime,
+	[LastCheckDateTime] datetime,
 	[Href] nvarchar(max),
 	[LinkType] nvarchar(128),
-	[SiteName] nvarchar(128)
+	[SiteName] nvarchar(128),
+	PRIMARY KEY ([Id])
 );
 
 CREATE TABLE [ParsingState] (
 	[Id] bigint IDENTITY(1,1), --BIGINT!
-	[CreationDateTime] timestamp,
+	[CreationDateTime] datetime,
 	[SiteName] nvarchar(128),
 	[Description] nvarchar(256),
 	[Details] nvarchar(max),
-	[Status] nvarchar(256)
+	[Status] nvarchar(256),
+	PRIMARY KEY ([Id])
 );

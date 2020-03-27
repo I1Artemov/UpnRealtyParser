@@ -1,12 +1,15 @@
 ﻿using System;
+using UpnRealtyParser.Business.Contexts;
 
 namespace UpnRealtyParser.Service
 {
-    class Program
+    public class Program
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            using (RealtyParserContext dbContext = new RealtyParserContext()) { 
+                Console.WriteLine("Hello World!");
+            }
         }
     }
 }
