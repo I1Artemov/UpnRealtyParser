@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 15.0.28010.2050
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpnRealtyParser.Service", "UpnRealtyParser.Service\UpnRealtyParser.Service.csproj", "{D30E8EBD-15D9-4A16-A464-3FC6BDA93F3A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6363176F-A4C3-4E37-81D2-14379F00A1CB} = {6363176F-A4C3-4E37-81D2-14379F00A1CB}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpnRealtyParser.Business", "UpnRealtyParser.Business\UpnRealtyParser.Business.csproj", "{6363176F-A4C3-4E37-81D2-14379F00A1CB}"
 EndProject
