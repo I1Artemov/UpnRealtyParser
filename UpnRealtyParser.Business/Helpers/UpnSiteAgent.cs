@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Repositories;
@@ -12,17 +13,73 @@ namespace UpnRealtyParser.Business.Helpers
 {
     public class UpnSiteAgent
     {
+        protected WebClient _webClient;
+        protected RealtyParserContext _dbContext;
+        protected Thread _dbProcessingThread;
+        protected bool _isConnectionOpen;
+
         protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         protected Action<string> _writeToLogDelegate;
+        protected List<WebProxy> _proxyList;
+        protected Random _random;
+        protected int _requestDelayInMs;
 
-        public UpnSiteAgent(Action<string> writeToLogDelegate)
+        public UpnSiteAgent(Action<string> writeToLogDelegate, List<string> proxyStrList, int requestDelayInMs)
         {
             _writeToLogDelegate = writeToLogDelegate;
+            _requestDelayInMs = requestDelayInMs;
+
+            if(proxyStrList != null && proxyStrList.Count != 0)
+                _proxyList = getProxiesFromIps(proxyStrList);
+
+            _random = new Random();
         }
 
-        public void InitializeRepositories(RealtyParserContext context)
+        protected void openConnection()
+        {
+            if (_isConnectionOpen)
+                return;
+
+            _dbContext = new RealtyParserContext();
+            _webClient = createWebClient();
+
+            initializeRepositories(_dbContext);
+
+            _isConnectionOpen = true;
+        }
+
+        protected void closeConnection()
+        {
+            if (!_isConnectionOpen)
+                return;
+
+            _dbContext.Dispose();
+            _webClient.Dispose();
+
+            _isConnectionOpen = false;
+        }
+
+        protected void initializeRepositories(RealtyParserContext context)
         {
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
+        }
+
+        public void StartLinksGatheringInSeparateThread()
+        {
+            ThreadStart threadMethod =
+                delegate { this.GatherLinksAndInsertInDb(); };
+            _dbProcessingThread = new Thread(threadMethod);
+            _dbProcessingThread.IsBackground = true; // Для корректного завершения при закрытии окна
+            _dbProcessingThread.Start();
+        }
+
+        public void StopProcessingInThread()
+        {
+            if (_dbProcessingThread == null)
+                return;
+
+            _dbProcessingThread.Abort();
+            _writeToLogDelegate("Обработка остановлена");
         }
 
         /// <summary>
@@ -34,11 +91,9 @@ namespace UpnRealtyParser.Business.Helpers
         {
             const string mainTableUrl = "https://upn.ru/realty_eburg_flat_sale.htm";
 
-            string firstTablePageHtml;
-            using (WebClient client = createWebClient())
-            {
-                firstTablePageHtml = client.DownloadString(mainTableUrl);
-            }
+            openConnection();
+
+            string firstTablePageHtml = _webClient.DownloadString(mainTableUrl);
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
                 if (_writeToLogDelegate != null) _writeToLogDelegate("Не удалось загрузить веб-страницу с перечнем квартир");
@@ -65,8 +120,12 @@ namespace UpnRealtyParser.Business.Helpers
 
                 List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml);
                 insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameUpn, currentPageNumber);
+
+                if(_requestDelayInMs >= 0)
+                    Thread.Sleep(_requestDelayInMs);
             }
-            return;
+
+            closeConnection();
         }
 
         /// <summary>
@@ -147,6 +206,35 @@ namespace UpnRealtyParser.Business.Helpers
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             return new WebClient { Encoding = Encoding.GetEncoding("windows-1251") };
+        }
+
+        /// <summary>
+        /// Превращает список адресов прокси формата "(IP):(порт)" в объекты WebProxy
+        /// </summary>
+        protected List<WebProxy> getProxiesFromIps(List<string> proxyStrList)
+        {
+            List<WebProxy> proxyList = new List<WebProxy>();
+
+            if (proxyStrList == null || proxyStrList.Count == 0)
+                return proxyList;
+
+            foreach (string proxyStr in proxyStrList)
+            {
+                List<string> separatedStrs = proxyStr.Split(':').ToList();
+                int port = Int32.Parse(separatedStrs[1]);
+
+                WebProxy currentProxy = new WebProxy(separatedStrs[0], port);
+                currentProxy.BypassProxyOnLocal = false;
+                proxyList.Add(currentProxy);
+            }
+
+            _writeToLogDelegate("Инициализация прокси-серверов завершена");
+            return proxyList;
+        }
+
+        static string DownloadString(string uri) {
+            using (var wc = new System.Net.WebClient())
+                return wc.DownloadString(uri);
         }
     }
 }

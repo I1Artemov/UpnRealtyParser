@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 
@@ -14,13 +15,11 @@ namespace UpnRealtyParser.Service
 
         static void Main(string[] args)
         {
-            using (RealtyParserContext dbContext = new RealtyParserContext()) {
-                UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog);
-                upnAgent.InitializeRepositories(dbContext);
+            UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, null, 20000);
 
-                Console.WriteLine("Начат сбор ссылок");
-                upnAgent.GatherLinksAndInsertInDb();
-            }
+            Console.WriteLine("Начат сбор ссылок");
+            upnAgent.StartLinksGatheringInSeparateThread();
+            Console.ReadLine();
         }
     }
 }

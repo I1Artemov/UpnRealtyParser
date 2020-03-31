@@ -73,14 +73,14 @@ namespace UpnRealtyParser.Tests
         //[Fact]
         public void UpnSiteAgent_LinksGatheringTest()
         {
-            UpnSiteAgent upnAgent = new UpnSiteAgent(null);
+            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, 0);
             upnAgent.GatherLinksAndInsertInDb();
         }
 
         [Fact]
         public void UpnSiteAgent_ApartmentGatheringTest()
         {
-            UpnSiteAgent upnAgent = new UpnSiteAgent(null);
+            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, 0);
             List<string> apartmentHrefs = new List<string> {
                 "/realty_eburg_flat_sale_info/30125886-2171.htm",
                 "/realty_eburg_flat_sale_info/20000573-2851.htm"
