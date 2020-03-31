@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace UpnRealtyParser.Business.Repositories
 {
@@ -15,6 +17,51 @@ namespace UpnRealtyParser.Business.Repositories
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
+        }
+
+        public void Add(TEntity item)
+        {
+            _dbSet.Add(item);
+        }
+
+        public void Delete(TEntity item)
+        {
+            _dbSet.Remove(item);
+        }
+
+        public TEntity Get(int id)
+        {
+            return _dbSet.Find(id);
+        }
+
+        public TEntity GetWithoutTracking(Func<TEntity, bool> condition)
+        {
+            return _dbSet.AsNoTracking().FirstOrDefault(condition);
+        }
+
+        public IQueryable<TEntity> GetAll()
+        {
+            return _dbSet;
+        }
+
+        public IQueryable<TEntity> GetAllWithoutTracking()
+        {
+            return _dbSet.AsNoTracking();
+        }
+
+        public void Update(TEntity item)
+        {
+            _context.Entry(item).State = EntityState.Modified;
+        }
+
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
+
+        public List<TEntity> ApplyPagination(IQueryable<TEntity> allData, int skip, int pageSize)
+        {
+            return allData.Skip(skip).Take(pageSize).ToList();
         }
 
         protected virtual void Dispose(bool disposing)

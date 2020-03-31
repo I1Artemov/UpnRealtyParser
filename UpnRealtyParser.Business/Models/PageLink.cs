@@ -4,7 +4,13 @@ namespace UpnRealtyParser.Business.Models
 {
     public class PageLink
     {
-        public long Id { get; set; }
+        public PageLink()
+        {
+            CreationDateTime = DateTime.Now;
+            LastCheckDateTime = DateTime.Now;
+        }
+
+        public int Id { get; set; }
 
         public DateTime? CreationDateTime { get; set; }
 

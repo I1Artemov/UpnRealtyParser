@@ -1,18 +1,36 @@
 ﻿using AngleSharp.Dom;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Text;
+using UpnRealtyParser.Business.Contexts;
+using UpnRealtyParser.Business.Models;
+using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
     public class UpnSiteAgent
     {
+        protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
+        protected Action<string> _writeToLogDelegate;
+
+        public UpnSiteAgent(Action<string> writeToLogDelegate)
+        {
+            _writeToLogDelegate = writeToLogDelegate;
+        }
+
+        public void InitializeRepositories(RealtyParserContext context)
+        {
+            _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
+        }
+
         /// <summary>
         /// Все, что касается сбора ссылок на квартиры и их сохранения в базу данных.
         /// Заходит на главную страницу с переченм квартир, получает общее кол-во квартир,
         /// собирает из таблицы все ссылки на просмотр страниц с описанием квартир
         /// </summary>
-        public string GatherLinksAndInsertInDb()
+        public void GatherLinksAndInsertInDb()
         {
             const string mainTableUrl = "https://upn.ru/realty_eburg_flat_sale.htm";
 
@@ -22,15 +40,17 @@ namespace UpnRealtyParser.Business.Helpers
                 firstTablePageHtml = client.DownloadString(mainTableUrl);
             }
             if (string.IsNullOrEmpty(firstTablePageHtml))
-                return "Не удалось загрузить главную страницу";
-
+            {
+                if (_writeToLogDelegate != null) _writeToLogDelegate("Не удалось загрузить веб-страницу с перечнем квартир");
+                return;
+            }
             UpnFlatLinksCollector linksCollector = new UpnFlatLinksCollector();
 
             int? totalApartmentsAmount = linksCollector.GetTotalEntriesInTable(firstTablePageHtml);
             int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
             string pageUrlTemplate = linksCollector.GetTablePageSwitchLinkTemplate(firstTablePageHtml);
+            _writeToLogDelegate(string.Format("Всего {0} записей на {1} страницах таблицы", totalApartmentsAmount.Value, totalTablePages));
 
-            List<string> allHrefs = new List<string>(totalApartmentsAmount.Value);
             for(int currentPageNumber = 1; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
@@ -44,9 +64,49 @@ namespace UpnRealtyParser.Business.Helpers
                     continue;
 
                 List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml);
-                allHrefs.AddRange(currentTablePageHrefs);
+                insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameUpn, currentPageNumber);
             }
-            return null;
+            return;
+        }
+
+        /// <summary>
+        /// Вставка (или обновление существующих) пачки ссылок в БД. Обработка идет по одной записи
+        /// </summary>
+        private void insertHrefsIntoDb(List<string> hrefs, string siteName, int pageNumber)
+        {
+            if (hrefs == null || hrefs.Count == 0 || _pageLinkRepo == null)
+                return;
+
+            int insertedAmount = 0;
+            int updatedAmount = 0;
+            foreach(string href in hrefs)
+            {
+                // Проверяем, есть ли уже такая ссылка в базе
+                PageLink foundLink = _pageLinkRepo.GetAll()
+                    .FirstOrDefault(x => x.Href == href && x.SiteName == siteName);
+
+                // Если нашлась, то обновляем дату проверки
+                if(foundLink != null)
+                {
+                    foundLink.LastCheckDateTime = DateTime.Now;
+                    _pageLinkRepo.Update(foundLink);
+                    updatedAmount++;
+                }
+                else
+                {
+                    PageLink linkForAddition = new PageLink
+                    {
+                        Href = href,
+                        SiteName = siteName,
+                        LinkType = Const.LinkTypeSellFlat
+                    };
+                    _pageLinkRepo.Add(linkForAddition);
+                    insertedAmount++;
+                }
+            }
+            _pageLinkRepo.Save();
+            _writeToLogDelegate(string.Format("Обработана страница {0}: вставлено {1} записей, обновлено {2}.",
+                pageNumber, insertedAmount, updatedAmount));
         }
 
         /// <summary>
