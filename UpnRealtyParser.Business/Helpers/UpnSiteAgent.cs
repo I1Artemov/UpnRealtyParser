@@ -20,14 +20,21 @@ namespace UpnRealtyParser.Business.Helpers
 
         protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         protected Action<string> _writeToLogDelegate;
+        protected bool _isUseProxy;
         protected List<WebProxy> _proxyList;
         protected Random _random;
         protected int _requestDelayInMs;
+        protected int _upnTablePagesToSkip;
+        protected int _maxRetryAmountForSingleRequest;
 
-        public UpnSiteAgent(Action<string> writeToLogDelegate, List<string> proxyStrList, int requestDelayInMs)
+        public UpnSiteAgent(Action<string> writeToLogDelegate, List<string> proxyStrList, bool isUseProxy, int requestDelayInMs,
+            int upnTablePagesToSkip, int maxRetryAmountForSingleRequest)
         {
             _writeToLogDelegate = writeToLogDelegate;
             _requestDelayInMs = requestDelayInMs;
+            _isUseProxy = isUseProxy;
+            _upnTablePagesToSkip = upnTablePagesToSkip;
+            _maxRetryAmountForSingleRequest = maxRetryAmountForSingleRequest;
 
             if(proxyStrList != null && proxyStrList.Count != 0)
                 _proxyList = getProxiesFromIps(proxyStrList);
@@ -93,7 +100,7 @@ namespace UpnRealtyParser.Business.Helpers
 
             openConnection();
 
-            string firstTablePageHtml = _webClient.DownloadString(mainTableUrl);
+            string firstTablePageHtml = DownloadString(mainTableUrl);
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
                 if (_writeToLogDelegate != null) _writeToLogDelegate("Не удалось загрузить веб-страницу с перечнем квартир");
@@ -104,16 +111,20 @@ namespace UpnRealtyParser.Business.Helpers
             int? totalApartmentsAmount = linksCollector.GetTotalEntriesInTable(firstTablePageHtml);
             int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
             string pageUrlTemplate = linksCollector.GetTablePageSwitchLinkTemplate(firstTablePageHtml);
+
+            if(totalApartmentsAmount.GetValueOrDefault(0) <= 0 || totalTablePages <= 0 || string.IsNullOrEmpty(pageUrlTemplate))
+            {
+                _writeToLogDelegate("Ошибка: не удалось обработать первую страницу сайта.");
+                return;
+            }
+
             _writeToLogDelegate(string.Format("Всего {0} записей на {1} страницах таблицы", totalApartmentsAmount.Value, totalTablePages));
 
-            for(int currentPageNumber = 1; currentPageNumber <= totalTablePages; currentPageNumber++)
+            for(int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
                 string currentTablePageHtml;
-                using (WebClient client = createWebClient())
-                {
-                    currentTablePageHtml = client.DownloadString(currentTablePageUrl);
-                }
+                currentTablePageHtml = DownloadString(currentTablePageUrl);
 
                 if (string.IsNullOrEmpty(currentTablePageHtml))
                     continue;
@@ -182,10 +193,7 @@ namespace UpnRealtyParser.Business.Helpers
                 string fullApartmentHref = isAddSiteHref ? "https://upn.ru" + apartmentHref : apartmentHref;
 
                 string apartmentPageHtml;
-                using (WebClient client = createWebClient())
-                {
-                    apartmentPageHtml = client.DownloadString(fullApartmentHref);
-                }
+                apartmentPageHtml = DownloadString(fullApartmentHref);
 
                 if (string.IsNullOrEmpty(apartmentPageHtml))
                     continue;
@@ -205,7 +213,24 @@ namespace UpnRealtyParser.Business.Helpers
         private WebClient createWebClient()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            return new WebClient { Encoding = Encoding.GetEncoding("windows-1251") };
+            WebClient webClient = new WebClient
+            {
+                Encoding = Encoding.GetEncoding("windows-1251"),
+            };
+
+            if(_isUseProxy) { 
+                webClient.Proxy = getRandomWebProxy();
+            }
+
+            return webClient;
+        }
+
+        protected WebProxy getRandomWebProxy()
+        {
+            int count = _proxyList.Count;
+            int randomIndex = _random.Next(0, count - 1);
+
+            return _proxyList[randomIndex];
         }
 
         /// <summary>
@@ -232,9 +257,24 @@ namespace UpnRealtyParser.Business.Helpers
             return proxyList;
         }
 
-        static string DownloadString(string uri) {
-            using (var wc = new System.Net.WebClient())
-                return wc.DownloadString(uri);
+        string DownloadString(string uri) {
+            int triesCount = 0;
+            string currentProxyAddress = "";
+            while(triesCount < _maxRetryAmountForSingleRequest) { 
+                try {
+                    using (var wc = createWebClient()) {
+                        currentProxyAddress = ((WebProxy)wc.Proxy)?.Address.ToString();
+                        return wc.DownloadString(uri);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    triesCount++;
+                    _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
+                        uri, triesCount, currentProxyAddress));
+                }
+            }
+            return "LoadingFailed";
         }
     }
 }

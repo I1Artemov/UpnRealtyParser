@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Threading;
-using UpnRealtyParser.Business.Contexts;
+using UpnRealtyParser.Business;
 using UpnRealtyParser.Business.Helpers;
+using UpnRealtyParser.Business.Models;
 
 namespace UpnRealtyParser.Service
 {
@@ -10,12 +10,21 @@ namespace UpnRealtyParser.Service
         public static void WriteDebugLog(string text)
         {
             string dateStr = DateTime.Now.ToString("dd.MM.yyyy hh:mm:ss");
-            Console.WriteLine(string.Format("[{0}] {1}\r\n", dateStr, text));
+            Console.WriteLine(string.Format("[{0}] {1}", dateStr, text));
         }
 
         static void Main(string[] args)
         {
-            UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, null, 20000);
+            AppSettingsSerializer serializer = new AppSettingsSerializer();
+            AppSettings loadedSettings = serializer.GetAppSettingsFromFile(Const.AppSettingsFileName);
+            if(loadedSettings == null)
+            {
+                Console.WriteLine("Не найден файл настройки приложения");
+                return;
+            }
+
+            UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings.ProxyList, loadedSettings.IsUseProxies,
+                loadedSettings.RequestDelayInMs, loadedSettings.UpnTablePagesToSkip, loadedSettings.MaxRetryAmountForSingleRequest);
 
             Console.WriteLine("Начат сбор ссылок");
             upnAgent.StartLinksGatheringInSeparateThread();

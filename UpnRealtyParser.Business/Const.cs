@@ -10,5 +10,6 @@
         public const string ParsingStatusDescriptionGatheringLinks = "GatheringLinks";
         public const string ParsingStatusDescriptionObservingFlat = "ObservingFlat";
 
+        public const string AppSettingsFileName = "AppSettings.xml";
     }
 }

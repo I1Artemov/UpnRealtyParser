@@ -72,6 +72,9 @@ namespace UpnRealtyParser.Business.Helpers
                 .Select(x => x.Attributes.GetNamedItem("href").Value)
                 .FirstOrDefault();
 
+            if (string.IsNullOrEmpty(firstPageHref))
+                return null;
+
             int sidFrom = firstPageHref.IndexOf("&sid=") + "&sid=".Length;
             int sidTo = firstPageHref.LastIndexOf("&ag=");
 
