@@ -93,3 +93,14 @@ CREATE TABLE [ParsingState] (
 	[Status] nvarchar(256),
 	PRIMARY KEY ([Id])
 );
+
+ALTER TABLE [UpnFlat] DROP COLUMN [SiteUrl];
+ALTER TABLE [UpnFlat] DROP COLUMN [IdOnSite];
+ALTER TABLE [UpnFlat] DROP COLUMN [PageCreationDateTime];
+ALTER TABLE [UpnFlat] ADD [PageLinkId] INT;
+ALTER TABLE [UpnFlat] ADD CONSTRAINT
+	FK_UpnFlat_PageLink_PageLinkId FOREIGN KEY ([PageLinkId]) REFERENCES [PageLink]([Id]);
+
+CREATE INDEX idx_UpnFlat_PageLinkId ON [UpnFlat] ([PageLinkId]);
+
+ALTER TABLE [PageLink] ADD [IsDead] BIT;

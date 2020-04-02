@@ -21,5 +21,7 @@ namespace UpnRealtyParser.Business.Models
         public string LinkType { get; set; }
 
         public string SiteName { get; set; }
+
+        public bool? IsDead { get; set; }
     }
 }

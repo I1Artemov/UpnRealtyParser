@@ -71,8 +71,11 @@ namespace UpnRealtyParser.Business.Helpers
             UpnFlat upnFlat = new UpnFlat {CreationDateTime = DateTime.Now};
 
             if(flatTypeIndex.HasValue && flatTypeIndex != 0)
+            { 
                 upnFlat.FlatType = fieldValueElements.ElementAtOrDefault(flatTypeIndex.Value)?.InnerHtml;
-            if(redevelopmentTypeIndex.HasValue && redevelopmentTypeIndex != 0)
+                upnFlat.FlatType = upnFlat.FlatType.Split("<").FirstOrDefault();
+            }
+            if (redevelopmentTypeIndex.HasValue && redevelopmentTypeIndex != 0)
                 upnFlat.RedevelopmentType = fieldValueElements.ElementAtOrDefault(redevelopmentTypeIndex.Value)?.InnerHtml;
             if (renovationTypeIndex.HasValue && renovationTypeIndex != 0)
                 upnFlat.RenovationType = fieldValueElements.ElementAtOrDefault(renovationTypeIndex.Value)?.InnerHtml;

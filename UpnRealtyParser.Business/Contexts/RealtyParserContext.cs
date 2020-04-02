@@ -6,6 +6,9 @@ namespace UpnRealtyParser.Business.Contexts
     public class RealtyParserContext : DbContext
     {
         public DbSet<PageLink> PageLinks { get; set; }
+        public DbSet<UpnFlat> UpnFlats { get; set; }
+        public DbSet<UpnHouseInfo> UpnHouseInfos { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

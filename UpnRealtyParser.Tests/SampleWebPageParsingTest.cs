@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using AngleSharp.Dom;
 using UpnRealtyParser.Business.Helpers;
+using UpnRealtyParser.Business.Models;
 using Xunit;
 
 namespace UpnRealtyParser.Tests
@@ -73,19 +74,19 @@ namespace UpnRealtyParser.Tests
         //[Fact]
         public void UpnSiteAgent_LinksGatheringTest()
         {
-            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, 0);
+            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, false, 0, 0, 1);
             upnAgent.GatherLinksAndInsertInDb();
         }
 
         [Fact]
         public void UpnSiteAgent_ApartmentGatheringTest()
         {
-            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, 0);
-            List<string> apartmentHrefs = new List<string> {
-                "/realty_eburg_flat_sale_info/30125886-2171.htm",
-                "/realty_eburg_flat_sale_info/20000573-2851.htm"
+            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, false, 0, 0, 1);
+            List<PageLink> apartmentHrefs = new List<PageLink> {
+                new PageLink{ Href = "/realty_eburg_flat_sale_info/30125886-2171.htm" } ,
+                new PageLink{ Href = "/realty_eburg_flat_sale_info/20000573-2851.htm" }
             };
-            string errorMessage = upnAgent.ProcessAllApartmentsFromLinksInDb(apartmentHrefs, true);
+            upnAgent.ProcessAllApartmentsFromLinks(apartmentHrefs, true);
         }
     }
 }

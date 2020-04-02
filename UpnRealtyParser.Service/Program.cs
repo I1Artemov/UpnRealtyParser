@@ -26,8 +26,10 @@ namespace UpnRealtyParser.Service
             UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings.ProxyList, loadedSettings.IsUseProxies,
                 loadedSettings.RequestDelayInMs, loadedSettings.UpnTablePagesToSkip, loadedSettings.MaxRetryAmountForSingleRequest);
 
-            Console.WriteLine("Начат сбор ссылок");
-            upnAgent.StartLinksGatheringInSeparateThread();
+            //Console.WriteLine("Начат сбор ссылок");
+            //upnAgent.StartLinksGatheringInSeparateThread();
+            Console.WriteLine("Начат сбор квартир");
+            upnAgent.StartApartmentGatheringInSeparateThread();
             Console.ReadLine();
         }
     }

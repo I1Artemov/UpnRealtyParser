@@ -7,8 +7,6 @@ public class UpnFlatBase : IdInfo {
     // NEW
     public DateTime? LastCheckDate {get; set;}
 
-    public DateTime? PageCreationDateTime {get; set;}
-
     public int? UpnHouseInfoId {get; set;}
 
     public int? UpnAgencyId {get; set;}
@@ -41,7 +39,5 @@ public class UpnFlatBase : IdInfo {
 
     public string Description {get; set;}
 
-    public string IdOnSite {get; set;}
-
-    public string SiteUrl {get; set;}
+    public int PageLinkId {get; set;}
 }
