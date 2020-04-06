@@ -1,9 +1,11 @@
 ﻿using AngleSharp.Dom;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace UpnRealtyParser.Business.Helpers
 {
-    public class UpnAgencyParser
+    public class UpnAgencyParser : BaseHttpParser
     {
         private const string nameHeaderText = "Агентство недвижимости:";
         private const string workTimeHeaderText = "Время работы:";
@@ -27,6 +29,37 @@ namespace UpnRealtyParser.Business.Helpers
             agentPhoneIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", agentPhoneHeaderText)) + 1;
             siteUrlIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", siteUrlHeaderText)) + 1;
             emailIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", emailHeaderText)) + 1;
+        }
+
+        public UpnAgency GetAgencyFromPageText(List<IElement> fieldValueElements)
+        {
+            fillFieldIndexes(fieldValueElements);
+            UpnAgency agency = new UpnAgency { CreationDateTime = DateTime.Now };
+
+            if (nameIndex.HasValue && nameIndex != 0) {
+                IElement nameAnchor = fieldValueElements.ElementAtOrDefault(nameIndex.Value);
+                agency.Name = getNodeValueOrFirstChildValue(nameAnchor);
+            }
+            if (workTimeIndex.HasValue && workTimeIndex != 0)
+                agency.WorkTime = fieldValueElements.ElementAtOrDefault(workTimeIndex.Value)?.InnerHtml;
+            if (companyPhoneIndex.HasValue && companyPhoneIndex != 0)
+                agency.CompanyPhone = fieldValueElements.ElementAtOrDefault(companyPhoneIndex.Value)?.InnerHtml;
+            if (agentPhoneIndex.HasValue && agentPhoneIndex != 0)
+            {
+                IElement agentPhoneAnchor = fieldValueElements.ElementAtOrDefault(agentPhoneIndex.Value);
+                agency.AgentPhone = getNodeValueOrFirstChildValue(agentPhoneAnchor);
+            }
+            if (siteUrlIndex.HasValue && siteUrlIndex != 0)
+            {
+                IElement siteUrlAnchor = fieldValueElements.ElementAtOrDefault(siteUrlIndex.Value);
+                agency.SiteUrl = getNodeValueOrFirstChildValue(siteUrlAnchor);
+            }
+            if (emailIndex.HasValue && emailIndex != 0) {
+                IElement emailAnchor = fieldValueElements.ElementAtOrDefault(emailIndex.Value);
+                agency.Email = getNodeValueOrFirstChildValue(emailAnchor);
+            }
+
+            return agency;
         }
     }
 }

@@ -70,6 +70,22 @@ namespace UpnRealtyParser.Tests
             Assert.EndsWith("sid=5f94fedb5e9a42b9b9aef2fa1db71986&ag=0&vm=1&id={0}&scn=6", pageUrlTemplate);
         }
 
+        [Fact]
+        public void GetAgencyFromPage_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "01_RealFlatForSell2Rooms_webpage.txt");
+            UpnAgencyParser agencyParser = new UpnAgencyParser();
+
+            List<IElement> fieldValueElements = agencyParser.GetTdElementsFromWebPage(webPageText);
+            UpnAgency agency = agencyParser.GetAgencyFromPageText(fieldValueElements);
+
+            Assert.Equal("пн.-пт.: с 10.00-21.00, сб.-вс.: с 11.00 до 18.00", agency.WorkTime);
+            Assert.Equal("(343) 286-09-14", agency.CompanyPhone);
+            Assert.Equal("89086306177", agency.AgentPhone);
+            Assert.Equal("http://orientir.pro", agency.SiteUrl);
+            Assert.Equal("info@orientir.pro", agency.Email);
+        }
+
         [Fact(Skip = "Действия с реальными данными")]
         //[Fact]
         public void UpnSiteAgent_LinksGatheringTest()
@@ -78,7 +94,8 @@ namespace UpnRealtyParser.Tests
             upnAgent.GatherLinksAndInsertInDb();
         }
 
-        [Fact]
+        [Fact(Skip = "Действия с реальными данными")]
+        //[Fact]
         public void UpnSiteAgent_ApartmentGatheringTest()
         {
             UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, false, 0, 0, 1);

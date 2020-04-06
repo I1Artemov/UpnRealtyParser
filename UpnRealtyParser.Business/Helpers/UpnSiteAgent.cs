@@ -22,6 +22,7 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         protected EFGenericRepo<UpnHouseInfo, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<UpnFlat, RealtyParserContext> _sellFlatRepo;
+        protected EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
 
         protected Action<string> _writeToLogDelegate;
         protected bool _isUseProxy;
@@ -75,6 +76,7 @@ namespace UpnRealtyParser.Business.Helpers
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
             _houseRepo = new EFGenericRepo<UpnHouseInfo, RealtyParserContext>(context);
             _sellFlatRepo = new EFGenericRepo<UpnFlat, RealtyParserContext>(context);
+            _agencyRepo = new EFGenericRepo<UpnAgency, RealtyParserContext>(context);
         }
 
         public void StartLinksGatheringInSeparateThread()
@@ -222,8 +224,8 @@ namespace UpnRealtyParser.Business.Helpers
         }
 
         /// <summary>
-        /// Переходит на страницы с описанием квартир (по списку ссылок на них), собирает информацию о каждой квартире
-        /// и о ее доме со страницы и добавляет всё в БД
+        /// Переходит на страницы с описанием квартир (по списку ссылок на них), собирает информацию о каждой квартире,
+        /// о ее доме и о риэлторе со страницы и добавляет всё в БД
         /// </summary>
         public void ProcessAllApartmentsFromLinks(List<PageLink> apartmentHrefs, bool isAddSiteHref)
         {
@@ -262,10 +264,15 @@ namespace UpnRealtyParser.Business.Helpers
                 if (_houseRepo != null)
                     updateOrAddHouse(house);
 
+                // Сбор сведений об агентстве
+                UpnAgencyParser agencyParser = new UpnAgencyParser();
+                UpnAgency agency = agencyParser.GetAgencyFromPageText(fieldValueElements);
+                updateOrAddAgency(agency);
+
                 // Сбор сведений о квартире
                 UpnApartmentParser parser = new UpnApartmentParser();
                 UpnFlat upnFlat = parser.GetUpnSellFlatFromPageText(fieldValueElements);
-                updateOrAddFlat(upnFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id);
+                updateOrAddFlat(upnFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
 
                 if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
@@ -294,10 +301,11 @@ namespace UpnRealtyParser.Business.Helpers
             }
         }
 
-        private void updateOrAddFlat(UpnFlat upnFlat, int houseId, int pageLinkId)
+        private void updateOrAddFlat(UpnFlat upnFlat, int houseId, int pageLinkId, int agencyId)
         {
             upnFlat.UpnHouseInfoId = houseId;
             upnFlat.PageLinkId = pageLinkId;
+            upnFlat.UpnAgencyId = agencyId;
             upnFlat.LastCheckDate = DateTime.Now;
             UpnFlat existingFlat = _sellFlatRepo.GetAllWithoutTracking()
                 .Where(x => x.PageLinkId == pageLinkId)
@@ -316,6 +324,26 @@ namespace UpnRealtyParser.Business.Helpers
             var isExisting = _sellFlatRepo.GetAllWithoutTracking()
                 .Any(x => x.PageLinkId == pageLinkId);
             return isExisting;
+        }
+
+        private void updateOrAddAgency(UpnAgency agency)
+        {
+            UpnAgency existingAgency = _agencyRepo.GetAllWithoutTracking().FirstOrDefault(
+                x => x.Name == agency.Name &&
+                x.AgentPhone == agency.AgentPhone &&
+                x.CompanyPhone == agency.CompanyPhone &&
+                x.Email == agency.Email);
+
+            if(existingAgency != null)
+            {
+                agency.Id = existingAgency.Id;
+            }
+            else
+            {
+                _agencyRepo.Add(agency);
+                _agencyRepo.Save();
+                _writeToLogDelegate(string.Format("Добавлено агентство: Id {0}, телефон агента {1}", agency.Id, agency.AgentPhone));
+            }
         }
 
         /// <summary>

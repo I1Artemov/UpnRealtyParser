@@ -8,6 +8,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<PageLink> PageLinks { get; set; }
         public DbSet<UpnFlat> UpnFlats { get; set; }
         public DbSet<UpnHouseInfo> UpnHouseInfos { get; set; }
+        public DbSet<UpnAgency> UpnAgencies { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -44,5 +44,20 @@ namespace UpnRealtyParser.Business.Helpers
 
             return htmlDocument;
         }
+
+        /// <summary>
+        /// Возвращает текст внутри элемента, если в нем нет дочерних элементов, 
+        /// или текст дочернего элемента, если такой элемент есть
+        /// </summary>
+        protected string getNodeValueOrFirstChildValue(IElement element)
+        {
+            if (element == null)
+                return "";
+
+            string result = element.ChildElementCount == 0 ?
+                    element.InnerHtml : element.FirstElementChild?.InnerHtml;
+
+            return result;
+        }
     }
 }
