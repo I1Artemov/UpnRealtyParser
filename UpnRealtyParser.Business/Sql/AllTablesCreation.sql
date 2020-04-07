@@ -104,3 +104,6 @@ ALTER TABLE [UpnFlat] ADD CONSTRAINT
 CREATE INDEX idx_UpnFlat_PageLinkId ON [UpnFlat] ([PageLinkId]);
 
 ALTER TABLE [PageLink] ADD [IsDead] BIT;
+
+-- 06.04.2020: Новый стобец для таблицы с фотографиями
+ALTER TABLE [UpnFlatPhoto] ADD [Href] nvarchar(max);

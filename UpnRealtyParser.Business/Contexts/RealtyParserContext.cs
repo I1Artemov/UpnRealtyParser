@@ -9,6 +9,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<UpnFlat> UpnFlats { get; set; }
         public DbSet<UpnHouseInfo> UpnHouseInfos { get; set; }
         public DbSet<UpnAgency> UpnAgencies { get; set; }
+        public DbSet<UpnFlatPhoto> UpnFlatPhotos{ get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

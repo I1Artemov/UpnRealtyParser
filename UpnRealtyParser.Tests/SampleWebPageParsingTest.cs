@@ -86,6 +86,16 @@ namespace UpnRealtyParser.Tests
             Assert.Equal("info@orientir.pro", agency.Email);
         }
 
+        [Fact]
+        public void GettingApartmentPhotoHrefs_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "01_RealFlatForSell2Rooms_webpage.txt");
+
+            UpnApartmentParser parser = new UpnApartmentParser();
+            List<string> hrefs = parser.GetPhotoHrefsFromPage(webPageText);
+            Assert.Equal(15, hrefs.Count);
+        }
+
         [Fact(Skip = "Действия с реальными данными")]
         //[Fact]
         public void UpnSiteAgent_LinksGatheringTest()

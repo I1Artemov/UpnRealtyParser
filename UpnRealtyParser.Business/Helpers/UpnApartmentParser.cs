@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using AngleSharp;
 using AngleSharp.Dom;
+using AngleSharp.Html.Dom;
 
 namespace UpnRealtyParser.Business.Helpers
 {
@@ -98,6 +99,24 @@ namespace UpnRealtyParser.Business.Helpers
             fillAndClearDescription(upnFlat, fieldValueElements);
 
             return upnFlat;
+        }
+
+        /// <summary>
+        /// Выбирает из текста веб-страницы все ссылки на фотографии квартир. Возварщает список HREF-ов на jpg
+        /// </summary>
+        public List<string> GetPhotoHrefsFromPage(string pageText)
+        {
+            // meta property="og:image" content ="http://upn.ru/getpic.ashx?gid=488521d9-c076-4f7c-b903-ef8ebce1a05b&filename=2923_20000161_1_286974337.jpg&t=false"
+            var htmlDocument = getPreparedHtmlDocument(pageText);
+            var anchorElements = htmlDocument.Result.All
+                .Where(m => m.LocalName == "meta" &&
+                    m.OuterHtml.Contains("property=\"og:image\""))
+                .Select(x => x as IHtmlMetaElement)
+                .ToList();
+
+            return anchorElements
+                .Select(x => x.Content)
+                .ToList();
         }
 
         /// <summary>

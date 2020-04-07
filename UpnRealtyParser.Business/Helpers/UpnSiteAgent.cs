@@ -23,6 +23,7 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<UpnHouseInfo, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<UpnFlat, RealtyParserContext> _sellFlatRepo;
         protected EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
+        protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
 
         protected Action<string> _writeToLogDelegate;
         protected bool _isUseProxy;
@@ -77,6 +78,7 @@ namespace UpnRealtyParser.Business.Helpers
             _houseRepo = new EFGenericRepo<UpnHouseInfo, RealtyParserContext>(context);
             _sellFlatRepo = new EFGenericRepo<UpnFlat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<UpnAgency, RealtyParserContext>(context);
+            _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
         }
 
         public void StartLinksGatheringInSeparateThread()
@@ -257,26 +259,35 @@ namespace UpnRealtyParser.Business.Helpers
                     continue;
                 }
 
-                // Сбор сведений о доме
-                UpnHouseParser houseParser = new UpnHouseParser();
-                List<IElement> fieldValueElements = houseParser.GetTdElementsFromWebPage(apartmentPageHtml);
-                UpnHouseInfo house = houseParser.GetUpnHouseFromPageText(fieldValueElements, apartmentPageHtml);
-                if (_houseRepo != null)
-                    updateOrAddHouse(house);
-
-                // Сбор сведений об агентстве
-                UpnAgencyParser agencyParser = new UpnAgencyParser();
-                UpnAgency agency = agencyParser.GetAgencyFromPageText(fieldValueElements);
-                updateOrAddAgency(agency);
-
-                // Сбор сведений о квартире
-                UpnApartmentParser parser = new UpnApartmentParser();
-                UpnFlat upnFlat = parser.GetUpnSellFlatFromPageText(fieldValueElements);
-                updateOrAddFlat(upnFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
+                processAllDataAboutSingleApartmentAndUpdateDb(apartmentPageHtml, apartmentLink);
 
                 if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
             }
+        }
+
+        protected void processAllDataAboutSingleApartmentAndUpdateDb(string apartmentPageHtml, PageLink apartmentLink)
+        {
+            // Сбор сведений о доме
+            UpnHouseParser houseParser = new UpnHouseParser();
+            List<IElement> fieldValueElements = houseParser.GetTdElementsFromWebPage(apartmentPageHtml);
+            UpnHouseInfo house = houseParser.GetUpnHouseFromPageText(fieldValueElements, apartmentPageHtml);
+            if (_houseRepo != null)
+                updateOrAddHouse(house);
+
+            // Сбор сведений об агентстве
+            UpnAgencyParser agencyParser = new UpnAgencyParser();
+            UpnAgency agency = agencyParser.GetAgencyFromPageText(fieldValueElements);
+            updateOrAddAgency(agency);
+
+            // Сбор сведений о квартире
+            UpnApartmentParser apartmentParser = new UpnApartmentParser();
+            UpnFlat upnFlat = apartmentParser.GetUpnSellFlatFromPageText(fieldValueElements);
+            updateOrAddFlat(upnFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
+
+            // Сбор ссылок на фотографии квартиры
+            List<string> photoHrefs = apartmentParser.GetPhotoHrefsFromPage(apartmentPageHtml);
+            updateOrAddPhotoHrefs(photoHrefs, upnFlat.Id.GetValueOrDefault(0));
         }
 
         /// <summary>
@@ -344,6 +355,22 @@ namespace UpnRealtyParser.Business.Helpers
                 _agencyRepo.Save();
                 _writeToLogDelegate(string.Format("Добавлено агентство: Id {0}, телефон агента {1}", agency.Id, agency.AgentPhone));
             }
+        }
+
+        protected void updateOrAddPhotoHrefs(List<string> hrefs, int apartmentId)
+        {
+            foreach(string href in hrefs)
+            {
+                UpnFlatPhoto photo = new UpnFlatPhoto {
+                    CreationDateTime = DateTime.Now,
+                    RelationType = Const.LinkTypeSellFlat,
+                    FlatId = apartmentId,
+                    Href = href
+                };
+                _photoRepo.Add(photo);
+            }
+            _photoRepo.Save();
+            _writeToLogDelegate(string.Format("Обнаружено {0} ссылок на фото для квартиры (Id = {1})", hrefs.Count, apartmentId));
         }
 
         /// <summary>
