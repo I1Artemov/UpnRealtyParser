@@ -201,6 +201,9 @@ namespace UpnRealtyParser.Business.Helpers
             int pFrom = priceText.IndexOf("<font style=\"font-size: 1.1em;\">") + "<font style=\"font-size: 1.1em;\">".Length;
             int pTo = priceText.LastIndexOf(" руб.</font>");
 
+            if (pFrom < 0 || pTo < 0 || pFrom >= pTo)
+                return;
+
             string priceValueText = priceText.Substring(pFrom, pTo - pFrom);
             bool isPriceParsed = Int32.TryParse(priceValueText.Replace(".", ""), out int priceValue);
             if (isPriceParsed)

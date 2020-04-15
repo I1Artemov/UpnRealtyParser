@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using UpnRealtyParser.Business.Helpers;
+using UpnRealtyParser.Business.Models;
 using Xunit;
 
 namespace UpnRealtyParser.Tests
@@ -11,7 +12,7 @@ namespace UpnRealtyParser.Tests
         public void LoadProxiesFromGithubTest()
         {
             OnlineProxyProvider proxyProvider = new OnlineProxyProvider(null);
-            List<WebProxy> webProxies = proxyProvider.GetAliveProxiesList();
+            List<WebProxyInfo> webProxies = proxyProvider.GetAliveProxiesList();
 
             Assert.NotEmpty(webProxies);
         }

@@ -13,6 +13,11 @@ namespace UpnRealtyParser.Business.Models
         public int RequestDelayInMs { get; set; }
 
         /// <summary>
+        /// Максимальное время, в течение которого ждем ответа от прокси
+        /// </summary>
+        public int MaxRequestTimeoutInMs { get; set; }
+
+        /// <summary>
         /// Сколько страниц таблицы с переченм квартир на УПН нужно пропустить
         /// </summary>
         public int UpnTablePagesToSkip { get; set; }

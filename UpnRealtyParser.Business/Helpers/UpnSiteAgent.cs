@@ -27,31 +27,32 @@ namespace UpnRealtyParser.Business.Helpers
 
         protected Action<string> _writeToLogDelegate;
         protected bool _isUseProxy;
-        protected List<WebProxy> _proxyList;
+        protected List<WebProxyInfo> _proxyInfoList;
         protected Random _random;
         protected int _requestDelayInMs;
         protected int _upnTablePagesToSkip;
         protected int _maxRetryAmountForSingleRequest;
+        protected int _maxRequestTimeoutInMs;
 
-        public UpnSiteAgent(Action<string> writeToLogDelegate, List<string> proxyStrList, bool isUseProxy, bool isGetProxiesFromGithub, int requestDelayInMs,
-            int upnTablePagesToSkip, int maxRetryAmountForSingleRequest)
+        public UpnSiteAgent(Action<string> writeToLogDelegate, AppSettings settings)
         {
             _writeToLogDelegate = writeToLogDelegate;
-            _requestDelayInMs = requestDelayInMs;
-            _isUseProxy = isUseProxy;
-            _upnTablePagesToSkip = upnTablePagesToSkip;
-            _maxRetryAmountForSingleRequest = maxRetryAmountForSingleRequest;
+            _requestDelayInMs = settings.RequestDelayInMs;
+            _isUseProxy = settings.IsUseProxies;
+            _upnTablePagesToSkip = settings.UpnTablePagesToSkip;
+            _maxRetryAmountForSingleRequest = settings.MaxRetryAmountForSingleRequest;
+            _maxRequestTimeoutInMs = settings.MaxRequestTimeoutInMs;
 
             // Берем прокси либо из списка, либо из сети (если они нужны)
-            if(isUseProxy && !isGetProxiesFromGithub && proxyStrList != null && proxyStrList.Count != 0)
+            if(settings.IsUseProxies && !settings.IsGetProxiesListFromGithub && settings.ProxyList != null && settings.ProxyList.Count != 0)
             { 
                 OnlineProxyProvider proxyProvider = new OnlineProxyProvider(writeToLogDelegate);
-                _proxyList = proxyProvider.GetProxiesFromIps(proxyStrList);
+                _proxyInfoList = proxyProvider.GetProxiesFromIps(settings.ProxyList);
             }
-            if(isUseProxy && isGetProxiesFromGithub)
+            if(settings.IsUseProxies && settings.IsGetProxiesListFromGithub)
             {
                 OnlineProxyProvider proxyProvider = new OnlineProxyProvider(writeToLogDelegate);
-                _proxyList = proxyProvider.GetAliveProxiesList();
+                _proxyInfoList = proxyProvider.GetAliveProxiesList();
             }
 
             _random = new Random();
@@ -400,30 +401,41 @@ namespace UpnRealtyParser.Business.Helpers
             _pageLinkRepo.Save();
         }
 
-        private WebClient createWebClient()
+        private WebClientWithTimeout createWebClient()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            WebClient webClient = new WebClient
+            WebClientWithTimeout webClient = new WebClientWithTimeout
             {
                 Encoding = Encoding.GetEncoding("windows-1251"),
+                RequestTimeout = _maxRequestTimeoutInMs
             };
 
-            if(_isUseProxy) { 
-                webClient.Proxy = getRandomWebProxy();
+            if (_isUseProxy) { 
+                webClient.Proxy = getRandomWebProxy().WebProxy;
             }
 
             return webClient;
         }
 
-        protected WebProxy getRandomWebProxy()
+        /// <summary>
+        /// Возвращает случайно выбранную прокси. Игнорирует прокси, у которых ранее был установлен признак IsNotResponding
+        /// </summary>
+        protected WebProxyInfo getRandomWebProxy()
         {
-            int count = _proxyList.Count;
+            List<WebProxyInfo> respondingProxies = _proxyInfoList
+                .Where(x => !x.IsHasNotResponded).ToList();
+            int count = respondingProxies.Count;
+            if(count == 0)
+            {
+                _writeToLogDelegate("Не осталось прокси без признака IsNotResponding. Будет выбрана любая прокси.");
+                respondingProxies = _proxyInfoList;
+                count = _proxyInfoList.Count;
+            }
+
             int randomIndex = _random.Next(0, count - 1);
 
-            return _proxyList[randomIndex];
+            return respondingProxies[randomIndex];
         }
-
-        
 
         /// <summary>
         /// Пытается загрузить веб-страницу по ссылке с использованием прокси (если задано) за несколько попыток
@@ -444,11 +456,24 @@ namespace UpnRealtyParser.Business.Helpers
                         return "NotFound";
 
                     triesCount++;
+                    markProxyAsNotResponding(currentProxyAddress);
                     _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
                         uri, triesCount, currentProxyAddress));
                 }
             }
             return "LoadingFailed";
+        }
+
+        /// <summary>
+        /// Почле неудачной попытки загрузить страницу через прокси отмечает проксю как NotResponding,
+        /// чтобы больше ее не использовать
+        /// </summary>
+        private void markProxyAsNotResponding(string ipAddress)
+        {
+            WebProxyInfo foundProxy = _proxyInfoList
+                .FirstOrDefault(x => x.WebProxy.Address.ToString().Contains(ipAddress));
+
+            foundProxy.IsHasNotResponded = true;
         }
     }
 }

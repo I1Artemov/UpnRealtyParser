@@ -95,6 +95,9 @@ namespace UpnRealtyParser.Business.Helpers
             int pFrom = pageText.IndexOf("var point = [") + "var point = [".Length;
             int pTo = pageText.LastIndexOf("];\r\n\r\n        ymaps.ready");
 
+            if (pFrom < 0 || pTo < 0 || pFrom >= pTo)
+                return;
+
             string latAndLonText = pageText.Substring(pFrom, pTo - pFrom);
             List<string> latAndLonParts = latAndLonText.Split(",").ToList();
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using UpnRealtyParser.Business.Models;
 
 namespace UpnRealtyParser.Business.Helpers
 {
@@ -21,7 +22,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// Получает с гитхаба список всех прокси, затем - список статусов (живая или нет).
         /// Возвращает только живые прокси
         /// </summary>
-        public List<WebProxy> GetAliveProxiesList()
+        public List<WebProxyInfo> GetAliveProxiesList()
         {
             List<string> rawProxies = getAllProxiesRaw();
             if(_writeToLogDelegate != null)
@@ -35,7 +36,7 @@ namespace UpnRealtyParser.Business.Helpers
                 x => aliveProxyIps.Contains(x.Split(':').ToList().FirstOrDefault()))
                 .ToList();
 
-            List<WebProxy> webProxies = GetProxiesFromIps(aliveProxiesWithPorts);
+            List<WebProxyInfo> webProxies = GetProxiesFromIps(aliveProxiesWithPorts);
             return webProxies;
         }
 
@@ -77,27 +78,27 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Превращает список адресов прокси формата "(IP):(порт)" в объекты WebProxy
         /// </summary>
-        public List<WebProxy> GetProxiesFromIps(List<string> proxyStrList)
+        public List<WebProxyInfo> GetProxiesFromIps(List<string> proxyStrList)
         {
-            List<WebProxy> proxyList = new List<WebProxy>();
+            List<WebProxyInfo> proxyInfoList = new List<WebProxyInfo>();
 
             if (proxyStrList == null || proxyStrList.Count == 0)
-                return proxyList;
+                return proxyInfoList;
 
             foreach (string proxyStr in proxyStrList)
             {
                 List<string> separatedStrs = proxyStr.Split(':').ToList();
                 int port = Int32.Parse(separatedStrs[1]);
 
-                WebProxy currentProxy = new WebProxy(separatedStrs[0], port);
-                currentProxy.BypassProxyOnLocal = false;
-                proxyList.Add(currentProxy);
+                WebProxyInfo currentProxyInfo = new WebProxyInfo(new WebProxy(separatedStrs[0], port));
+                currentProxyInfo.WebProxy.BypassProxyOnLocal = false;
+                proxyInfoList.Add(currentProxyInfo);
             }
 
             if(_writeToLogDelegate != null)
                 _writeToLogDelegate("Инициализация прокси-серверов завершена");
 
-            return proxyList;
+            return proxyInfoList;
         }
     }
 }

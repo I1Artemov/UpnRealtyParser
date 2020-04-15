@@ -100,7 +100,8 @@ namespace UpnRealtyParser.Tests
         //[Fact]
         public void UpnSiteAgent_LinksGatheringTest()
         {
-            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, false, false, 0, 0, 1);
+            AppSettings settings = new AppSettings(); // null, false, false, 0, 0, 1
+            UpnSiteAgent upnAgent = new UpnSiteAgent(null, settings);
             upnAgent.GatherLinksAndInsertInDb();
         }
 
@@ -108,7 +109,8 @@ namespace UpnRealtyParser.Tests
         //[Fact]
         public void UpnSiteAgent_ApartmentGatheringTest()
         {
-            UpnSiteAgent upnAgent = new UpnSiteAgent(null, null, false, false, 0, 0, 1);
+            AppSettings settings = new AppSettings(); // null, false, false, 0, 0, 1
+            UpnSiteAgent upnAgent = new UpnSiteAgent(null, settings);
             List<PageLink> apartmentHrefs = new List<PageLink> {
                 new PageLink{ Href = "/realty_eburg_flat_sale_info/30125886-2171.htm" } ,
                 new PageLink{ Href = "/realty_eburg_flat_sale_info/20000573-2851.htm" }
