@@ -5,9 +5,9 @@
   <MaxRetryAmountForSingleRequest>15</MaxRetryAmountForSingleRequest>
   <IsUseProxies>true</IsUseProxies>
   <ProxyList>
-	<string>176.53.40.222:3128</string>
-	<string>118.200.73.124:8080</string>
-	<string>70.165.64.33:48678</string>
 	<string>216.85.7.155:30131</string>
+	<string>192.41.71.199:3128</string>
+	<string>34.230.168.103:3128</string>
+	<string>216.98.9.150:3128</string>
   </ProxyList>
 </AppSettings>

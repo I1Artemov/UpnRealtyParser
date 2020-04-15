@@ -25,6 +25,11 @@ namespace UpnRealtyParser.Business.Models
         public bool IsUseProxies { get; set; }
 
         /// <summary>
+        /// Если установлено, то прокси будут браться не из конфига, а с https://github.com/clarketm/proxy-list
+        /// </summary>
+        public bool IsGetProxiesListFromGithub { get; set; }
+
+        /// <summary>
         /// Список прокси в формате "IP:Port"
         /// </summary>
         public List<string> ProxyList { get; set; }

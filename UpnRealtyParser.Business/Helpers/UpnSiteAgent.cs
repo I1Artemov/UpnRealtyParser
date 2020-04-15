@@ -33,7 +33,7 @@ namespace UpnRealtyParser.Business.Helpers
         protected int _upnTablePagesToSkip;
         protected int _maxRetryAmountForSingleRequest;
 
-        public UpnSiteAgent(Action<string> writeToLogDelegate, List<string> proxyStrList, bool isUseProxy, int requestDelayInMs,
+        public UpnSiteAgent(Action<string> writeToLogDelegate, List<string> proxyStrList, bool isUseProxy, bool isGetProxiesFromGithub, int requestDelayInMs,
             int upnTablePagesToSkip, int maxRetryAmountForSingleRequest)
         {
             _writeToLogDelegate = writeToLogDelegate;
@@ -42,8 +42,17 @@ namespace UpnRealtyParser.Business.Helpers
             _upnTablePagesToSkip = upnTablePagesToSkip;
             _maxRetryAmountForSingleRequest = maxRetryAmountForSingleRequest;
 
-            if(proxyStrList != null && proxyStrList.Count != 0)
-                _proxyList = getProxiesFromIps(proxyStrList);
+            // Берем прокси либо из списка, либо из сети (если они нужны)
+            if(isUseProxy && !isGetProxiesFromGithub && proxyStrList != null && proxyStrList.Count != 0)
+            { 
+                OnlineProxyProvider proxyProvider = new OnlineProxyProvider(writeToLogDelegate);
+                _proxyList = proxyProvider.GetProxiesFromIps(proxyStrList);
+            }
+            if(isUseProxy && isGetProxiesFromGithub)
+            {
+                OnlineProxyProvider proxyProvider = new OnlineProxyProvider(writeToLogDelegate);
+                _proxyList = proxyProvider.GetAliveProxiesList();
+            }
 
             _random = new Random();
         }
@@ -213,14 +222,10 @@ namespace UpnRealtyParser.Business.Helpers
 
             int totalLinksCount = linksFilterQuery.Count();
 
-            for (int linksToSkip = 0; linksToSkip < totalLinksCount; linksToSkip += linksAmountForSingleSelect) {
+            List<PageLink> apartmentHrefs = linksFilterQuery
+                .ToList();
 
-                List<PageLink> apartmentHrefs = linksFilterQuery
-                    .Skip(linksToSkip).Take(linksAmountForSingleSelect)
-                    .ToList();
-
-                ProcessAllApartmentsFromLinks(apartmentHrefs, true);
-            }
+            ProcessAllApartmentsFromLinks(apartmentHrefs, true);
 
             closeConnection();
         }
@@ -238,7 +243,6 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 if (isFlatAlreadyInDb(apartmentLink.Id)) // TODO: Пока что не обрабатываем обновление данных в уже распарсенных квартирах
                 {
-                    _writeToLogDelegate(string.Format("Квартира уже есть в базе данных, link {0}", apartmentLink.Href));
                     continue;
                 }
 
@@ -264,6 +268,7 @@ namespace UpnRealtyParser.Business.Helpers
                 if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
             }
+            _writeToLogDelegate("Обработка квартир завершена");
         }
 
         protected void processAllDataAboutSingleApartmentAndUpdateDb(string apartmentPageHtml, PageLink apartmentLink)
@@ -418,29 +423,7 @@ namespace UpnRealtyParser.Business.Helpers
             return _proxyList[randomIndex];
         }
 
-        /// <summary>
-        /// Превращает список адресов прокси формата "(IP):(порт)" в объекты WebProxy
-        /// </summary>
-        protected List<WebProxy> getProxiesFromIps(List<string> proxyStrList)
-        {
-            List<WebProxy> proxyList = new List<WebProxy>();
-
-            if (proxyStrList == null || proxyStrList.Count == 0)
-                return proxyList;
-
-            foreach (string proxyStr in proxyStrList)
-            {
-                List<string> separatedStrs = proxyStr.Split(':').ToList();
-                int port = Int32.Parse(separatedStrs[1]);
-
-                WebProxy currentProxy = new WebProxy(separatedStrs[0], port);
-                currentProxy.BypassProxyOnLocal = false;
-                proxyList.Add(currentProxy);
-            }
-
-            _writeToLogDelegate("Инициализация прокси-серверов завершена");
-            return proxyList;
-        }
+        
 
         /// <summary>
         /// Пытается загрузить веб-страницу по ссылке с использованием прокси (если задано) за несколько попыток
