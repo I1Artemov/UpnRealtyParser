@@ -36,7 +36,7 @@ namespace UpnRealtyParser.Business.Helpers
                 x => aliveProxyIps.Contains(x.Split(':').ToList().FirstOrDefault()))
                 .ToList();
 
-            List<WebProxyInfo> webProxies = GetProxiesFromIps(aliveProxiesWithPorts);
+            List<WebProxyInfo> webProxies = GetProxiesFromIps(rawProxies); // TODO: Второй файл игнорируется!
             return webProxies;
         }
 
@@ -88,6 +88,9 @@ namespace UpnRealtyParser.Business.Helpers
             foreach (string proxyStr in proxyStrList)
             {
                 List<string> separatedStrs = proxyStr.Split(':').ToList();
+                if (separatedStrs.Count < 2)
+                    continue;
+
                 int port = Int32.Parse(separatedStrs[1]);
 
                 WebProxyInfo currentProxyInfo = new WebProxyInfo(new WebProxy(separatedStrs[0], port));

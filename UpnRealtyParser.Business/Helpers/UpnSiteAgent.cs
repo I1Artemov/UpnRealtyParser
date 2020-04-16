@@ -213,8 +213,6 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void GetApartmentLinksFromDbAndProcessApartments()
         {
-            const int linksAmountForSingleSelect = 10;
-
             openConnection();
 
             IQueryable<PageLink> linksFilterQuery = _pageLinkRepo.GetAllWithoutTracking()
@@ -430,6 +428,11 @@ namespace UpnRealtyParser.Business.Helpers
                 _writeToLogDelegate("Не осталось прокси без признака IsNotResponding. Будет выбрана любая прокси.");
                 respondingProxies = _proxyInfoList;
                 count = _proxyInfoList.Count;
+
+                foreach(var proxy in _proxyInfoList)
+                {
+                    proxy.IsHasNotResponded = false;
+                }
             }
 
             int randomIndex = _random.Next(0, count - 1);
@@ -474,6 +477,10 @@ namespace UpnRealtyParser.Business.Helpers
                 .FirstOrDefault(x => x.WebProxy.Address.ToString().Contains(ipAddress));
 
             foundProxy.IsHasNotResponded = true;
+
+            int respondingProxiesCount = _proxyInfoList.Count(x => !x.IsHasNotResponded);
+            if (respondingProxiesCount % 10 == 0)
+                _writeToLogDelegate(string.Format("Осталось {0} живых прокси", respondingProxiesCount));
         }
     }
 }
