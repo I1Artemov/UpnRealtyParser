@@ -11,7 +11,7 @@ using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
-    public class UpnSiteAgent
+    public class UpnSiteAgent : IDisposable
     {
         protected WebClient _webClient;
         protected RealtyParserContext _dbContext;
@@ -481,6 +481,12 @@ namespace UpnRealtyParser.Business.Helpers
             int respondingProxiesCount = _proxyInfoList.Count(x => !x.IsHasNotResponded);
             if (respondingProxiesCount % 10 == 0)
                 _writeToLogDelegate(string.Format("Осталось {0} живых прокси", respondingProxiesCount));
+        }
+
+        public void Dispose()
+        {
+            _writeToLogDelegate("(ВНИМАНИЕ) Агент удален!");
+            throw new NotImplementedException();
         }
     }
 }
