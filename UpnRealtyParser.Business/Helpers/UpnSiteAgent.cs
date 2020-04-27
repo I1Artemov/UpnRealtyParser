@@ -34,6 +34,8 @@ namespace UpnRealtyParser.Business.Helpers
         protected int _maxRetryAmountForSingleRequest;
         protected int _maxRequestTimeoutInMs;
 
+        protected int _processedObjectsCount;
+
         public UpnSiteAgent(Action<string> writeToLogDelegate, AppSettings settings)
         {
             _writeToLogDelegate = writeToLogDelegate;
@@ -56,6 +58,21 @@ namespace UpnRealtyParser.Business.Helpers
             }
 
             _random = new Random();
+        }
+
+        public int GetProcessedRecordsAmount()
+        {
+            return _processedObjectsCount;
+        }
+
+        public ThreadState GetApartmentThreadState()
+        {
+            return _apartmentProcessingThread.ThreadState;
+        }
+
+        public ThreadState GetLinksThreadState()
+        {
+            return _LinksProcessingThread.ThreadState;
         }
 
         protected void openConnection()
@@ -149,7 +166,8 @@ namespace UpnRealtyParser.Business.Helpers
 
             _writeToLogDelegate(string.Format("Всего {0} записей на {1} страницах таблицы", totalApartmentsAmount.Value, totalTablePages));
 
-            for(int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
+            _processedObjectsCount = 0;
+            for (int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
                 string currentTablePageHtml;
@@ -163,6 +181,8 @@ namespace UpnRealtyParser.Business.Helpers
 
                 if(_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
+
+                _processedObjectsCount++;
             }
 
             closeConnection();
@@ -238,6 +258,7 @@ namespace UpnRealtyParser.Business.Helpers
             if (apartmentHrefs == null || apartmentHrefs.Count == 0)
                 _writeToLogDelegate("Перечень ссылок на квартиры пуст");
 
+            _processedObjectsCount = 0;
             foreach(PageLink apartmentLink in apartmentHrefs)
             {
                 if (isFlatAlreadyInDb(apartmentLink.Id)) // TODO: Пока что не обрабатываем обновление данных в уже распарсенных квартирах
@@ -266,6 +287,8 @@ namespace UpnRealtyParser.Business.Helpers
 
                 if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
+
+                _processedObjectsCount++;
             }
             _writeToLogDelegate("Обработка квартир завершена");
         }

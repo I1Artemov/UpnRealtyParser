@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using UpnRealtyParser.Business;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
@@ -29,7 +30,32 @@ namespace UpnRealtyParser.Service
             //upnAgent.StartLinksGatheringInSeparateThread();
             Console.WriteLine("Начат сбор квартир");
             upnAgent.StartApartmentGatheringInSeparateThread();
+
+            ThreadStart threadMethod = delegate { watchdogProcessingAndLogging(upnAgent); };
+            Thread watchdogThread = new Thread(threadMethod);
+            watchdogThread.IsBackground = true;
+            watchdogThread.Start();
+
             Console.ReadLine();
+        }
+
+        protected static void watchdogProcessingAndLogging(UpnSiteAgent upnAgent)
+        {
+            Thread.Sleep(400000);
+            int previouslyProcessedAmount = 0;
+
+            while (true)
+            {
+                int currentlyProcessedAmount = upnAgent.GetProcessedRecordsAmount();
+                WriteDebugLog(string.Format("Проверка состояния. Обработано {0} записей.", currentlyProcessedAmount));
+                if(currentlyProcessedAmount == previouslyProcessedAmount)
+                {
+                    WriteDebugLog("Поток завис. Перезапуск...");
+                    upnAgent.StopProcessingInThreads();
+                    upnAgent.StartApartmentGatheringInSeparateThread();
+                }
+                Thread.Sleep(400000);
+            }
         }
     }
 }
