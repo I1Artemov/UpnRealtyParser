@@ -49,7 +49,7 @@ namespace UpnRealtyParser.Business.Helpers
 
             if (houseTypeIndex.HasValue && houseTypeIndex != 0)
                 house.HouseType = fieldValueElements.ElementAtOrDefault(houseTypeIndex.Value)?.InnerHtml;
-            if (wallMaterialIndex.HasValue)
+            if (wallMaterialIndex.HasValue && wallMaterialIndex != 0)
                 house.WallMaterial = fieldValueElements.ElementAtOrDefault(wallMaterialIndex.Value)?.InnerHtml;
 
             fillHouseBuildYear(house, fieldValueElements);

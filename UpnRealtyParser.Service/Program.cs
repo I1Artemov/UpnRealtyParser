@@ -41,7 +41,7 @@ namespace UpnRealtyParser.Service
 
         protected static void watchdogProcessingAndLogging(UpnSiteAgent upnAgent)
         {
-            Thread.Sleep(400000);
+            Thread.Sleep(800000);
             int previouslyProcessedAmount = 0;
 
             while (true)
@@ -51,10 +51,11 @@ namespace UpnRealtyParser.Service
                 if(currentlyProcessedAmount == previouslyProcessedAmount)
                 {
                     WriteDebugLog("Поток завис. Перезапуск...");
-                    upnAgent.StopProcessingInThreads();
+                    //upnAgent.StartLinksGatheringInSeparateThread();
                     upnAgent.StartApartmentGatheringInSeparateThread();
                 }
-                Thread.Sleep(400000);
+                previouslyProcessedAmount = currentlyProcessedAmount;
+                Thread.Sleep(800000);
             }
         }
     }

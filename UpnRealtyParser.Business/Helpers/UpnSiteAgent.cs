@@ -299,8 +299,11 @@ namespace UpnRealtyParser.Business.Helpers
             UpnHouseParser houseParser = new UpnHouseParser();
             List<IElement> fieldValueElements = houseParser.GetTdElementsFromWebPage(apartmentPageHtml);
             UpnHouseInfo house = houseParser.GetUpnHouseFromPageText(fieldValueElements, apartmentPageHtml);
+            bool isHouseCreatedSuccessfully = false;
             if (_houseRepo != null)
-                updateOrAddHouse(house);
+                isHouseCreatedSuccessfully = updateOrAddHouse(house);
+            if (!isHouseCreatedSuccessfully)
+                return;
 
             // Сбор сведений об агентстве
             UpnAgencyParser agencyParser = new UpnAgencyParser();
@@ -321,7 +324,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// Проверяет, существует ли уже дом с таким адресом в базе данных.
         /// Если нет, то добавляет в БД с сохранением. Если да, то объекту присваивает Id существующего дома
         /// </summary>
-        private void updateOrAddHouse(UpnHouseInfo house)
+        private bool updateOrAddHouse(UpnHouseInfo house)
         {
             var existingHouse = _houseRepo.GetAllWithoutTracking()
                 .FirstOrDefault(x => x.Address == house.Address);
@@ -334,9 +337,17 @@ namespace UpnRealtyParser.Business.Helpers
             else
             {
                 _houseRepo.Add(house);
-                _houseRepo.Save();
-                _writeToLogDelegate(string.Format("Добавлен дом: Id {0}, адрес {1}", house.Id, house.Address) );
+                try { 
+                    _houseRepo.Save(); // TODO: Починить
+                    _writeToLogDelegate(string.Format("Добавлен дом: Id {0}, адрес {1}", house.Id, house.Address));
+                }
+                catch(Exception ex)
+                {
+                    _writeToLogDelegate(string.Format("Не удалось добавить дом с адресом {0}. Ошибка: {1}", house.Address, ex.Message));
+                    return false;
+                }
             }
+            return true;
         }
 
         private void updateOrAddFlat(UpnFlat upnFlat, int houseId, int pageLinkId, int agencyId)
@@ -408,7 +419,14 @@ namespace UpnRealtyParser.Business.Helpers
         {
             pageLink.LastCheckDateTime = DateTime.Now;
             pageLink.IsDead = true;
-            _pageLinkRepo.Update(pageLink);
+            try
+            { 
+                _pageLinkRepo.Update(pageLink);
+            }
+            catch(Exception ex)
+            {
+                _writeToLogDelegate(string.Format("Не удалось отметить ссылку {0} как \"мертвую\": {1}", pageLink.Href, ex.Message));
+            }
 
             UpnFlat linkedFlat = _sellFlatRepo.GetAll()
                 .FirstOrDefault(x => x.PageLinkId == pageLink.Id);
@@ -485,6 +503,10 @@ namespace UpnRealtyParser.Business.Helpers
                     markProxyAsNotResponding(currentProxyAddress);
                     _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
                         uri, triesCount, currentProxyAddress));
+                }
+                finally
+                {
+                    triesCount++;
                 }
             }
             return "LoadingFailed";
