@@ -35,6 +35,8 @@ namespace UpnRealtyParser.Business.Helpers
         protected int _maxRequestTimeoutInMs;
 
         protected int _processedObjectsCount;
+        protected bool _isProcessingCompleted;
+        protected string _currentActionName;
 
         public UpnSiteAgent(Action<string> writeToLogDelegate, AppSettings settings)
         {
@@ -60,10 +62,11 @@ namespace UpnRealtyParser.Business.Helpers
             _random = new Random();
         }
 
-        public int GetProcessedRecordsAmount()
-        {
-            return _processedObjectsCount;
-        }
+        public string GetCurrentActionName() => _currentActionName;
+
+        public bool CheckIfProcessingCompleted() => _isProcessingCompleted;
+
+        public int GetProcessedRecordsAmount() => _processedObjectsCount;
 
         public ThreadState GetApartmentThreadState()
         {
@@ -110,6 +113,9 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void StartLinksGatheringInSeparateThread()
         {
+            _isProcessingCompleted = false;
+            _currentActionName = Const.ParsingStatusDescriptionGatheringLinks;
+
             ThreadStart threadMethod = delegate { this.GatherLinksAndInsertInDb(); };
             _LinksProcessingThread = new Thread(threadMethod);
             _LinksProcessingThread.IsBackground = true; // Для корректного завершения при закрытии окна
@@ -118,6 +124,9 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void StartApartmentGatheringInSeparateThread()
         {
+            _isProcessingCompleted = false;
+            _currentActionName = Const.ParsingStatusDescriptionObservingFlat;
+
             ThreadStart threadMethod = delegate { this.GetApartmentLinksFromDbAndProcessApartments(); };
             _apartmentProcessingThread = new Thread(threadMethod);
             _apartmentProcessingThread.IsBackground = true;
@@ -186,6 +195,8 @@ namespace UpnRealtyParser.Business.Helpers
             }
 
             closeConnection();
+            _writeToLogDelegate("Сбор ссылок завершен");
+            _isProcessingCompleted = true;
         }
 
         /// <summary>
@@ -247,6 +258,7 @@ namespace UpnRealtyParser.Business.Helpers
             ProcessAllApartmentsFromLinks(apartmentHrefs, true);
 
             closeConnection();
+            _isProcessingCompleted = true;
         }
 
         /// <summary>

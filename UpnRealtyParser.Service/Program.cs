@@ -24,14 +24,7 @@ namespace UpnRealtyParser.Service
                 return;
             }
 
-            UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
-
-            //Console.WriteLine("Начат сбор ссылок");
-            //upnAgent.StartLinksGatheringInSeparateThread();
-            Console.WriteLine("Начат сбор квартир");
-            upnAgent.StartApartmentGatheringInSeparateThread();
-
-            ThreadStart threadMethod = delegate { watchdogProcessingAndLogging(upnAgent); };
+            ThreadStart threadMethod = delegate { watchdogProcessingAndLogging(loadedSettings); };
             Thread watchdogThread = new Thread(threadMethod);
             watchdogThread.IsBackground = true;
             watchdogThread.Start();
@@ -39,23 +32,52 @@ namespace UpnRealtyParser.Service
             Console.ReadLine();
         }
 
-        protected static void watchdogProcessingAndLogging(UpnSiteAgent upnAgent)
+        protected static void watchdogProcessingAndLogging(AppSettings loadedSettings)
         {
-            Thread.Sleep(800000);
+            UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
+
+            // Начинаем со сбора ссылок, на сбор квартир переключит watchdog
+            Console.WriteLine("Начат сбор ссылок");
+            upnAgent.StartLinksGatheringInSeparateThread();
+
+            Thread.Sleep(300000);
             int previouslyProcessedAmount = 0;
 
             while (true)
             {
                 int currentlyProcessedAmount = upnAgent.GetProcessedRecordsAmount();
                 WriteDebugLog(string.Format("Проверка состояния. Обработано {0} записей.", currentlyProcessedAmount));
+
                 if(currentlyProcessedAmount == previouslyProcessedAmount)
                 {
-                    WriteDebugLog("Поток завис. Перезапуск...");
-                    //upnAgent.StartLinksGatheringInSeparateThread();
-                    upnAgent.StartApartmentGatheringInSeparateThread();
+                    if(upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
+                    {
+                        // Если завершился сбор ссылок, то начинаем сбор квартир
+                        WriteDebugLog("Переключение на сбор квартир.");
+                        previouslyProcessedAmount = 0;
+                        upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
+                        upnAgent.StartApartmentGatheringInSeparateThread();
+                    }
+                    else if(upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlat)
+                    {
+                        // Если завершился сбор квартир, то выходим из цикла
+                        WriteDebugLog("Обработка полностью завершена. Остановка цикла.");
+                        break;
+                    }
+                    else
+                    { 
+                        // Если флаг завершения сбора не выставлен, то в любом случае перезапускаем нужный тип процессинга
+                        WriteDebugLog("Поток завис. Перезапуск...");
+                        if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
+                            upnAgent.StartLinksGatheringInSeparateThread();
+
+                        if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlat)
+                            upnAgent.StartApartmentGatheringInSeparateThread();
+                    }
                 }
+
                 previouslyProcessedAmount = currentlyProcessedAmount;
-                Thread.Sleep(800000);
+                Thread.Sleep(300000);
             }
         }
     }
