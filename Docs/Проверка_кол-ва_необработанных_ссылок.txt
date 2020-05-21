@@ -1,0 +1,5 @@
+select count(*) from PageLink pgl 
+where 
+pgl.IsDead != 1
+and pgl.Id not in 
+(select ufl.PageLinkId from UpnFlat ufl);

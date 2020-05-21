@@ -2,7 +2,7 @@
 <AppSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <RequestDelayInMs>15000</RequestDelayInMs>
   <MaxRequestTimeoutInMs>22000</MaxRequestTimeoutInMs>
-  <UpnTablePagesToSkip>289</UpnTablePagesToSkip>
+  <UpnTablePagesToSkip>0</UpnTablePagesToSkip>
   <MaxRetryAmountForSingleRequest>40</MaxRetryAmountForSingleRequest>
   <IsUseProxies>true</IsUseProxies>
   <IsGetProxiesListFromGithub>true</IsGetProxiesListFromGithub>

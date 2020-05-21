@@ -38,9 +38,10 @@ namespace UpnRealtyParser.Service
 
             // Начинаем со сбора ссылок, на сбор квартир переключит watchdog
             Console.WriteLine("Начат сбор ссылок");
+            upnAgent.OpenConnection();
             upnAgent.StartLinksGatheringInSeparateThread();
 
-            Thread.Sleep(300000);
+            Thread.Sleep(700000);
             int previouslyProcessedAmount = 0;
 
             while (true)
@@ -55,7 +56,10 @@ namespace UpnRealtyParser.Service
                         // Если завершился сбор ссылок, то начинаем сбор квартир
                         WriteDebugLog("Переключение на сбор квартир.");
                         previouslyProcessedAmount = 0;
+
+                        upnAgent.CloseConnection();
                         upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
+                        upnAgent.OpenConnection();
                         upnAgent.StartApartmentGatheringInSeparateThread();
                     }
                     else if(upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlat)
@@ -79,6 +83,8 @@ namespace UpnRealtyParser.Service
                 previouslyProcessedAmount = currentlyProcessedAmount;
                 Thread.Sleep(300000);
             }
+
+            upnAgent.CloseConnection();
         }
     }
 }

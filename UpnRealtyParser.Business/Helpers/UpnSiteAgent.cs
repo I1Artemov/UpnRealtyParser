@@ -78,7 +78,7 @@ namespace UpnRealtyParser.Business.Helpers
             return _LinksProcessingThread.ThreadState;
         }
 
-        protected void openConnection()
+        public void OpenConnection()
         {
             if (_isConnectionOpen)
                 return;
@@ -91,7 +91,7 @@ namespace UpnRealtyParser.Business.Helpers
             _isConnectionOpen = true;
         }
 
-        protected void closeConnection()
+        public void CloseConnection()
         {
             if (!_isConnectionOpen)
                 return;
@@ -153,8 +153,6 @@ namespace UpnRealtyParser.Business.Helpers
         {
             const string mainTableUrl = "https://upn.ru/realty_eburg_flat_sale.htm";
 
-            openConnection();
-
             string firstTablePageHtml = DownloadString(mainTableUrl);
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
@@ -194,7 +192,7 @@ namespace UpnRealtyParser.Business.Helpers
                 _processedObjectsCount++;
             }
 
-            closeConnection();
+            CloseConnection();
             _writeToLogDelegate("Сбор ссылок завершен");
             _isProcessingCompleted = true;
         }
@@ -244,8 +242,6 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void GetApartmentLinksFromDbAndProcessApartments()
         {
-            openConnection();
-
             IQueryable<PageLink> linksFilterQuery = _pageLinkRepo.GetAllWithoutTracking()
                 .Where(x => x.LinkType == Const.LinkTypeSellFlat && x.SiteName == Const.SiteNameUpn
                         && (x.IsDead == null || x.IsDead.Value == false));
@@ -257,7 +253,6 @@ namespace UpnRealtyParser.Business.Helpers
 
             ProcessAllApartmentsFromLinks(apartmentHrefs, true);
 
-            closeConnection();
             _isProcessingCompleted = true;
         }
 
@@ -429,13 +424,16 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private void markLinkAsDead(PageLink pageLink)
         {
-            pageLink.LastCheckDateTime = DateTime.Now;
-            pageLink.IsDead = true;
+            // Нужно отдельно достать ссылку из БД, т.к. изначально все они доставались как AsNoTracking
+            PageLink trackedPageLink = _pageLinkRepo.Get(pageLink.Id);
+
+            trackedPageLink.LastCheckDateTime = DateTime.Now;
+            trackedPageLink.IsDead = true;
             try
-            { 
-                _pageLinkRepo.Update(pageLink);
+            {
+                _pageLinkRepo.Save();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _writeToLogDelegate(string.Format("Не удалось отметить ссылку {0} как \"мертвую\": {1}", pageLink.Href, ex.Message));
             }
@@ -449,7 +447,6 @@ namespace UpnRealtyParser.Business.Helpers
                 _sellFlatRepo.Update(linkedFlat);
                 _writeToLogDelegate(string.Format("Квартира (Id {0}) отмечена как удаленная", linkedFlat.Id));
             }
-            _pageLinkRepo.Save();
         }
 
         private WebClientWithTimeout createWebClient()
