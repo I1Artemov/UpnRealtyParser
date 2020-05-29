@@ -71,12 +71,17 @@ namespace UpnRealtyParser.Service
                     else
                     { 
                         // Если флаг завершения сбора не выставлен, то в любом случае перезапускаем нужный тип процессинга
-                        WriteDebugLog("Поток завис. Перезапуск...");
                         if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
-                            upnAgent.StartLinksGatheringInSeparateThread();
+                        {
+                            WriteDebugLog("Возможно, поток завис.");
+
+                        }
 
                         if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlat)
+                        {
                             upnAgent.StartApartmentGatheringInSeparateThread();
+                            WriteDebugLog("Поток завис. Перезапуск...");
+                        }
                     }
                 }
 
