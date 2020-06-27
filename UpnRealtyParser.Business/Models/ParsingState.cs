@@ -15,5 +15,10 @@ namespace UpnRealtyParser.Business.Models
         public string Details { get; set; }
 
         public string Status { get; set; }
+
+        public ParsingState()
+        {
+            CreationDateTime = DateTime.Now;
+        }
     }
 }

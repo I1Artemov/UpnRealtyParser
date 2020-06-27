@@ -25,6 +25,7 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
         protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
 
+        protected StateLogger _stateLogger;
         protected Action<string> _writeToLogDelegate;
         protected bool _isUseProxy;
         protected List<WebProxyInfo> _proxyInfoList;
@@ -109,6 +110,7 @@ namespace UpnRealtyParser.Business.Helpers
             _sellFlatRepo = new EFGenericRepo<UpnFlat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<UpnAgency, RealtyParserContext>(context);
             _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
+            _stateLogger = new StateLogger(context);
         }
 
         public void StartLinksGatheringInSeparateThread()
@@ -157,6 +159,7 @@ namespace UpnRealtyParser.Business.Helpers
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
                 if (_writeToLogDelegate != null) _writeToLogDelegate("Не удалось загрузить веб-страницу с перечнем квартир");
+                _stateLogger.LogFirstPageLoadingFailure("Не удалось загрузить страницу");
                 return;
             }
             UpnFlatLinksCollector linksCollector = new UpnFlatLinksCollector();
@@ -168,10 +171,12 @@ namespace UpnRealtyParser.Business.Helpers
             if(totalApartmentsAmount.GetValueOrDefault(0) <= 0 || totalTablePages <= 0 || string.IsNullOrEmpty(pageUrlTemplate))
             {
                 _writeToLogDelegate("Ошибка: не удалось обработать первую страницу сайта.");
+                _stateLogger.LogFirstPageLoadingFailure("Не удалось обработать страницу");
                 return;
             }
 
             _writeToLogDelegate(string.Format("Всего {0} записей на {1} страницах таблицы", totalApartmentsAmount.Value, totalTablePages));
+            _stateLogger.LogFirstPageLoading(totalApartmentsAmount.Value, totalTablePages);
 
             _processedObjectsCount = 0;
             for (int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
@@ -180,8 +185,10 @@ namespace UpnRealtyParser.Business.Helpers
                 string currentTablePageHtml;
                 currentTablePageHtml = DownloadString(currentTablePageUrl);
 
-                if (string.IsNullOrEmpty(currentTablePageHtml))
+                if (string.IsNullOrEmpty(currentTablePageHtml)) {
+                    _stateLogger.LogLinksPageLoadingFailure(currentPageNumber);
                     continue;
+                }
 
                 List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml);
                 insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameUpn, currentPageNumber);
@@ -194,6 +201,7 @@ namespace UpnRealtyParser.Business.Helpers
 
             CloseConnection();
             _writeToLogDelegate("Сбор ссылок завершен");
+            _stateLogger.LogLinksGatheringCompletion();
             _isProcessingCompleted = true;
         }
 
@@ -235,6 +243,7 @@ namespace UpnRealtyParser.Business.Helpers
             _pageLinkRepo.Save();
             _writeToLogDelegate(string.Format("Обработана страница {0}: вставлено {1} записей, обновлено {2}.",
                 pageNumber, insertedAmount, updatedAmount));
+            _stateLogger.LogLinksPageProcessingResult(pageNumber, insertedAmount, updatedAmount);
         }
 
         /// <summary>

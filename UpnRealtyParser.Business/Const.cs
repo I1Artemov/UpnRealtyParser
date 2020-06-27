@@ -9,6 +9,11 @@
 
         public const string ParsingStatusDescriptionGatheringLinks = "GatheringLinks";
         public const string ParsingStatusDescriptionObservingFlat = "ObservingFlat";
+        public const string ParsingStatusGettingRowsAndPagesAmount = "GettingRowsAndPagesAmount";
+        public const string ParsingStatusMainTableSinglePageProcessing = "MainTableSinglePageProcessing";
+
+        public const string StatusTypeSuccess = "Success";
+        public const string StatusTypeFailure = "Failure";
 
         public const string AppSettingsFileName = "AppSettings.xml";
     }
