@@ -199,9 +199,9 @@ namespace UpnRealtyParser.Business.Helpers
                 _processedObjectsCount++;
             }
 
+            _stateLogger.LogLinksGatheringCompletion();
             CloseConnection();
             _writeToLogDelegate("Сбор ссылок завершен");
-            _stateLogger.LogLinksGatheringCompletion();
             _isProcessingCompleted = true;
         }
 
