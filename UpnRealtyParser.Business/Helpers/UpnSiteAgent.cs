@@ -291,6 +291,7 @@ namespace UpnRealtyParser.Business.Helpers
                     _writeToLogDelegate(string.Format("Страница по ссылке {0} не найдена (квартира продана)", apartmentLink.Href));
                     markLinkAsDead(apartmentLink);
                     _stateLogger.LogApartmentParsingNotFoundOnSite(apartmentLink.Href);
+                    _processedObjectsCount++;
                     if (_requestDelayInMs >= 0) Thread.Sleep(_requestDelayInMs);
                     continue;
                 }
@@ -299,6 +300,7 @@ namespace UpnRealtyParser.Business.Helpers
                 {
                     _writeToLogDelegate(string.Format("Проблема при загрузке страницы {0}, переход к следующей", apartmentLink.Href));
                     _stateLogger.LogApartmentPageLoadingProplem(apartmentLink.Href);
+                    _processedObjectsCount++;
                     continue;
                 }
 
