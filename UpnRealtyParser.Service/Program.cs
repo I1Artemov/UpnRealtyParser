@@ -62,7 +62,7 @@ namespace UpnRealtyParser.Service
                         upnAgent.OpenConnection();
                         upnAgent.StartApartmentGatheringInSeparateThread();
                     }
-                    else if(upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlat)
+                    else if(upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlats)
                     {
                         // Если завершился сбор квартир, то выходим из цикла
                         WriteDebugLog("Обработка полностью завершена. Остановка цикла.");
@@ -77,7 +77,7 @@ namespace UpnRealtyParser.Service
 
                         }
 
-                        if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlat)
+                        if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlats)
                         {
                             upnAgent.StartApartmentGatheringInSeparateThread();
                             WriteDebugLog("Поток завис. Перезапуск...");

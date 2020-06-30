@@ -86,5 +86,100 @@ namespace UpnRealtyParser.Business.Helpers
                 string.Format("PageNumber={0}", pageNumber),
                 Const.StatusTypeFailure);
         }
+
+        /// <summary>
+        /// При начале обработки квартир (указываем число новых ссылок для обработки)
+        /// </summary>
+        public void LogApartmentsParsingStart(int apartmentsAmount)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusDescriptionObservingFlats,
+                string.Format("Started LinksToProcess={0}", apartmentsAmount),
+                Const.StatusTypeSuccess);
+        }
+
+        /// <summary>
+        /// Если квартира по ссылке не обнаружена (объявление снято / продана)
+        /// </summary>
+        public void LogApartmentParsingNotFoundOnSite(string pageHref)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusDescriptionObservingFlats,
+                string.Format("NotFound Href={0}", pageHref),
+                Const.StatusTypeSuccess);
+        }
+
+        /// <summary>
+        /// Если страница с информацией о квартире не была загружена по какой-то причине (например, слишком много попыток)
+        /// </summary>
+        public void LogApartmentPageLoadingProplem(string pageHref)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusDescriptionObservingFlats,
+                string.Format("NotLoaded Href={0}", pageHref),
+                Const.StatusTypeFailure);
+        }
+
+        public void LogApartmentMarkedAsDead(string pageHref)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusProcessingSingleFlat,
+                string.Format("MarkedAsDead Href={0}", pageHref),
+                Const.StatusTypeSuccess);
+        }
+
+        public void LogApartmentMarkedAsDeadError(string pageHref)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusProcessingSingleFlat,
+                string.Format("ErrorMarkedAsDead Href={0}", pageHref),
+                Const.StatusTypeFailure);
+        }
+
+        /// <summary>
+        /// Если не удалось обработать информацию о доме со страницы с квартирой
+        /// </summary>
+        public void LogErrorProcessingHouse(string pageHref)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusProcessingHouse,
+                string.Format("NotProcessed Href={0}", pageHref),
+                Const.StatusTypeFailure);
+        }
+
+        /// <summary>
+        /// При добавлении дома
+        /// </summary>
+        public void LogHouseAddition(int id, string address)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusProcessingHouse,
+                string.Format("Added Id={0} Address={1}", id, address),
+                Const.StatusTypeSuccess);
+        }
+
+        public void LogApartmentAddition(int id, int houseId)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusProcessingSingleFlat,
+                string.Format("Added Id={0} HouseId={1}", id, houseId),
+                Const.StatusTypeSuccess);
+        }
+
+        public void LogAgencyAddition(int id)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusProcessingAgency,
+                string.Format("Added Id={0}", id),
+                Const.StatusTypeSuccess);
+        }
+
+        public void LogApartmentPhotoHrefsAddition(int apartmentId, int linksAmount)
+        {
+            LogAnyMessage(Const.SiteNameUpn,
+                Const.ParsingStatusGettingApartmentPhotoLinks,
+                string.Format("Added for Id={0} Amount={1}", apartmentId, linksAmount),
+                Const.StatusTypeSuccess);
+        }
     }
 }

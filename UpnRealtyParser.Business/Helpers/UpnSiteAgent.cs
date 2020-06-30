@@ -127,7 +127,7 @@ namespace UpnRealtyParser.Business.Helpers
         public void StartApartmentGatheringInSeparateThread()
         {
             _isProcessingCompleted = false;
-            _currentActionName = Const.ParsingStatusDescriptionObservingFlat;
+            _currentActionName = Const.ParsingStatusDescriptionObservingFlats;
 
             ThreadStart threadMethod = delegate { this.GetApartmentLinksFromDbAndProcessApartments(); };
             _apartmentProcessingThread = new Thread(threadMethod);
@@ -259,6 +259,7 @@ namespace UpnRealtyParser.Business.Helpers
 
             List<PageLink> apartmentHrefs = linksFilterQuery
                 .ToList();
+            _stateLogger.LogApartmentsParsingStart(apartmentHrefs.Count);
 
             ProcessAllApartmentsFromLinks(apartmentHrefs, true);
 
@@ -289,6 +290,7 @@ namespace UpnRealtyParser.Business.Helpers
                 {
                     _writeToLogDelegate(string.Format("Страница по ссылке {0} не найдена (квартира продана)", apartmentLink.Href));
                     markLinkAsDead(apartmentLink);
+                    _stateLogger.LogApartmentParsingNotFoundOnSite(apartmentLink.Href);
                     if (_requestDelayInMs >= 0) Thread.Sleep(_requestDelayInMs);
                     continue;
                 }
@@ -296,6 +298,7 @@ namespace UpnRealtyParser.Business.Helpers
                 if (string.IsNullOrEmpty(apartmentPageHtml) || apartmentPageHtml == "LoadingFailed")
                 {
                     _writeToLogDelegate(string.Format("Проблема при загрузке страницы {0}, переход к следующей", apartmentLink.Href));
+                    _stateLogger.LogApartmentPageLoadingProplem(apartmentLink.Href);
                     continue;
                 }
 
@@ -319,7 +322,10 @@ namespace UpnRealtyParser.Business.Helpers
             if (_houseRepo != null)
                 isHouseCreatedSuccessfully = updateOrAddHouse(house);
             if (!isHouseCreatedSuccessfully)
+            {
+                _stateLogger.LogErrorProcessingHouse(apartmentLink.Href);
                 return;
+            }
 
             // Сбор сведений об агентстве
             UpnAgencyParser agencyParser = new UpnAgencyParser();
@@ -355,6 +361,7 @@ namespace UpnRealtyParser.Business.Helpers
                 _houseRepo.Add(house);
                 try { 
                     _houseRepo.Save(); // TODO: Починить
+                    _stateLogger.LogHouseAddition(house.Id.Value, house.Address);
                     _writeToLogDelegate(string.Format("Добавлен дом: Id {0}, адрес {1}", house.Id, house.Address));
                 }
                 catch(Exception ex)
@@ -381,6 +388,7 @@ namespace UpnRealtyParser.Business.Helpers
 
             _sellFlatRepo.Add(upnFlat);
             _sellFlatRepo.Save();
+            _stateLogger.LogApartmentAddition(upnFlat.Id.Value, upnFlat.UpnHouseInfoId.Value);
             _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}", upnFlat.Id, houseId, pageLinkId));
         }
 
@@ -407,6 +415,7 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 _agencyRepo.Add(agency);
                 _agencyRepo.Save();
+                _stateLogger.LogAgencyAddition(agency.Id.Value);
                 _writeToLogDelegate(string.Format("Добавлено агентство: Id {0}, телефон агента {1}", agency.Id, agency.AgentPhone));
             }
         }
@@ -424,6 +433,7 @@ namespace UpnRealtyParser.Business.Helpers
                 _photoRepo.Add(photo);
             }
             _photoRepo.Save();
+            _stateLogger.LogApartmentPhotoHrefsAddition(apartmentId, hrefs.Count);
             _writeToLogDelegate(string.Format("Обнаружено {0} ссылок на фото для квартиры (Id = {1})", hrefs.Count, apartmentId));
         }
 
@@ -444,6 +454,7 @@ namespace UpnRealtyParser.Business.Helpers
             }
             catch (Exception ex)
             {
+                _stateLogger.LogApartmentMarkedAsDeadError(pageLink.Href);
                 _writeToLogDelegate(string.Format("Не удалось отметить ссылку {0} как \"мертвую\": {1}", pageLink.Href, ex.Message));
             }
 
@@ -454,6 +465,7 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 linkedFlat.RemovalDate = DateTime.Now;
                 _sellFlatRepo.Update(linkedFlat);
+                _stateLogger.LogApartmentMarkedAsDead(pageLink.Href);
                 _writeToLogDelegate(string.Format("Квартира (Id {0}) отмечена как удаленная", linkedFlat.Id));
             }
         }
