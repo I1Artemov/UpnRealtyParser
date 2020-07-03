@@ -107,3 +107,16 @@ ALTER TABLE [PageLink] ADD [IsDead] BIT;
 
 -- 06.04.2020: Новый стобец для таблицы с фотографиями
 ALTER TABLE [UpnFlatPhoto] ADD [Href] nvarchar(max);
+
+-- 03.07.2020: Таблица для хранения проксей
+CREATE TABLE [WebProxyInfo] (
+	[Id] int IDENTITY(1,1),
+	[CreationDateTime] datetime,
+	[LastUseDateTime] datetime,
+	[Ip] nvarchar(128),
+	[Port] nvarchar(64),
+	[SuccessAmount] int,
+	[FailureAmount] int,
+	PRIMARY KEY ([Id])
+);
+ALTER TABLE [WebProxyInfo] ADD [LastSuccessDateTime] datetime;

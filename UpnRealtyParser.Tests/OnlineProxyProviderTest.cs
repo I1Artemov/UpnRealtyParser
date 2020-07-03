@@ -11,7 +11,7 @@ namespace UpnRealtyParser.Tests
         [Fact]
         public void LoadProxiesFromGithubTest()
         {
-            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(null);
+            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(null, null);
             List<WebProxyInfo> webProxies = proxyProvider.GetAliveProxiesList();
 
             Assert.NotEmpty(webProxies);

@@ -50,14 +50,20 @@ namespace UpnRealtyParser.Business.Helpers
 
             // Берем прокси либо из списка, либо из сети (если они нужны)
             if(settings.IsUseProxies && !settings.IsGetProxiesListFromGithub && settings.ProxyList != null && settings.ProxyList.Count != 0)
-            { 
-                OnlineProxyProvider proxyProvider = new OnlineProxyProvider(writeToLogDelegate);
-                _proxyInfoList = proxyProvider.GetProxiesFromIps(settings.ProxyList);
+            {
+                using (var realtyContext = new RealtyParserContext())
+                {
+                    OnlineProxyProvider proxyProvider = new OnlineProxyProvider(realtyContext, writeToLogDelegate);
+                    _proxyInfoList = proxyProvider.GetProxiesFromIps(settings.ProxyList);
+                }
             }
             if(settings.IsUseProxies && settings.IsGetProxiesListFromGithub)
             {
-                OnlineProxyProvider proxyProvider = new OnlineProxyProvider(writeToLogDelegate);
-                _proxyInfoList = proxyProvider.GetAliveProxiesList();
+                using (var realtyContext = new RealtyParserContext())
+                {
+                    OnlineProxyProvider proxyProvider = new OnlineProxyProvider(realtyContext, writeToLogDelegate);
+                    _proxyInfoList = proxyProvider.GetAliveProxiesList();
+                }
             }
 
             _random = new Random();
@@ -523,7 +529,11 @@ namespace UpnRealtyParser.Business.Helpers
                 try {
                     using (var wc = createWebClient()) {
                         currentProxyAddress = ((WebProxy)wc.Proxy)?.Address.ToString();
-                        return wc.DownloadString(uri);
+                        string downloadedString = wc.DownloadString(uri);
+
+                        findProxyInDbAndAddSuccessAmount(currentProxyAddress);
+
+                        return downloadedString;
                     }
                 }
                 catch (Exception ex)
@@ -544,6 +554,15 @@ namespace UpnRealtyParser.Business.Helpers
             return "LoadingFailed";
         }
 
+        private void findProxyInDbAndAddSuccessAmount(string ipAddress)
+        {
+            WebProxyInfo foundProxy = _proxyInfoList
+                            .FirstOrDefault(x => x.WebProxy.Address.ToString().Contains(ipAddress));
+
+            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
+            proxyProvider.AddSuccessAmountToProxyInDb(foundProxy);
+        }
+
         /// <summary>
         /// Почле неудачной попытки загрузить страницу через прокси отмечает проксю как NotResponding,
         /// чтобы больше ее не использовать
@@ -554,6 +573,9 @@ namespace UpnRealtyParser.Business.Helpers
                 .FirstOrDefault(x => x.WebProxy.Address.ToString().Contains(ipAddress));
 
             foundProxy.IsHasNotResponded = true;
+
+            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
+            proxyProvider.AddFailureAmountToProxyInDb(foundProxy);
 
             int respondingProxiesCount = _proxyInfoList.Count(x => !x.IsHasNotResponded);
             if (respondingProxiesCount % 10 == 0)

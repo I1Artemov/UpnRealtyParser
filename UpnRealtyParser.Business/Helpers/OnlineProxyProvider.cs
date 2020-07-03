@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
+using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
@@ -12,10 +14,13 @@ namespace UpnRealtyParser.Business.Helpers
         public const string ProxyStatusesListUrl = "https://raw.githubusercontent.com/clarketm/proxy-list/master/proxy-list-status.txt";
 
         protected Action<string> _writeToLogDelegate;
+        protected EFGenericRepo<WebProxyInfo, RealtyParserContext> _proxyRepo;
 
-        public OnlineProxyProvider(Action<string> writeToLogDelegate)
+        public OnlineProxyProvider(RealtyParserContext dbContext, Action<string> writeToLogDelegate)
         {
             _writeToLogDelegate = writeToLogDelegate;
+            if(dbContext != null)
+                _proxyRepo = new EFGenericRepo<WebProxyInfo, RealtyParserContext>(dbContext);
         }
 
         /// <summary>
@@ -37,6 +42,7 @@ namespace UpnRealtyParser.Business.Helpers
                 .ToList();
 
             List<WebProxyInfo> webProxies = GetProxiesFromIps(rawProxies); // TODO: Второй файл игнорируется!
+            insertOrUpdateProxiesInfoInDb(webProxies);
             return webProxies;
         }
 
@@ -102,6 +108,83 @@ namespace UpnRealtyParser.Business.Helpers
                 _writeToLogDelegate("Инициализация прокси-серверов завершена");
 
             return proxyInfoList;
+        }
+
+        /// <summary>
+        /// Находит прокси, соответствующую используемой, в БД и увеличивает у нее счетчик неудачных коннектов
+        /// </summary>
+        public void AddFailureAmountToProxyInDb(WebProxyInfo usedProxy)
+        {
+            if (usedProxy == null)
+                return;
+
+            WebProxyInfo proxyFromDb = _proxyRepo.GetAll().FirstOrDefault(x => x.Ip == usedProxy.Ip && x.Port == usedProxy.Port);
+            if (proxyFromDb == null)
+                return;
+
+            proxyFromDb.LastUseDateTime = DateTime.Now;
+            if (proxyFromDb.FailureAmount == null)
+                proxyFromDb.FailureAmount = 0;
+            proxyFromDb.FailureAmount++;
+
+            try
+            {
+                _proxyRepo.Update(proxyFromDb);
+                _proxyRepo.Save();
+            }
+            catch (Exception ex)
+            {
+                _writeToLogDelegate(string.Format(
+                    "Ошибка обновления числа неудачных коннектов для прокси {0}: {1}", proxyFromDb.Ip, ex.Message));
+            }
+        }
+
+        /// <summary>
+        /// Находит прокси, соответствующую используемой, в БД и увеличивает у нее счетчик успешных коннектов
+        /// </summary>
+        public void AddSuccessAmountToProxyInDb(WebProxyInfo usedProxy)
+        {
+            if (usedProxy == null)
+                return;
+
+            WebProxyInfo proxyFromDb = _proxyRepo.GetAll().FirstOrDefault(x => x.Ip == usedProxy.Ip && x.Port == usedProxy.Port);
+            if (proxyFromDb == null)
+                return;
+
+            proxyFromDb.LastUseDateTime = DateTime.Now;
+            proxyFromDb.LastSuccessDateTime = DateTime.Now;
+            if (proxyFromDb.SuccessAmount == null)
+                proxyFromDb.SuccessAmount = 0;
+            proxyFromDb.SuccessAmount++;
+
+            try { 
+                _proxyRepo.Update(proxyFromDb);
+                _proxyRepo.Save();
+            }
+            catch (Exception ex)
+            {
+                _writeToLogDelegate(string.Format(
+                    "Ошибка обновления числа успешных коннектов для прокси {0}: {1}", proxyFromDb.Ip, ex.Message));
+            }
+        }
+
+        protected bool insertOrUpdateProxiesInfoInDb(List<WebProxyInfo> proxyInfoList)
+        {
+            if (_proxyRepo == null)
+                return false;
+
+            foreach(WebProxyInfo webProxyInfo in proxyInfoList)
+            {
+                webProxyInfo.FillFieldsFromWebInfo();
+
+                var foundProxy = _proxyRepo
+                    .GetWithoutTracking(x => x.Ip == webProxyInfo.Ip && x.Port == webProxyInfo.Port);
+                if (foundProxy == null)
+                    _proxyRepo.Add(webProxyInfo);
+            }
+
+            _proxyRepo.Save();
+            return true;
         }
     }
 }
