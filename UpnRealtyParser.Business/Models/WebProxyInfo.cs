@@ -32,12 +32,22 @@ namespace UpnRealtyParser.Business.Models
         [NotMapped]
         public WebProxy WebProxy { get; set; }
 
-        /// <summary>
-        /// Устанавливается в true, если с прокси не удалось соединиться (уже в ходе работы, а не на
-        /// этапе загрузки прокси с гитхаба)
-        /// </summary>
         [NotMapped]
-        public bool IsHasNotResponded { get; set; }
+        public double SuccessRate
+        {
+            get
+            {
+                if (SuccessAmount.GetValueOrDefault(0) == 0 && FailureAmount.GetValueOrDefault(0) == 0)
+                    return 0;
+                return SuccessAmount.GetValueOrDefault(0) / (SuccessAmount.GetValueOrDefault(0) + FailureAmount.GetValueOrDefault(0));
+            }
+        }
+            
+
+        public void InitializeWebProxy()
+        {
+            this.WebProxy = new WebProxy(Ip, Int32.Parse(Port));
+        }
 
         public void FillFieldsFromWebInfo()
         {

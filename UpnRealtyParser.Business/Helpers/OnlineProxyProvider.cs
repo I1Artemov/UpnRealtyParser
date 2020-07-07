@@ -139,6 +139,33 @@ namespace UpnRealtyParser.Business.Helpers
             }
         }
 
+        public WebProxyInfo GetRandomWebProxy(Random random)
+        {
+            List<WebProxyInfo> notCheckedProxies = _proxyRepo
+                .GetAllWithoutTracking()
+                .Where(x => x.LastUseDateTime == null)
+                .ToList();
+
+            List<WebProxyInfo> workingProxies = _proxyRepo.GetAllWithoutTracking()
+                .Where(x => x.LastSuccessDateTime != null)
+                .ToList();
+
+            // Фильтруем по дате последнего успешного подключения уже не в БД (иначе - ошибка)
+            workingProxies = workingProxies
+                .Where(x => (x.LastSuccessDateTime - DateTime.Now).Value.Days < 7
+                    && x.SuccessRate >= 0.55d)
+                .ToList();
+
+            List<WebProxyInfo> targetProxylist = notCheckedProxies == null || notCheckedProxies.Count == 0 ?
+                workingProxies : notCheckedProxies;
+
+            int count = targetProxylist.Count;
+            int randomIndex = random.Next(0, count - 1);
+            var chosenProxy = targetProxylist[randomIndex];
+            chosenProxy.InitializeWebProxy();
+            return chosenProxy;
+        }
+
         /// <summary>
         /// Находит прокси, соответствующую используемой, в БД и увеличивает у нее счетчик успешных коннектов
         /// </summary>

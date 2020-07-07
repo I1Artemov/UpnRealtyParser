@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using UpnRealtyParser.Business.Contexts;
@@ -13,7 +13,8 @@ namespace UpnRealtyParser.Business.Helpers
 {
     public class UpnSiteAgent : IDisposable
     {
-        protected WebClient _webClient;
+        protected HttpClient _webClient;
+        protected WebProxyInfo _currentProxy;
         protected RealtyParserContext _dbContext;
         protected Thread _LinksProcessingThread;
         protected Thread _apartmentProcessingThread;
@@ -28,7 +29,6 @@ namespace UpnRealtyParser.Business.Helpers
         protected StateLogger _stateLogger;
         protected Action<string> _writeToLogDelegate;
         protected bool _isUseProxy;
-        protected List<WebProxyInfo> _proxyInfoList;
         protected Random _random;
         protected int _requestDelayInMs;
         protected int _upnTablePagesToSkip;
@@ -54,7 +54,7 @@ namespace UpnRealtyParser.Business.Helpers
                 using (var realtyContext = new RealtyParserContext())
                 {
                     OnlineProxyProvider proxyProvider = new OnlineProxyProvider(realtyContext, writeToLogDelegate);
-                    _proxyInfoList = proxyProvider.GetProxiesFromIps(settings.ProxyList);
+                    proxyProvider.GetProxiesFromIps(settings.ProxyList);
                 }
             }
             if(settings.IsUseProxies && settings.IsGetProxiesListFromGithub)
@@ -62,7 +62,7 @@ namespace UpnRealtyParser.Business.Helpers
                 using (var realtyContext = new RealtyParserContext())
                 {
                     OnlineProxyProvider proxyProvider = new OnlineProxyProvider(realtyContext, writeToLogDelegate);
-                    _proxyInfoList = proxyProvider.GetAliveProxiesList();
+                    proxyProvider.GetAliveProxiesList();
                 }
             }
 
@@ -91,7 +91,7 @@ namespace UpnRealtyParser.Business.Helpers
                 return;
 
             _dbContext = new RealtyParserContext();
-            _webClient = createWebClient();
+            _webClient = createHttpClient();
 
             initializeRepositories(_dbContext);
 
@@ -478,20 +478,20 @@ namespace UpnRealtyParser.Business.Helpers
             }
         }
 
-        private WebClientWithTimeout createWebClient()
+        private HttpClient createHttpClient()
         {
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            WebClientWithTimeout webClient = new WebClientWithTimeout
-            {
-                Encoding = Encoding.GetEncoding("windows-1251"),
-                RequestTimeout = _maxRequestTimeoutInMs
-            };
 
+            HttpClientHandler clientHandler = new HttpClientHandler();
             if (_isUseProxy) { 
-                webClient.Proxy = getRandomWebProxy().WebProxy;
+                _currentProxy = getRandomWebProxy();
+                clientHandler.Proxy = _currentProxy.WebProxy;
+                clientHandler.UseProxy = true;
             }
 
-            return webClient;
+            HttpClient httpClient = new HttpClient(clientHandler);
+            httpClient.Timeout = TimeSpan.FromSeconds(20); // TODO: В параметры
+            return httpClient;
         }
 
         /// <summary>
@@ -499,24 +499,8 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         protected WebProxyInfo getRandomWebProxy()
         {
-            List<WebProxyInfo> respondingProxies = _proxyInfoList
-                .Where(x => !x.IsHasNotResponded).ToList();
-            int count = respondingProxies.Count;
-            if(count == 0)
-            {
-                _writeToLogDelegate("Не осталось прокси без признака IsNotResponding. Будет выбрана любая прокси.");
-                respondingProxies = _proxyInfoList;
-                count = _proxyInfoList.Count;
-
-                foreach(var proxy in _proxyInfoList)
-                {
-                    proxy.IsHasNotResponded = false;
-                }
-            }
-
-            int randomIndex = _random.Next(0, count - 1);
-
-            return respondingProxies[randomIndex];
+            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
+            return proxyProvider.GetRandomWebProxy(_random);
         }
 
         /// <summary>
@@ -527,13 +511,23 @@ namespace UpnRealtyParser.Business.Helpers
             string currentProxyAddress = "";
             while(triesCount < _maxRetryAmountForSingleRequest) { 
                 try {
-                    using (var wc = createWebClient()) {
-                        currentProxyAddress = ((WebProxy)wc.Proxy)?.Address.ToString();
-                        string downloadedString = wc.DownloadString(uri);
+                    using (HttpClient wc = createHttpClient()) {
+                        currentProxyAddress = _currentProxy?.Ip.ToString();
+                        using (HttpResponseMessage response = wc.GetAsync(uri).Result)
+                        {
+                            if(response.IsSuccessStatusCode)
+                            {
+                                var responseContent = response.Content;
+                                byte[] contentBytes = responseContent.ReadAsByteArrayAsync().Result;
+                                string downloadedString = Encoding.GetEncoding("windows-1251").GetString(contentBytes);
 
-                        findProxyInDbAndAddSuccessAmount(currentProxyAddress);
+                                findProxyInDbAndAddSuccessAmount();
 
-                        return downloadedString;
+                                return downloadedString;
+                            }
+
+                            return "NotFound";
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -542,7 +536,7 @@ namespace UpnRealtyParser.Business.Helpers
                         return "NotFound";
 
                     triesCount++;
-                    markProxyAsNotResponding(currentProxyAddress);
+                    markProxyAsNotResponding();
                     _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
                         uri, triesCount, currentProxyAddress));
                 }
@@ -554,10 +548,9 @@ namespace UpnRealtyParser.Business.Helpers
             return "LoadingFailed";
         }
 
-        private void findProxyInDbAndAddSuccessAmount(string ipAddress)
+        private void findProxyInDbAndAddSuccessAmount()
         {
-            WebProxyInfo foundProxy = _proxyInfoList
-                            .FirstOrDefault(x => x.WebProxy.Address.ToString().Contains(ipAddress));
+            WebProxyInfo foundProxy = _currentProxy;
 
             OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
             proxyProvider.AddSuccessAmountToProxyInDb(foundProxy);
@@ -567,19 +560,11 @@ namespace UpnRealtyParser.Business.Helpers
         /// Почле неудачной попытки загрузить страницу через прокси отмечает проксю как NotResponding,
         /// чтобы больше ее не использовать
         /// </summary>
-        private void markProxyAsNotResponding(string ipAddress)
+        private void markProxyAsNotResponding()
         {
-            WebProxyInfo foundProxy = _proxyInfoList
-                .FirstOrDefault(x => x.WebProxy.Address.ToString().Contains(ipAddress));
-
-            foundProxy.IsHasNotResponded = true;
-
+            WebProxyInfo foundProxy = _currentProxy;
             OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
             proxyProvider.AddFailureAmountToProxyInDb(foundProxy);
-
-            int respondingProxiesCount = _proxyInfoList.Count(x => !x.IsHasNotResponded);
-            if (respondingProxiesCount % 10 == 0)
-                _writeToLogDelegate(string.Format("Осталось {0} живых прокси", respondingProxiesCount));
         }
 
         public void Dispose()

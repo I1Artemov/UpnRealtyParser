@@ -79,8 +79,8 @@ namespace UpnRealtyParser.Service
 
                         if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlats)
                         {
-                            upnAgent.StartApartmentGatheringInSeparateThread();
-                            WriteDebugLog("Поток завис. Перезапуск...");
+                            //upnAgent.StartApartmentGatheringInSeparateThread();
+                            WriteDebugLog("Поток завис. Перезапуск отключен!");
                         }
                     }
                 }
