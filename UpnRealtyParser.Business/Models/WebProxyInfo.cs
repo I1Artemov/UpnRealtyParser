@@ -39,7 +39,7 @@ namespace UpnRealtyParser.Business.Models
             {
                 if (SuccessAmount.GetValueOrDefault(0) == 0 && FailureAmount.GetValueOrDefault(0) == 0)
                     return 0;
-                return SuccessAmount.GetValueOrDefault(0) / (SuccessAmount.GetValueOrDefault(0) + FailureAmount.GetValueOrDefault(0));
+                return (double)SuccessAmount.GetValueOrDefault(0) / (double)(SuccessAmount.GetValueOrDefault(0) + FailureAmount.GetValueOrDefault(0));
             }
         }
             

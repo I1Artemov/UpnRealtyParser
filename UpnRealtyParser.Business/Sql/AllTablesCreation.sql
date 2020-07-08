@@ -120,3 +120,30 @@ CREATE TABLE [WebProxyInfo] (
 	PRIMARY KEY ([Id])
 );
 ALTER TABLE [WebProxyInfo] ADD [LastSuccessDateTime] datetime;
+
+-- 07.07.2020: Станции метро
+CREATE TABLE [SubwayStation] (
+	[Id] int IDENTITY(1,1),
+	[Name] nvarchar(256),
+	[Latitude] float,
+    [Longitude] float,
+	PRIMARY KEY ([Id])
+);
+
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Проспект космонавтов', 56.901276, 60.613984);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Уралмаш', 56.888068, 60.613538);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Машиностроителей', 56.878514, 60.612160);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Уральская', 56.857875, 60.600372);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Динамо', 56.847523, 60.600201);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Площадь 1905 года', 56.836122, 60.599370);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Геологическая', 56.827069, 60.602959);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Чкаловская', 56.808601, 60.609990);
+INSERT INTO [SubwayStation] ([Name], [Latitude], [Longitude]) VALUES ('Ботаническая', 56.797022, 60.632579);
+
+ALTER TABLE [UpnHouseInfo] ADD [ClosestSubwayStationId] int;
+ALTER TABLE [UpnHouseInfo] ADD [ClosestSubwayStationRange] float;
+
+ALTER TABLE [UpnHouseInfo] ADD CONSTRAINT
+	FK_UpnHouse_Subway_SubwayId FOREIGN KEY ([ClosestSubwayStationId]) REFERENCES [SubwayStation]([Id]);
+
+CREATE INDEX idx_UpnHouse_ClosestSubwayId ON [UpnHouseInfo] ([ClosestSubwayStationId]);

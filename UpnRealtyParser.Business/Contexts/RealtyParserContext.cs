@@ -12,6 +12,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<UpnFlatPhoto> UpnFlatPhotos{ get; set; }
         public DbSet<ParsingState> ParsingStates { get; set; }
         public DbSet<WebProxyInfo> WebProxyInfos { get; set; }
+        public DbSet<SubwayStation> SubwayStations { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -12,4 +12,8 @@ public class UpnHouseInfo : IdInfo {
     public double? Latitude {get; set;}
 
     public double? Longitude {get; set;}
+
+    public int? ClosestSubwayStationId { get; set; }
+
+    public double? ClosestSubwayStationRange { get; set; }
 }
