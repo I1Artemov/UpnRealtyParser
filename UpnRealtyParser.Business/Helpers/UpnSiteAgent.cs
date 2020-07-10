@@ -328,7 +328,11 @@ namespace UpnRealtyParser.Business.Helpers
             UpnHouseInfo house = houseParser.GetUpnHouseFromPageText(fieldValueElements, apartmentPageHtml);
             bool isHouseCreatedSuccessfully = false;
             if (_houseRepo != null)
+            {
+                DistanceCalculator distanceCalc = new DistanceCalculator(_dbContext);
+                distanceCalc.FindClosestSubwayForSingleHouse(house);
                 isHouseCreatedSuccessfully = updateOrAddHouse(house);
+            }
             if (!isHouseCreatedSuccessfully)
             {
                 _stateLogger.LogErrorProcessingHouse(apartmentLink.Href);
@@ -515,7 +519,7 @@ namespace UpnRealtyParser.Business.Helpers
                         currentProxyAddress = _currentProxy?.Ip.ToString();
                         using (HttpResponseMessage response = wc.GetAsync(uri).Result)
                         {
-                            if(response.IsSuccessStatusCode)
+                            if (response.IsSuccessStatusCode)
                             {
                                 var responseContent = response.Content;
                                 byte[] contentBytes = responseContent.ReadAsByteArrayAsync().Result;
@@ -525,8 +529,13 @@ namespace UpnRealtyParser.Business.Helpers
 
                                 return downloadedString;
                             }
-
-                            return "NotFound";
+                            else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                                return "NotFound";
+                            else
+                            {
+                                markProxyAsNotResponding();
+                                triesCount++;
+                            }
                         }
                     }
                 }
