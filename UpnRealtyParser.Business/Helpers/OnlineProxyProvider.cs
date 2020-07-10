@@ -153,7 +153,7 @@ namespace UpnRealtyParser.Business.Helpers
             // Фильтруем по дате последнего успешного подключения уже не в БД (иначе - ошибка)
             workingProxies = workingProxies
                 .Where(x => (x.LastSuccessDateTime - DateTime.Now).Value.Days < 7
-                    && x.SuccessRate >= 0.25d)
+                    && x.SuccessRate >= 0.45d)
                 .ToList();
 
             List<WebProxyInfo> targetProxylist = notCheckedProxies == null || notCheckedProxies.Count == 0 ?
