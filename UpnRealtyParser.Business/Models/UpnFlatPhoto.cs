@@ -1,15 +1,20 @@
-public class UpnFlatPhoto : IdInfo {
-    // Rent или Sell
-    public string RelationType {get; set;}
+namespace UpnRealtyParser.Business.Models
+{
+    public class UpnFlatPhoto : IdInfo
+    {
+        // Rent или Sell
+        public string RelationType { get; set; }
 
-    public string FileName {get; set;}
+        public string FileName { get; set; }
 
-    // Может ссылаться на различные таблицы в зависимости от RelationType
-    public int FlatId {get; set;}
+        // Может ссылаться на различные таблицы в зависимости от RelationType
+        public int FlatId { get; set; }
 
-    public string Href { get; set; }
+        public string Href { get; set; }
 
-    public string GetFilePath() {
-        return string.Format("UpnPhotos\\{0}\\{1}.jpg", RelationType, FileName);
+        public string GetFilePath()
+        {
+            return string.Format("UpnPhotos\\{0}\\{1}.jpg", RelationType, FileName);
+        }
     }
 }

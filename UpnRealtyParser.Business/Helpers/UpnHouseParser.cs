@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Dom;
+using UpnRealtyParser.Business.Models;
 
 namespace UpnRealtyParser.Business.Helpers
 {

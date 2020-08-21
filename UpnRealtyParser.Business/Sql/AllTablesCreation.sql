@@ -147,3 +147,38 @@ ALTER TABLE [UpnHouseInfo] ADD CONSTRAINT
 	FK_UpnHouse_Subway_SubwayId FOREIGN KEY ([ClosestSubwayStationId]) REFERENCES [SubwayStation]([Id]);
 
 CREATE INDEX idx_UpnHouse_ClosestSubwayId ON [UpnHouseInfo] ([ClosestSubwayStationId]);
+
+-- 21.08.2020 Таблица с арендными квартирами
+CREATE TABLE [UpnRentFlat] (
+    [Id] int IDENTITY(1,1),
+    [RemovalDate] datetime,
+    [CreationDateTime] datetime,
+    [LastCheckDate] datetime,
+    [UpnHouseInfoId] int,
+    [UpnAgencyId] int,
+    [FlatType] nvarchar(64),
+    [RoomAmount] int,
+    [SpaceSum] float,
+    [SpaceLiving] float,
+    [SpaceKitchen] float,
+    [FlatFloor] int,
+    [JointBathrooms] int,
+    [SeparateBathrooms] int,
+    [RenovationType] nvarchar(256),
+    [RedevelopmentType] nvarchar(256),
+    [WindowsType] nvarchar(128),
+    [Furniture] nvarchar(256),
+    [Price] int,
+    [Description] nvarchar(max),
+    [MinimalRentPeriod] nvarchar(256),
+	[PageLinkId] int
+	PRIMARY KEY ([Id]),
+    CONSTRAINT FK_UpnRentFlat_UpnHouseInfo_HouseInfoId FOREIGN KEY ([UpnHouseInfoId])
+        REFERENCES [UpnHouseInfo]([Id]),
+    CONSTRAINT FK_UpnRentFlat_UpnAgency_UpnAgencyId FOREIGN KEY ([UpnAgencyId])
+        REFERENCES [UpnAgency]([Id]),
+	CONSTRAINT FK_UpnRentFlat_PageLink_PageLinkId FOREIGN KEY ([PageLinkId]) REFERENCES [PageLink]([Id])
+);
+
+CREATE INDEX idx_UpnRentFlat_UpnHouseInfoId ON [UpnRentFlat] ([UpnHouseInfoId]);
+CREATE INDEX idx_UpnRentFlat_UpnAgencyId ON [UpnRentFlat] ([UpnAgencyId]);

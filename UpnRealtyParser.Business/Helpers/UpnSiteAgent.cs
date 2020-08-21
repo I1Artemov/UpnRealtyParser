@@ -119,12 +119,12 @@ namespace UpnRealtyParser.Business.Helpers
             _stateLogger = new StateLogger(context);
         }
 
-        public void StartLinksGatheringInSeparateThread()
+        public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
         {
             _isProcessingCompleted = false;
             _currentActionName = Const.ParsingStatusDescriptionGatheringLinks;
 
-            ThreadStart threadMethod = delegate { this.GatherLinksAndInsertInDb(); };
+            ThreadStart threadMethod = delegate { this.GatherLinksAndInsertInDb(isRentFlats); };
             _LinksProcessingThread = new Thread(threadMethod);
             _LinksProcessingThread.IsBackground = true; // Для корректного завершения при закрытии окна
             _LinksProcessingThread.Start();
@@ -157,47 +157,49 @@ namespace UpnRealtyParser.Business.Helpers
         /// Заходит на главную страницу с переченм квартир, получает общее кол-во квартир,
         /// собирает из таблицы все ссылки на просмотр страниц с описанием квартир
         /// </summary>
-        public void GatherLinksAndInsertInDb()
+        /// <param name="isRentFlats">Обработка квартир под аренду</param>
+        public void GatherLinksAndInsertInDb(bool isRentFlats = false)
         {
-            const string mainTableUrl = "https://upn.ru/realty_eburg_flat_sale.htm";
+            string mainTableUrl = isRentFlats ? "https://upn.ru/realty_eburg_flat_rent.htm" : "https://upn.ru/realty_eburg_flat_sale.htm";
+            string rentLogMessageAddition = isRentFlats ? " (аренда)" : "";
 
             string firstTablePageHtml = DownloadString(mainTableUrl);
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
-                if (_writeToLogDelegate != null) _writeToLogDelegate("Не удалось загрузить веб-страницу с перечнем квартир");
-                _stateLogger.LogFirstPageLoadingFailure("Не удалось загрузить страницу");
+                _writeToLogDelegate?.Invoke("Не удалось загрузить веб-страницу с перечнем квартир" + rentLogMessageAddition);
+                _stateLogger.LogFirstPageLoadingFailure("Не удалось загрузить страницу" + rentLogMessageAddition);
                 return;
             }
             UpnFlatLinksCollector linksCollector = new UpnFlatLinksCollector();
 
             int? totalApartmentsAmount = linksCollector.GetTotalEntriesInTable(firstTablePageHtml);
             int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
-            string pageUrlTemplate = linksCollector.GetTablePageSwitchLinkTemplate(firstTablePageHtml);
+            string pageUrlTemplate = linksCollector.GetTablePageSwitchLinkTemplate(firstTablePageHtml, isRentFlats);
 
             if(totalApartmentsAmount.GetValueOrDefault(0) <= 0 || totalTablePages <= 0 || string.IsNullOrEmpty(pageUrlTemplate))
             {
-                _writeToLogDelegate("Ошибка: не удалось обработать первую страницу сайта.");
-                _stateLogger.LogFirstPageLoadingFailure("Не удалось обработать страницу");
+                _writeToLogDelegate?.Invoke("Ошибка: не удалось обработать первую страницу сайта" + rentLogMessageAddition);
+                _stateLogger.LogFirstPageLoadingFailure("Не удалось обработать страницу" + rentLogMessageAddition);
                 return;
             }
 
-            _writeToLogDelegate(string.Format("Всего {0} записей на {1} страницах таблицы", totalApartmentsAmount.Value, totalTablePages));
-            _stateLogger.LogFirstPageLoading(totalApartmentsAmount.Value, totalTablePages);
+            _writeToLogDelegate?.Invoke(string.Format("Всего {0} записей на {1} страницах таблицы{2}",
+                totalApartmentsAmount.GetValueOrDefault(0), totalTablePages, rentLogMessageAddition));
+            _stateLogger.LogFirstPageLoading(totalApartmentsAmount.GetValueOrDefault(0), totalTablePages, isRentFlats);
 
             _processedObjectsCount = 0;
             for (int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
-                string currentTablePageHtml;
-                currentTablePageHtml = DownloadString(currentTablePageUrl);
+                string currentTablePageHtml = DownloadString(currentTablePageUrl);
 
                 if (string.IsNullOrEmpty(currentTablePageHtml)) {
-                    _stateLogger.LogLinksPageLoadingFailure(currentPageNumber);
+                    _stateLogger.LogLinksPageLoadingFailure(currentPageNumber, isRentFlats);
                     continue;
                 }
 
-                List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml);
-                insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameUpn, currentPageNumber);
+                List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml, isRentFlats);
+                insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameUpn, currentPageNumber, isRentFlats);
 
                 if(_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
@@ -205,16 +207,16 @@ namespace UpnRealtyParser.Business.Helpers
                 _processedObjectsCount++;
             }
 
-            _stateLogger.LogLinksGatheringCompletion();
+            _stateLogger.LogLinksGatheringCompletion(isRentFlats);
             CloseConnection();
-            _writeToLogDelegate("Сбор ссылок завершен");
+            _writeToLogDelegate?.Invoke("Сбор ссылок завершен" + rentLogMessageAddition);
             _isProcessingCompleted = true;
         }
 
         /// <summary>
         /// Вставка (или обновление существующих) пачки ссылок в БД. Обработка идет по одной записи
         /// </summary>
-        private void insertHrefsIntoDb(List<string> hrefs, string siteName, int pageNumber)
+        private void insertHrefsIntoDb(List<string> hrefs, string siteName, int pageNumber, bool isRentFlats)
         {
             if (hrefs == null || hrefs.Count == 0 || _pageLinkRepo == null)
                 return;
@@ -236,11 +238,12 @@ namespace UpnRealtyParser.Business.Helpers
                 }
                 else
                 {
+                    string linkType = isRentFlats ? Const.LinkTypeRentFlat : Const.LinkTypeSellFlat;
                     PageLink linkForAddition = new PageLink
                     {
                         Href = href,
                         SiteName = siteName,
-                        LinkType = Const.LinkTypeSellFlat
+                        LinkType = linkType
                     };
                     _pageLinkRepo.Add(linkForAddition);
                     insertedAmount++;

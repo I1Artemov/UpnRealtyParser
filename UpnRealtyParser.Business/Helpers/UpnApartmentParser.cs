@@ -5,6 +5,7 @@ using System.Text;
 using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
+using UpnRealtyParser.Business.Models;
 
 namespace UpnRealtyParser.Business.Helpers
 {
@@ -21,6 +22,7 @@ namespace UpnRealtyParser.Business.Helpers
         private const string FurnitureHeaderText = "Мебель:";
         private const string SellConditionHeaderText = "Условия продажи:";
         private const string PriceHeaderText = "Цена:";
+        private const string MinimalRentPeriodHeaderText = "Минимальный срок аренды:";
 
         private int? roomAmountIndex;
         private int? flatTypeIndex;
@@ -34,6 +36,7 @@ namespace UpnRealtyParser.Business.Helpers
         private int? sellConditionIndex;
         private int? priceIndex;
         private int? descriptionIndex;
+        private int? minimalRentPeriodIndex;
 
         public void GetSingleSellFlatInfoFromUrl(string flatUrl)
         {

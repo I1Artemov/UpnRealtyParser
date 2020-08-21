@@ -48,9 +48,9 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Собирает все URL на квартиры с текущей страницы таблицы с перечнем квартир
         /// </summary>
-        public List<string> GetLinksFromSinglePage(string pageText)
+        public List<string> GetLinksFromSinglePage(string pageText, bool isRentFlats = false)
         {
-            List<IElement> anchorElements = GetApartmentAnchorElementsFromWebPage(pageText);
+            List<IElement> anchorElements = GetApartmentAnchorElementsFromWebPage(pageText, isRentFlats);
 
             List<string> hrefs = anchorElements
                 .Select(x => x.Attributes.GetNamedItem("href").Value)
@@ -62,13 +62,16 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Со страницы с перечнем квартир берет ссылку на 1-ую страницу таблицы и в ней id=1 заменяет на id={0}
         /// </summary>
-        public string GetTablePageSwitchLinkTemplate(string pageText)
+        public string GetTablePageSwitchLinkTemplate(string pageText, bool isRentFlats = false)
         {
+            string rentOrSaleText = isRentFlats ? "rent" : "sale";
+
             Task<IDocument> htmlDocument = getPreparedHtmlDocument(pageText);
             string firstPageHref = htmlDocument.Result.All
                 .Where(m => m.LocalName == "a" &&
                     m.Attributes.GetNamedItem("href")?.Value != null &&
-                    m.Attributes.GetNamedItem("href").Value.Contains("index.aspx?page=realty_eburg_flat_sale&ofdays=&sid="))
+                    m.Attributes.GetNamedItem("href").Value.Contains(
+                        string.Format("index.aspx?page=realty_eburg_flat_{0}&ofdays=&sid=", rentOrSaleText)))
                 .Select(x => x.Attributes.GetNamedItem("href").Value)
                 .FirstOrDefault();
 
@@ -80,8 +83,8 @@ namespace UpnRealtyParser.Business.Helpers
 
             string sidValue = firstPageHref.Substring(sidFrom, sidTo - sidFrom);
 
-            string pageSwitchUrlTemplate =
-                "https://upn.ru/index.aspx?page=realty_eburg_flat_sale&ofdays=&sid=" + sidValue + "&ag=0&vm=1&id={0}&scn=6";
+            string pageSwitchUrlTemplate = 
+                "https://upn.ru/index.aspx?page=realty_eburg_flat_" + rentOrSaleText + "&ofdays=&sid=" + sidValue + "&ag=0&vm=1&id={0}&scn=6";
             return pageSwitchUrlTemplate;
         }
     }

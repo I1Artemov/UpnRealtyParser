@@ -107,6 +107,15 @@ namespace UpnRealtyParser.Tests
 
         [Fact(Skip = "Действия с реальными данными")]
         //[Fact]
+        public void UpnSiteAgent_LinksGatheringTest_Rent()
+        {
+            AppSettings settings = new AppSettings(); // null, false, false, 0, 0, 1
+            UpnSiteAgent upnAgent = new UpnSiteAgent(null, settings);
+            upnAgent.GatherLinksAndInsertInDb(true);
+        }
+
+        [Fact(Skip = "Действия с реальными данными")]
+        //[Fact]
         public void UpnSiteAgent_ApartmentGatheringTest()
         {
             AppSettings settings = new AppSettings(); // null, false, false, 0, 0, 1

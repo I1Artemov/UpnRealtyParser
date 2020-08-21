@@ -32,11 +32,11 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// При загруке информации с первой страницы при сборе ссылок. "Всего {0} записей на {1} страницах таблицы"
         /// </summary>
-        public void LogFirstPageLoading(int recordsAmount, int pagesAmount)
+        public void LogFirstPageLoading(int recordsAmount, int pagesAmount, bool isRentFlats)
         {
             LogAnyMessage(Const.SiteNameUpn,
                 Const.ParsingStatusGettingRowsAndPagesAmount,
-                string.Format("Records={0} Pages={1}", recordsAmount, pagesAmount),
+                string.Format("Records={0} Pages={1} Rent={2}", recordsAmount, pagesAmount, isRentFlats),
                 Const.StatusTypeSuccess);
         }
 
@@ -54,11 +54,11 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// "Сбор ссылок завершен"
         /// </summary>
-        public void LogLinksGatheringCompletion()
+        public void LogLinksGatheringCompletion(bool isRentFlats)
         {
             LogAnyMessage(Const.SiteNameUpn,
                 Const.ParsingStatusDescriptionGatheringLinks,
-                "Completed",
+                string.Format("Completed Rent={0}", isRentFlats),
                 Const.StatusTypeSuccess);
         }
 
@@ -79,11 +79,11 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Если не удалось скачать очередную страницу при загрузке ссылок
         /// </summary>
-        public void LogLinksPageLoadingFailure(int pageNumber)
+        public void LogLinksPageLoadingFailure(int pageNumber, bool isRentFlats)
         {
             LogAnyMessage(Const.SiteNameUpn,
                 Const.ParsingStatusMainTableSinglePageProcessing,
-                string.Format("PageNumber={0}", pageNumber),
+                string.Format("PageNumber={0} Rent={1}", pageNumber, isRentFlats),
                 Const.StatusTypeFailure);
         }
 
