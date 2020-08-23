@@ -9,6 +9,8 @@
 
         public const string ParsingStatusDescriptionGatheringLinks = "GatheringLinks";
         public const string ParsingStatusDescriptionObservingFlats = "ObservingFlats";
+        public const string ParsingStatusDescriptionGatheringLinksRent = "GatheringLinksRent";
+        public const string ParsingStatusDescriptionObservingFlatsRent = "ObservingFlatsRent";
         public const string ParsingStatusGettingRowsAndPagesAmount = "GettingRowsAndPagesAmount";
         public const string ParsingStatusMainTableSinglePageProcessing = "MainTableSinglePageProcessing";
         public const string ParsingStatusProcessingHouse = "ProcessingHouse";

@@ -90,33 +90,33 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// При начале обработки квартир (указываем число новых ссылок для обработки)
         /// </summary>
-        public void LogApartmentsParsingStart(int apartmentsAmount)
+        public void LogApartmentsParsingStart(int apartmentsAmount, bool isRentFlats)
         {
             LogAnyMessage(Const.SiteNameUpn,
                 Const.ParsingStatusDescriptionObservingFlats,
-                string.Format("Started LinksToProcess={0}", apartmentsAmount),
+                string.Format("Started LinksToProcess={0} Rent={1}", apartmentsAmount, isRentFlats),
                 Const.StatusTypeSuccess);
         }
 
         /// <summary>
         /// Если квартира по ссылке не обнаружена (объявление снято / продана)
         /// </summary>
-        public void LogApartmentParsingNotFoundOnSite(string pageHref)
+        public void LogApartmentParsingNotFoundOnSite(string pageHref, bool isRentFlats)
         {
             LogAnyMessage(Const.SiteNameUpn,
                 Const.ParsingStatusDescriptionObservingFlats,
-                string.Format("NotFound Href={0}", pageHref),
+                string.Format("NotFound Href={0} Rent={1}", pageHref, isRentFlats),
                 Const.StatusTypeSuccess);
         }
 
         /// <summary>
         /// Если страница с информацией о квартире не была загружена по какой-то причине (например, слишком много попыток)
         /// </summary>
-        public void LogApartmentPageLoadingProplem(string pageHref)
+        public void LogApartmentPageLoadingProplem(string pageHref, bool isRentFlats)
         {
             LogAnyMessage(Const.SiteNameUpn,
                 Const.ParsingStatusDescriptionObservingFlats,
-                string.Format("NotLoaded Href={0}", pageHref),
+                string.Format("NotLoaded Href={0} Rent={1}", pageHref, isRentFlats),
                 Const.StatusTypeFailure);
         }
 
@@ -158,11 +158,11 @@ namespace UpnRealtyParser.Business.Helpers
                 Const.StatusTypeSuccess);
         }
 
-        public void LogApartmentAddition(int id, int houseId)
+        public void LogApartmentAddition(int id, int houseId, bool isRentFlat)
         {
             LogAnyMessage(Const.SiteNameUpn,
                 Const.ParsingStatusProcessingSingleFlat,
-                string.Format("Added Id={0} HouseId={1}", id, houseId),
+                string.Format("Added Id={0} HouseId={1} Rent={2}", id, houseId, isRentFlat),
                 Const.StatusTypeSuccess);
         }
 

@@ -51,7 +51,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Находит строки в table с нужным текстом и определяет, строки с какими номерами дадут информацию для полей
         /// </summary>
-        protected void fillFieldIndexes(List<IElement> tdElements)
+        protected void fillFieldIndexes(List<IElement> tdElements, bool isRentFlats)
         {
             roomAmountIndex = tdElements.FindIndex(x => x.InnerHtml== string.Format("<b>{0}</b>", RoomAmountHeaderText)) + 1;
             flatTypeIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", FlatTypeHeaderText)) + 1;
@@ -62,7 +62,10 @@ namespace UpnRealtyParser.Business.Helpers
             redevelopmentTypeIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", RedevelopmentHeaderIndex)) + 1;
             windowsTypeIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", WindowsTypeHeaderText)) + 1;
             furnitureIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", FurnitureHeaderText)) + 1;
-            sellConditionIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", SellConditionHeaderText)) + 1;
+            if(!isRentFlats)
+                sellConditionIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", SellConditionHeaderText)) + 1;
+            else
+                minimalRentPeriodIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", MinimalRentPeriodHeaderText)) + 1;
             priceIndex = tdElements.FindIndex(x => x.InnerHtml == string.Format("<b>{0}</b>", PriceHeaderText)) + 1;
             if(priceIndex.HasValue && priceIndex > 0)
                 descriptionIndex = priceIndex + 1;
@@ -70,9 +73,28 @@ namespace UpnRealtyParser.Business.Helpers
 
         public UpnFlat GetUpnSellFlatFromPageText(List<IElement> fieldValueElements)
         {
-            fillFieldIndexes(fieldValueElements);
+            UpnFlat upnSellFlat = new UpnFlat { CreationDateTime = DateTime.Now };
+            fillAnyFlatFromPageTextAndGetValueElements(upnSellFlat, fieldValueElements, false);
 
-            UpnFlat upnFlat = new UpnFlat {CreationDateTime = DateTime.Now};
+            if (sellConditionIndex.HasValue && sellConditionIndex != 0)
+                upnSellFlat.SellCondition = fieldValueElements.ElementAtOrDefault(sellConditionIndex.Value)?.InnerHtml;
+
+            return upnSellFlat;
+        }
+
+        public UpnRentFlat GetUpnRentFlatFromPageText(List<IElement> fieldValueElements)
+        {
+            UpnRentFlat upnRentFlat = new UpnRentFlat { CreationDateTime = DateTime.Now };
+            fillAnyFlatFromPageTextAndGetValueElements(upnRentFlat, fieldValueElements, true);
+
+            if (minimalRentPeriodIndex.HasValue && minimalRentPeriodIndex != 0)
+                upnRentFlat.MinimalRentPeriod = fieldValueElements.ElementAtOrDefault(minimalRentPeriodIndex.Value)?.InnerHtml;
+
+            return upnRentFlat;
+        }
+        private void fillAnyFlatFromPageTextAndGetValueElements(UpnFlatBase upnFlat, List<IElement> fieldValueElements, bool isRentFlats)
+        {
+            fillFieldIndexes(fieldValueElements, isRentFlats);
 
             if(flatTypeIndex.HasValue && flatTypeIndex != 0)
             { 
@@ -87,8 +109,6 @@ namespace UpnRealtyParser.Business.Helpers
                 upnFlat.WindowsType = fieldValueElements.ElementAtOrDefault(windowsTypeIndex.Value)?.InnerHtml;
             if (furnitureIndex.HasValue && furnitureIndex != 0)
                 upnFlat.Furniture = fieldValueElements.ElementAtOrDefault(furnitureIndex.Value)?.InnerHtml;
-            if (sellConditionIndex.HasValue && sellConditionIndex != 0)
-                upnFlat.SellCondition = fieldValueElements.ElementAtOrDefault(sellConditionIndex.Value)?.InnerHtml;
 
             if (roomAmountIndex.HasValue && roomAmountIndex != 0) { 
                 bool hasRoomAmount = Int32.TryParse(fieldValueElements.ElementAtOrDefault(roomAmountIndex.Value)?.InnerHtml, out int roomAmount);
@@ -100,8 +120,6 @@ namespace UpnRealtyParser.Business.Helpers
             fillFlatBathroomComponents(upnFlat, fieldValueElements);
             fillPrice(upnFlat, fieldValueElements);
             fillAndClearDescription(upnFlat, fieldValueElements);
-
-            return upnFlat;
         }
 
         /// <summary>
@@ -125,7 +143,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Заполняет номер этажа квартиры. Записаны через дробь (этаж/всего)
         /// </summary>
-        private void fillFloorNumber(UpnFlat upnFlat, List<IElement> fieldValueElements)
+        private void fillFloorNumber(UpnFlatBase upnFlat, List<IElement> fieldValueElements)
         {
             if (!floorComponentsIndex.HasValue || floorComponentsIndex == 0)
                 return;
@@ -143,7 +161,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Заполнение полей с площадью (общая/жилая/кухни)
         /// </summary>
-        private void fillFlatSpaceComponents(UpnFlat upnFlat, List<IElement> fieldValueElements)
+        private void fillFlatSpaceComponents(UpnFlatBase upnFlat, List<IElement> fieldValueElements)
         {
             if (!spaceComponentsIndex.HasValue || spaceComponentsIndex == 0)
                 return;
@@ -173,7 +191,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Заполнение информации о санузлах (совмещенных/раздельных)
         /// </summary>
-        private void fillFlatBathroomComponents(UpnFlat upnFlat, List<IElement> fieldValueElements)
+        private void fillFlatBathroomComponents(UpnFlatBase upnFlat, List<IElement> fieldValueElements)
         {
             if (!bathroomComponentsIndex.HasValue || bathroomComponentsIndex == 0)
                 return;
@@ -192,7 +210,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Цена квартиры может быть в баннере "Оформить заявку на кредит"
         /// </summary>
-        private void fillPrice(UpnFlat upnFlat, List<IElement> fieldValueElements)
+        private void fillPrice(UpnFlatBase upnFlat, List<IElement> fieldValueElements)
         {
             if (!priceIndex.HasValue || priceIndex == 0)
                 return;
@@ -213,7 +231,7 @@ namespace UpnRealtyParser.Business.Helpers
                 upnFlat.Price = priceValue;
         }
 
-        private void fillAndClearDescription(UpnFlat upnFlat, List<IElement> fieldValueElements)
+        private void fillAndClearDescription(UpnFlatBase upnFlat, List<IElement> fieldValueElements)
         {
             if (descriptionIndex.HasValue && descriptionIndex != 0)
                 upnFlat.Description = fieldValueElements.ElementAtOrDefault(descriptionIndex.Value)?.InnerHtml;

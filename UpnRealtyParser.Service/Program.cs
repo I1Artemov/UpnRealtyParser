@@ -37,7 +37,7 @@ namespace UpnRealtyParser.Service
             UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
 
             // Начинаем со сбора ссылок, на сбор квартир переключит watchdog
-            Console.WriteLine("Начат сбор ссылок");
+            Console.WriteLine("Начат сбор ссылок на квартиры на продажу");
             upnAgent.OpenConnection();
             upnAgent.StartLinksGatheringInSeparateThread();
 
@@ -51,10 +51,10 @@ namespace UpnRealtyParser.Service
 
                 if(currentlyProcessedAmount == previouslyProcessedAmount)
                 {
-                    if(upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
+                    if (upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
                     {
                         // Если завершился сбор ссылок, то начинаем сбор квартир
-                        WriteDebugLog("Переключение на сбор квартир.");
+                        WriteDebugLog("Переключение на сбор квартир на продажу.");
                         previouslyProcessedAmount = 0;
 
                         upnAgent.CloseConnection();
@@ -62,24 +62,40 @@ namespace UpnRealtyParser.Service
                         upnAgent.OpenConnection();
                         upnAgent.StartApartmentGatheringInSeparateThread();
                     }
-                    else if(upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlats)
+                    else if (upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlats)
                     {
-                        // Если завершился сбор квартир, то выходим из цикла
+                        WriteDebugLog("Переключение на сбор ссылок по аренде.");
+                        previouslyProcessedAmount = 0;
+
+                        upnAgent.CloseConnection();
+                        upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
+                        upnAgent.OpenConnection();
+                        upnAgent.StartLinksGatheringInSeparateThread(true);
+                    }
+                    else if (upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinksRent)
+                    {
+                        WriteDebugLog("Переключение на сбор арендных квартир.");
+                        previouslyProcessedAmount = 0;
+
+                        upnAgent.CloseConnection();
+                        upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
+                        upnAgent.OpenConnection();
+                        upnAgent.StartApartmentGatheringInSeparateThread(true);
+
+                        
+                    }
+                    else if (upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlatsRent)
+                    {
+                        // Если завершился сбор арендных квартир, то выходим из цикла
                         WriteDebugLog("Обработка полностью завершена. Остановка цикла.");
                         break;
                     }
                     else
-                    { 
+                    {
                         // Если флаг завершения сбора не выставлен, то в любом случае перезапускаем нужный тип процессинга
-                        if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
+                        if (!upnAgent.CheckIfProcessingCompleted())
                         {
-                            WriteDebugLog("Возможно, поток завис.");
-
-                        }
-
-                        if (!upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlats)
-                        {
-                            WriteDebugLog("Поток завис. Перезапуск отключен!");
+                            WriteDebugLog("Возможно, поток завис. Перезапуск отключен!");
                         }
                     }
                 }

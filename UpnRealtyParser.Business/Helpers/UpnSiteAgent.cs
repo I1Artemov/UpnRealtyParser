@@ -23,6 +23,7 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         protected EFGenericRepo<UpnHouseInfo, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<UpnFlat, RealtyParserContext> _sellFlatRepo;
+        protected EFGenericRepo<UpnRentFlat, RealtyParserContext> _rentFlatRepo;
         protected EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
         protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
 
@@ -114,6 +115,7 @@ namespace UpnRealtyParser.Business.Helpers
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
             _houseRepo = new EFGenericRepo<UpnHouseInfo, RealtyParserContext>(context);
             _sellFlatRepo = new EFGenericRepo<UpnFlat, RealtyParserContext>(context);
+            _rentFlatRepo = new EFGenericRepo<UpnRentFlat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<UpnAgency, RealtyParserContext>(context);
             _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
             _stateLogger = new StateLogger(context);
@@ -122,7 +124,8 @@ namespace UpnRealtyParser.Business.Helpers
         public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
         {
             _isProcessingCompleted = false;
-            _currentActionName = Const.ParsingStatusDescriptionGatheringLinks;
+            _currentActionName = isRentFlats ? Const.ParsingStatusDescriptionGatheringLinksRent :
+                Const.ParsingStatusDescriptionGatheringLinks;
 
             ThreadStart threadMethod = delegate { this.GatherLinksAndInsertInDb(isRentFlats); };
             _LinksProcessingThread = new Thread(threadMethod);
@@ -130,12 +133,13 @@ namespace UpnRealtyParser.Business.Helpers
             _LinksProcessingThread.Start();
         }
 
-        public void StartApartmentGatheringInSeparateThread()
+        public void StartApartmentGatheringInSeparateThread(bool isRentFlats = false)
         {
             _isProcessingCompleted = false;
-            _currentActionName = Const.ParsingStatusDescriptionObservingFlats;
+            _currentActionName = isRentFlats ? Const.ParsingStatusDescriptionObservingFlatsRent :
+                Const.ParsingStatusDescriptionObservingFlats;
 
-            ThreadStart threadMethod = delegate { this.GetApartmentLinksFromDbAndProcessApartments(); };
+            ThreadStart threadMethod = delegate { this.GetApartmentLinksFromDbAndProcessApartments(isRentFlats); };
             _apartmentProcessingThread = new Thread(threadMethod);
             _apartmentProcessingThread.IsBackground = true;
             _apartmentProcessingThread.Start();
@@ -258,19 +262,20 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Считывает из БД ссылки на квартиры порциями по N штук и запускает обработку квартир по каждой ссылке
         /// </summary>
-        public void GetApartmentLinksFromDbAndProcessApartments()
+        public void GetApartmentLinksFromDbAndProcessApartments(bool isRentFlats)
         {
+            string targetLinkType = isRentFlats ? Const.LinkTypeRentFlat : Const.LinkTypeSellFlat;
             IQueryable<PageLink> linksFilterQuery = _pageLinkRepo.GetAllWithoutTracking()
-                .Where(x => x.LinkType == Const.LinkTypeSellFlat && x.SiteName == Const.SiteNameUpn
+                .Where(x => x.LinkType == targetLinkType && x.SiteName == Const.SiteNameUpn
                         && (x.IsDead == null || x.IsDead.Value == false));
 
             int totalLinksCount = linksFilterQuery.Count();
 
             List<PageLink> apartmentHrefs = linksFilterQuery
                 .ToList();
-            _stateLogger.LogApartmentsParsingStart(apartmentHrefs.Count);
+            _stateLogger.LogApartmentsParsingStart(apartmentHrefs.Count, isRentFlats);
 
-            ProcessAllApartmentsFromLinks(apartmentHrefs, true);
+            ProcessAllApartmentsFromLinks(apartmentHrefs, true, isRentFlats);
 
             _isProcessingCompleted = true;
         }
@@ -279,15 +284,16 @@ namespace UpnRealtyParser.Business.Helpers
         /// Переходит на страницы с описанием квартир (по списку ссылок на них), собирает информацию о каждой квартире,
         /// о ее доме и о риэлторе со страницы и добавляет всё в БД
         /// </summary>
-        public void ProcessAllApartmentsFromLinks(List<PageLink> apartmentHrefs, bool isAddSiteHref)
+        public void ProcessAllApartmentsFromLinks(List<PageLink> apartmentHrefs, bool isAddSiteHref, bool isRentFlats)
         {
+            string rentLogMessageAddition = isRentFlats ? " (аренда)" : "";
             if (apartmentHrefs == null || apartmentHrefs.Count == 0)
-                _writeToLogDelegate("Перечень ссылок на квартиры пуст");
+                _writeToLogDelegate("Перечень ссылок на квартиры пуст" + rentLogMessageAddition);
 
             _processedObjectsCount = 0;
             foreach(PageLink apartmentLink in apartmentHrefs)
             {
-                if (isFlatAlreadyInDb(apartmentLink.Id)) // TODO: Пока что не обрабатываем обновление данных в уже распарсенных квартирах
+                if (isFlatAlreadyInDb(apartmentLink.Id, isRentFlats)) // TODO: Пока что не обрабатываем обновление данных в уже распарсенных квартирах
                 {
                     continue;
                 }
@@ -297,9 +303,10 @@ namespace UpnRealtyParser.Business.Helpers
 
                 if(apartmentPageHtml == "NotFound")
                 {
-                    _writeToLogDelegate(string.Format("Страница по ссылке {0} не найдена (квартира продана)", apartmentLink.Href));
+                    _writeToLogDelegate(string.Format("Страница по ссылке {0} не найдена (квартира продана){1}",
+                        apartmentLink.Href, rentLogMessageAddition));
                     markLinkAsDead(apartmentLink);
-                    _stateLogger.LogApartmentParsingNotFoundOnSite(apartmentLink.Href);
+                    _stateLogger.LogApartmentParsingNotFoundOnSite(apartmentLink.Href, isRentFlats);
                     _processedObjectsCount++;
                     if (_requestDelayInMs >= 0) Thread.Sleep(_requestDelayInMs);
                     continue;
@@ -307,23 +314,24 @@ namespace UpnRealtyParser.Business.Helpers
 
                 if (string.IsNullOrEmpty(apartmentPageHtml) || apartmentPageHtml == "LoadingFailed")
                 {
-                    _writeToLogDelegate(string.Format("Проблема при загрузке страницы {0}, переход к следующей", apartmentLink.Href));
-                    _stateLogger.LogApartmentPageLoadingProplem(apartmentLink.Href);
+                    _writeToLogDelegate(string.Format("Проблема при загрузке страницы {0}, переход к следующей{1}",
+                        apartmentLink.Href, rentLogMessageAddition));
+                    _stateLogger.LogApartmentPageLoadingProplem(apartmentLink.Href, isRentFlats);
                     _processedObjectsCount++;
                     continue;
                 }
 
-                processAllDataAboutSingleApartmentAndUpdateDb(apartmentPageHtml, apartmentLink);
+                processAllDataAboutSingleApartmentAndUpdateDb(apartmentPageHtml, apartmentLink, isRentFlats);
 
                 if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
 
                 _processedObjectsCount++;
             }
-            _writeToLogDelegate("Обработка квартир завершена");
+            _writeToLogDelegate("Обработка квартир завершена" + rentLogMessageAddition);
         }
 
-        protected void processAllDataAboutSingleApartmentAndUpdateDb(string apartmentPageHtml, PageLink apartmentLink)
+        protected void processAllDataAboutSingleApartmentAndUpdateDb(string apartmentPageHtml, PageLink apartmentLink, bool isRentFlats)
         {
             // Сбор сведений о доме
             UpnHouseParser houseParser = new UpnHouseParser();
@@ -349,12 +357,23 @@ namespace UpnRealtyParser.Business.Helpers
 
             // Сбор сведений о квартире
             UpnApartmentParser apartmentParser = new UpnApartmentParser();
-            UpnFlat upnFlat = apartmentParser.GetUpnSellFlatFromPageText(fieldValueElements);
-            updateOrAddFlat(upnFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
+            int flatId;
+            if(isRentFlats)
+            {
+                UpnRentFlat upnRentFlat = apartmentParser.GetUpnRentFlatFromPageText(fieldValueElements);
+                updateOrAddRentFlat(upnRentFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
+                flatId = upnRentFlat.Id.GetValueOrDefault(0);
+            }
+            else
+            {
+                UpnFlat upnSellFlat = apartmentParser.GetUpnSellFlatFromPageText(fieldValueElements);
+                updateOrAddSellFlat(upnSellFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
+                flatId = upnSellFlat.Id.GetValueOrDefault(0);
+            }
 
             // Сбор ссылок на фотографии квартиры
             List<string> photoHrefs = apartmentParser.GetPhotoHrefsFromPage(apartmentPageHtml);
-            updateOrAddPhotoHrefs(photoHrefs, upnFlat.Id.GetValueOrDefault(0));
+            updateOrAddPhotoHrefs(photoHrefs, flatId, isRentFlats);
         }
 
         /// <summary>
@@ -388,29 +407,55 @@ namespace UpnRealtyParser.Business.Helpers
             return true;
         }
 
-        private void updateOrAddFlat(UpnFlat upnFlat, int houseId, int pageLinkId, int agencyId)
+        private void updateOrAddSellFlat(UpnFlat upnSellFlat, int houseId, int pageLinkId, int agencyId)
         {
-            upnFlat.UpnHouseInfoId = houseId;
-            upnFlat.PageLinkId = pageLinkId;
-            upnFlat.UpnAgencyId = agencyId;
-            upnFlat.LastCheckDate = DateTime.Now;
-            UpnFlat existingFlat = _sellFlatRepo.GetAllWithoutTracking()
-                .Where(x => x.PageLinkId == pageLinkId)
-                .FirstOrDefault();
+            upnSellFlat.UpnHouseInfoId = houseId;
+            upnSellFlat.PageLinkId = pageLinkId;
+            upnSellFlat.UpnAgencyId = agencyId;
+            upnSellFlat.LastCheckDate = DateTime.Now;
+
+            UpnFlatBase existingFlat = _sellFlatRepo.GetAllWithoutTracking()
+                    .Where(x => x.PageLinkId == pageLinkId)
+                    .FirstOrDefault();
 
             if (existingFlat != null)
                 return;
 
-            _sellFlatRepo.Add(upnFlat);
-            _sellFlatRepo.Save();
-            _stateLogger.LogApartmentAddition(upnFlat.Id.Value, upnFlat.UpnHouseInfoId.Value);
-            _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}", upnFlat.Id, houseId, pageLinkId));
+                _sellFlatRepo.Add(upnSellFlat);
+                _sellFlatRepo.Save();
+            
+            _stateLogger.LogApartmentAddition(upnSellFlat.Id.Value, upnSellFlat.UpnHouseInfoId.Value, false);
+            _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}, Аренда=false",
+                upnSellFlat.Id, houseId, pageLinkId));
         }
 
-        private bool isFlatAlreadyInDb(int pageLinkId)
+        private void updateOrAddRentFlat(UpnRentFlat upnRentFlat, int houseId, int pageLinkId, int agencyId)
         {
-            var isExisting = _sellFlatRepo.GetAllWithoutTracking()
-                .Any(x => x.PageLinkId == pageLinkId);
+            upnRentFlat.UpnHouseInfoId = houseId;
+            upnRentFlat.PageLinkId = pageLinkId;
+            upnRentFlat.UpnAgencyId = agencyId;
+            upnRentFlat.LastCheckDate = DateTime.Now;
+
+            UpnFlatBase existingFlat = _rentFlatRepo.GetAllWithoutTracking()
+                    .Where(x => x.PageLinkId == pageLinkId)
+                    .FirstOrDefault();
+
+            if (existingFlat != null)
+                return;
+
+            _rentFlatRepo.Add(upnRentFlat);
+            _rentFlatRepo.Save();
+
+            _stateLogger.LogApartmentAddition(upnRentFlat.Id.Value, upnRentFlat.UpnHouseInfoId.Value, true);
+            _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}, Аренда=true",
+                upnRentFlat.Id, houseId, pageLinkId));
+        }
+
+        private bool isFlatAlreadyInDb(int pageLinkId, bool isRentFlats)
+        {
+            var isExisting = isRentFlats ?
+                _rentFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId) :
+                _sellFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId);
             return isExisting;
         }
 
@@ -435,13 +480,14 @@ namespace UpnRealtyParser.Business.Helpers
             }
         }
 
-        protected void updateOrAddPhotoHrefs(List<string> hrefs, int apartmentId)
+        protected void updateOrAddPhotoHrefs(List<string> hrefs, int apartmentId, bool isRentFlats)
         {
+            string targetRelationType = isRentFlats ? Const.LinkTypeRentFlat : Const.LinkTypeSellFlat;
             foreach(string href in hrefs)
             {
                 UpnFlatPhoto photo = new UpnFlatPhoto {
                     CreationDateTime = DateTime.Now,
-                    RelationType = Const.LinkTypeSellFlat,
+                    RelationType = targetRelationType,
                     FlatId = apartmentId,
                     Href = href
                 };
@@ -449,7 +495,8 @@ namespace UpnRealtyParser.Business.Helpers
             }
             _photoRepo.Save();
             _stateLogger.LogApartmentPhotoHrefsAddition(apartmentId, hrefs.Count);
-            _writeToLogDelegate(string.Format("Обнаружено {0} ссылок на фото для квартиры (Id = {1})", hrefs.Count, apartmentId));
+            _writeToLogDelegate(string.Format("Обнаружено {0} ссылок на фото для квартиры (Id = {1} Rent = {2})",
+                hrefs.Count, apartmentId, isRentFlats));
         }
 
         /// <summary>
