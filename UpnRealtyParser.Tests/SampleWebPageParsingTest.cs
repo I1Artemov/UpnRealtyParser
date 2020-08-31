@@ -19,7 +19,7 @@ namespace UpnRealtyParser.Tests
 
             UpnApartmentParser parser = new UpnApartmentParser();
             List<IElement> fieldValueElements = parser.GetTdElementsFromWebPage(webPageText);
-            UpnFlatBase upnFlat = parser.GetUpnAnyFlatFromPageText(fieldValueElements, false);
+            UpnFlat upnFlat = parser.GetUpnSellFlatFromPageText(fieldValueElements);
 
             Assert.Equal(2, upnFlat.RoomAmount);
             Assert.Equal(42, (int)Math.Floor(upnFlat.SpaceSum.Value));
