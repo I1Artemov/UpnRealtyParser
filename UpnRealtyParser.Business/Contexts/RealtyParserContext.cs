@@ -15,10 +15,14 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<WebProxyInfo> WebProxyInfos { get; set; }
         public DbSet<SubwayStation> SubwayStations { get; set; }
 
+        public RealtyParserContext(DbContextOptions<RealtyParserContext> options) : base(options) { }
+
+        public RealtyParserContext(){ }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=.\MSSQL14LOCAL;Database=RealtyParser;Trusted_Connection=True;");
+            // todo: Вынести в конфиг
+            optionsBuilder.UseSqlServer(@"Data Source=SHODAN;Database=RealtyParser;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

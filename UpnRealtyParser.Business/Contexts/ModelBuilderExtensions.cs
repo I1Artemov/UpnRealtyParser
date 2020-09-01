@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace UpnRealtyParser.Business.Contexts
 {
@@ -9,7 +10,8 @@ namespace UpnRealtyParser.Business.Contexts
         {
             foreach(IMutableEntityType entity in modelBuilder.Model.GetEntityTypes())
             {
-                entity.SetTableName(entity.DisplayName());
+                entity.Relational().TableName = entity.DisplayName();
+                //entity.SetTableName(entity.DisplayName());
             }
         }
     }
