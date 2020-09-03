@@ -1,1 +1,1 @@
-﻿
+﻿export const Href_UpnSellFlatController_GetAllFlats = "api/UpnSellFlat/getall";

@@ -41,7 +41,7 @@ namespace UpnRealtyParser.Business.Helpers
                 x => aliveProxyIps.Contains(x.Split(':').ToList().FirstOrDefault()))
                 .ToList();
 
-            List<WebProxyInfo> webProxies = GetProxiesFromIps(aliveProxiesWithPorts); // TODO: Второй файл игнорируется!
+            List<WebProxyInfo> webProxies = GetProxiesFromIps(rawProxies); // TODO: Второй файл игнорируется!
             insertOrUpdateProxiesInfoInDb(webProxies);
             return webProxies;
         }
