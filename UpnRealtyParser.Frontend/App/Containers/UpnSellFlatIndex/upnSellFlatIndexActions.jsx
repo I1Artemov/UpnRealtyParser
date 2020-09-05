@@ -5,7 +5,8 @@ import "isomorphic-fetch";
 export function receiveAllFlats(data) {
     return {
         type: GET_ALL_FLATS_SUCCESS,
-        flatsInfo: data
+        flatsInfo: data.flatsList,
+        totalFlatsCount: data.totalCount
     };
 }
 
@@ -16,9 +17,12 @@ export function errorReceiveAllFlats(err) {
     };
 }
 
-export function getAllFlats(pageNumber = 0) {
+export function getAllFlats(pagination) {
+    let targetPage = !pagination.current ? 1 : pagination.current;
+    let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
+
     return (dispatch) => {
-        let queryTrailer = '?page=' + pageNumber;
+        let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
 
         fetch(Href_UpnSellFlatController_GetAllFlats + queryTrailer)
             .then((response) => {

@@ -2,28 +2,32 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllFlats } from './upnSellFlatIndexActions.jsx';
+import { RENT_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
+import { Table } from 'antd';
+
+import 'antd/dist/antd.css';
 // import CommentList from '../CommentList/commentList.jsx';
 
 class UpnSellFlatIndex extends React.Component {
     componentDidMount() {
-        this.props.getAllFlats(0);
+        this.props.getAllFlats(new Object());
+    }
+
+    handleTableChange(pagination, filters, sorter) {
+        this.props.getAllFlats(pagination);
     }
 
     render() {
-        let flats = this.props.flatsInfo.map(item => {
-            return (
-                <div key={item.id} className="flat-info-block">
-                    <div>№{item.id}</div>
-                    <div className="flat-description">{item.description}</div>
-                    <hr />
-                </div>
-            );
-        });
+        let flatsData = this.props.flatsInfo.map(item => ({ ...item, key: item.id }));
+        let totalFlatsCount = this.props.totalFlatsCount;
 
         return (
-            <div id="allFlatsWrapper">
-                {flats}
-            </div>
+            <Table
+                dataSource={flatsData}
+                columns={RENT_FLATS_TABLE_COLUMNS}
+                onChange={this.handleTableChange.bind(this)}
+                pagination={{total: totalFlatsCount}}
+            />
         );
     }
 }
@@ -31,13 +35,14 @@ class UpnSellFlatIndex extends React.Component {
 let mapStateToProps = (state) => {
     return {
         flatsInfo: state.upnSellFlatIndexReducer.flatsInfo,
+        totalFlatsCount: state.upnSellFlatIndexReducer.totalFlatsCount,
         error: state.upnSellFlatIndexReducer.error
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllFlats: (pageNumber) => dispatch(getAllFlats(pageNumber))
+        getAllFlats: (pagination) => dispatch(getAllFlats(pagination))
     };
 };
 
