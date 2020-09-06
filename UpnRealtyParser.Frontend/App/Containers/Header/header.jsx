@@ -1,36 +1,43 @@
 ﻿import React from 'react';
 import { Link } from 'react-router-dom';
+import { Layout, Menu } from 'antd';
+
+const { Sider } = Layout;
+const { SubMenu } = Menu;
 
 export default class Header extends React.Component {
     render() {
         return (
-            <header>
-                <menu>
-                    <ul>
-                        <li>
-                            <Link to="/">Недвижимость УПН</Link>
-                        </li>
-                        <li>
-                            <Link to="/sellflat">Квартиры на продажу</Link>
-                        </li>
-                        <li>
-                            <Link to="/rentflat">Квартиры в аренду</Link>
-                        </li>
-                        <li>
-                            <Link to="/house">Дома</Link>
-                        </li>
-                        <li>
-                            <Link to="/agency">Агентства</Link>
-                        </li>
-                        <li>
+            <Sider>
+                <div className="logo" />
+                <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline">
+                    <Menu.Item key="1">
+                        <Link to="/">Недвижимость УПН</Link>
+                    </Menu.Item>
+                    <SubMenu key="sub1" title="Квартиры">
+                        <Menu.Item key="2">
+                            <Link to="/sellflat">На продажу</Link>
+                        </Menu.Item>
+                        <Menu.Item key="3">
+                            <Link to="/rentflat">В аренду</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <Menu.Item key="4">
+                        <Link to="/house">Дома</Link>
+                    </Menu.Item>
+                    <Menu.Item key="5">
+                        <Link to="/agency">Агентства</Link>
+                    </Menu.Item>
+                    <SubMenu key="sub3" title="Администрирование">
+                        <Menu.Item key="6">
                             <Link to="/webproxy">Прокси</Link>
-                        </li>
-                        <li>
+                        </Menu.Item>
+                        <Menu.Item key="7">
                             <Link to="/log">Лог</Link>
-                        </li>
-                    </ul>
-                </menu>
-            </header>
+                        </Menu.Item>
+                    </SubMenu>
+                </Menu>
+            </Sider>
         );
     }
 };

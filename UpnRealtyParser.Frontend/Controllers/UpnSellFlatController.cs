@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
+using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Frontend.Controllers
 {
@@ -9,6 +11,13 @@ namespace UpnRealtyParser.Frontend.Controllers
     [ApiController]
     public class UpnSellFlatController : Controller
     {
+        private readonly EFGenericRepo<UpnFlat, RealtyParserContext> _upnFlatRepo;
+
+        public UpnSellFlatController(EFGenericRepo<UpnFlat, RealtyParserContext> upnFlatRepo)
+        {
+            _upnFlatRepo = upnFlatRepo;
+        }
+
         [Route("getall")]
         [HttpGet]
         public IActionResult GetAllFlats(int? page, int? pageSize)
@@ -16,17 +25,14 @@ namespace UpnRealtyParser.Frontend.Controllers
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
-            List<UpnFlat> allSellFlats = new List<UpnFlat>();
-            for (int i = 0; i < 50; i++)
-            {
-                allSellFlats.Add(new UpnFlat{Id = i, Description = "Квартира номер " + i});
-            }
+            IQueryable<UpnFlat> allSellFlats = _upnFlatRepo.GetAllWithoutTracking();
+            int totalCount = allSellFlats.Count();
 
             List<UpnFlat> filteredFlats = allSellFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 
-            return Json(new {flatsList = filteredFlats, totalCount = allSellFlats.Count});
+            return Json(new {flatsList = filteredFlats, totalCount = totalCount});
         }
     }
 }

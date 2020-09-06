@@ -8,6 +8,41 @@ export const RENT_FLATS_TABLE_COLUMNS = [
         key: 'id'
     },
     {
+        title: 'Создан',
+        dataIndex: 'creationDateTime',
+        key: 'creationDateTime'
+    },
+    {
+        title: 'Проверен',
+        dataIndex: 'lastCheckDate',
+        key: 'lastCheckDate'
+    },
+    {
+        title: 'Тип',
+        dataIndex: 'flatType',
+        key: 'flatType'
+    },
+    {
+        title: 'Комнат',
+        dataIndex: 'roomAmount',
+        key: 'roomAmount'
+    },
+    {
+        title: 'Площадь',
+        dataIndex: 'spaceSum',
+        key: 'spaceSum'
+    },
+    {
+        title: 'Этаж',
+        dataIndex: 'flatFloor',
+        key: 'flatFloor'
+    },
+    {
+        title: 'Цена',
+        dataIndex: 'price',
+        key: 'price'
+    },
+    {
         title: 'Описание',
         dataIndex: 'description',
         key: 'description'

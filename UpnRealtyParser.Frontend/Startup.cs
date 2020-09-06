@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using UpnRealtyParser.Business.Contexts;
+using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Frontend
 {
@@ -31,7 +32,7 @@ namespace UpnRealtyParser.Frontend
             var connectionString = Configuration.GetConnectionString("UpnRealtyParserContext");
 
             services.AddDbContext<RealtyParserContext>(options => options.UseSqlServer(connectionString));
-            //todo: services.AddScoped(typeof(EFGenericRepo<>), typeof(EFGenericRepo<>));
+            services.AddScoped(typeof(EFGenericRepo<,>));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
