@@ -5,10 +5,11 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import App from './Containers/app.jsx';
 import upnSellFlatIndexReducer from './Containers/UpnSellFlatIndex/upnSellFlatIndexReducer.jsx';
+import upnHouseIndexReducer from './Containers/UpnHouseIndex/upnHouseIndexReducer.jsx';
 
 import './site.css';
 
-const rootReducer = combineReducers({ upnSellFlatIndexReducer });
+const rootReducer = combineReducers({ upnSellFlatIndexReducer, upnHouseIndexReducer });
 
 function configureStore(initialState) {
     return createStore(rootReducer, initialState, applyMiddleware(thunk));

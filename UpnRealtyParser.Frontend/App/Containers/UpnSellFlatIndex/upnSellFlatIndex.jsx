@@ -2,15 +2,15 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllFlats } from './upnSellFlatIndexActions.jsx';
-import { RENT_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
+import { SELL_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
 import { Table } from 'antd';
 
 import 'antd/dist/antd.css';
-// import CommentList from '../CommentList/commentList.jsx';
 
 class UpnSellFlatIndex extends React.Component {
     componentDidMount() {
         this.props.getAllFlats(new Object());
+        // todo: bind
     }
 
     handleTableChange(pagination, filters, sorter) {
@@ -24,7 +24,7 @@ class UpnSellFlatIndex extends React.Component {
         return (
             <Table
                 dataSource={flatsData}
-                columns={RENT_FLATS_TABLE_COLUMNS}
+                columns={SELL_FLATS_TABLE_COLUMNS}
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{total: totalFlatsCount}}
             />
