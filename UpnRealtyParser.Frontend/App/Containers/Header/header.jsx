@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
+import { HomeOutlined, TeamOutlined, ToolOutlined, BankOutlined } from '@ant-design/icons';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -14,7 +15,7 @@ export default class Header extends React.Component {
                     <Menu.Item key="1">
                         <Link to="/">Недвижимость УПН</Link>
                     </Menu.Item>
-                    <SubMenu key="sub1" title="Квартиры">
+                    <SubMenu icon={<BankOutlined />}  key="sub1" title="Квартиры">
                         <Menu.Item key="2">
                             <Link to="/sellflat">На продажу</Link>
                         </Menu.Item>
@@ -22,13 +23,13 @@ export default class Header extends React.Component {
                             <Link to="/rentflat">В аренду</Link>
                         </Menu.Item>
                     </SubMenu>
-                    <Menu.Item key="4">
+                    <Menu.Item icon={<HomeOutlined/>} key="4">
                         <Link to="/house">Дома</Link>
                     </Menu.Item>
-                    <Menu.Item key="5">
+                    <Menu.Item icon={<TeamOutlined />} key="5">
                         <Link to="/agency">Агентства</Link>
                     </Menu.Item>
-                    <SubMenu key="sub3" title="Администрирование">
+                    <SubMenu icon={<ToolOutlined />} key="sub3" title="Администрирование">
                         <Menu.Item key="6">
                             <Link to="/webproxy">Прокси</Link>
                         </Menu.Item>

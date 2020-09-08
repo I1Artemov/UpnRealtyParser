@@ -8,13 +8,13 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         key: 'id'
     },
     {
-        title: 'Создан',
-        dataIndex: 'creationDateTime',
-        key: 'creationDateTime'
+        title: 'Создан/проверен',
+        dataIndex: 'createdCheckedDatesSummary',
+        key: 'createdCheckedDatesSummary'
     },
     {
         title: 'Проверен',
-        dataIndex: 'lastCheckDate',
+        dataIndex: 'lastCheckDatePrintable',
         key: 'lastCheckDate'
     },
     {
@@ -34,8 +34,33 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     },
     {
         title: 'Этаж',
-        dataIndex: 'flatFloor',
-        key: 'flatFloor'
+        dataIndex: 'floorSummary',
+        key: 'floorSummary'
+    },
+    {
+        title: 'Адрес',
+        dataIndex: 'houseAddress',
+        key: 'houseAddress'
+    },
+    {
+        title: 'Тип дома',
+        dataIndex: 'houseType',
+        key: 'houseType'
+    },
+    {
+        title: 'Материал дома',
+        dataIndex: 'houseWallMaterial',
+        key: 'houseWallMaterial'
+    },
+    {
+        title: 'Построена',
+        dataIndex: 'houseBuildYear',
+        key: 'houseBuildYear'
+    },
+    {
+        title: 'До метро',
+        dataIndex: 'subwaySummary',
+        key: 'subwaySummary'
     },
     {
         title: 'Цена',
@@ -44,7 +69,7 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     },
     {
         title: 'Описание',
-        dataIndex: 'description',
-        key: 'description'
+        dataIndex: 'shortenedDescription',
+        key: 'shortenedDescription'
     }
 ];

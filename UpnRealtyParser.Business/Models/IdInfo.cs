@@ -6,5 +6,8 @@ namespace UpnRealtyParser.Business.Models
         public int? Id {get; set;}
 
         public DateTime? CreationDateTime {get; set;}
+
+        public string CreationDatePrintable =>
+            CreationDateTime == null ? "" : CreationDateTime.Value.ToString("dd.MM.yyyy");
     }
 }
