@@ -239,6 +239,7 @@ namespace UpnRealtyParser.Business.Helpers
                     foundLink.LastCheckDateTime = DateTime.Now;
                     _pageLinkRepo.Update(foundLink);
                     updatedAmount++;
+                    updateExistingFlatByExistingPageLinkOrGetError(foundLink);
                 }
                 else
                 {
@@ -257,6 +258,42 @@ namespace UpnRealtyParser.Business.Helpers
             _writeToLogDelegate(string.Format("Обработана страница {0}: вставлено {1} записей, обновлено {2}.",
                 pageNumber, insertedAmount, updatedAmount));
             _stateLogger.LogLinksPageProcessingResult(pageNumber, insertedAmount, updatedAmount);
+        }
+
+        /// <summary>
+        /// Обновляет дату последней проверки у квартиры, соответствующей ссылке на страницу
+        /// </summary>
+        private void updateExistingFlatByExistingPageLinkOrGetError(PageLink foundLink)
+        {
+            UpnRentFlat foundRentFlat = _rentFlatRepo.GetAll().FirstOrDefault(x => x.PageLinkId == foundLink.Id);
+            if(foundRentFlat != null)
+            {
+                try
+                {
+                    foundRentFlat.LastCheckDate = DateTime.Now;
+                    _rentFlatRepo.Update(foundRentFlat);
+                    _rentFlatRepo.Save();
+                }
+                catch(Exception ex)
+                {
+                    _writeToLogDelegate( "Ошибка обновления арендной квартиры " + foundRentFlat.Id + " по ссылке на страницу: " + ex.Message);
+                }
+            }
+
+            UpnFlat foundSellFlat = _sellFlatRepo.GetAll().FirstOrDefault(x => x.PageLinkId == foundLink.Id);
+            if (foundSellFlat != null)
+            {
+                try
+                {
+                    foundSellFlat.LastCheckDate = DateTime.Now;
+                    _sellFlatRepo.Update(foundSellFlat);
+                    _sellFlatRepo.Save();
+                }
+                catch (Exception ex)
+                {
+                    _writeToLogDelegate("Ошибка обновления квартиры в продаже " + foundSellFlat.Id + " по ссылке на страницу: " + ex.Message);
+                }
+            }
         }
 
         /// <summary>
@@ -418,14 +455,8 @@ namespace UpnRealtyParser.Business.Helpers
                     .Where(x => x.PageLinkId == pageLinkId)
                     .FirstOrDefault();
 
-            // Обновление даты проверки, если квартира уже лежит в БД
             if (existingFlat != null)
-            {
-                existingFlat.LastCheckDate = DateTime.Now;
-                _sellFlatRepo.Update(existingFlat);
-                _sellFlatRepo.Save();
                 return;
-            }
 
             _sellFlatRepo.Add(upnSellFlat);
             _sellFlatRepo.Save();
@@ -446,14 +477,8 @@ namespace UpnRealtyParser.Business.Helpers
                     .Where(x => x.PageLinkId == pageLinkId)
                     .FirstOrDefault();
 
-            // Обновление даты проверки, если квартира уже лежит в БД
             if (existingFlat != null)
-            {
-                existingFlat.LastCheckDate = DateTime.Now;
-                _rentFlatRepo.Update(existingFlat);
-                _rentFlatRepo.Save();
                 return;
-            }
 
             _rentFlatRepo.Add(upnRentFlat);
             _rentFlatRepo.Save();
