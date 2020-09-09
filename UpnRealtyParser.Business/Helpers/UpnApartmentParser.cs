@@ -241,6 +241,7 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 upnFlat.Description = upnFlat.Description.Replace("<div bis_skin_checked=\"1\">", "");
                 upnFlat.Description = upnFlat.Description.Replace("<br>", "");
+                upnFlat.Description = upnFlat.Description.Replace("<div>", "");
                 upnFlat.Description = upnFlat.Description.Replace("</div>", "");
                 upnFlat.Description = upnFlat.Description.Replace("\n", "");
                 upnFlat.Description = upnFlat.Description.Trim();
