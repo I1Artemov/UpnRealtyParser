@@ -414,15 +414,21 @@ namespace UpnRealtyParser.Business.Helpers
             upnSellFlat.UpnAgencyId = agencyId;
             upnSellFlat.LastCheckDate = DateTime.Now;
 
-            UpnFlatBase existingFlat = _sellFlatRepo.GetAllWithoutTracking()
+            UpnFlat existingFlat = _sellFlatRepo.GetAllWithoutTracking()
                     .Where(x => x.PageLinkId == pageLinkId)
                     .FirstOrDefault();
 
+            // Обновление даты проверки, если квартира уже лежит в БД
             if (existingFlat != null)
-                return;
-
-                _sellFlatRepo.Add(upnSellFlat);
+            {
+                existingFlat.LastCheckDate = DateTime.Now;
+                _sellFlatRepo.Update(existingFlat);
                 _sellFlatRepo.Save();
+                return;
+            }
+
+            _sellFlatRepo.Add(upnSellFlat);
+            _sellFlatRepo.Save();
             
             _stateLogger.LogApartmentAddition(upnSellFlat.Id.Value, upnSellFlat.UpnHouseInfoId.Value, false);
             _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}, Аренда=false",
@@ -436,12 +442,18 @@ namespace UpnRealtyParser.Business.Helpers
             upnRentFlat.UpnAgencyId = agencyId;
             upnRentFlat.LastCheckDate = DateTime.Now;
 
-            UpnFlatBase existingFlat = _rentFlatRepo.GetAllWithoutTracking()
+            UpnRentFlat existingFlat = _rentFlatRepo.GetAll()
                     .Where(x => x.PageLinkId == pageLinkId)
                     .FirstOrDefault();
 
+            // Обновление даты проверки, если квартира уже лежит в БД
             if (existingFlat != null)
+            {
+                existingFlat.LastCheckDate = DateTime.Now;
+                _rentFlatRepo.Update(existingFlat);
+                _rentFlatRepo.Save();
                 return;
+            }
 
             _rentFlatRepo.Add(upnRentFlat);
             _rentFlatRepo.Save();

@@ -9,8 +9,8 @@ export const HOUSES_TABLE_COLUMNS = [
     },
     {
         title: 'Создан',
-        dataIndex: 'creationDateTime',
-        key: 'creationDateTime'
+        dataIndex: 'creationDatePrintable',
+        key: 'creationDatePrintable'
     },
     {
         title: 'Адрес',

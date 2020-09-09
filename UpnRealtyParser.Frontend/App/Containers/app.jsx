@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from './Header/header.jsx';
 import UpnSellFlatIndex from './UpnSellFlatIndex/upnSellFlatIndex.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
+import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
 import { Layout, Breadcrumb } from 'antd';
 
 const { Content, Footer } = Layout;
@@ -27,9 +28,9 @@ export default class App extends React.Component {
                                         {/*<Route path="/" component={UpnHomeIndex} />*/}
                                         <Route path="/sellflat" component={UpnSellFlatIndex} />
                                         <Route path="/house" component={UpnHouseIndex} />
+                                        <Route path="/agency" component={UpnAgencyIndex} />
                                         {/*
                                         <Route path="/rentflat" component={UpnRentFlatIndex} />
-                                        <Route path="/agency" component={UpnAgencyIndex} />
                                         <Route path="/webproxy" component={WebProxyIndex} />
                                         <Route path="/log" component={LogMessagesIndex} />
                                         */}

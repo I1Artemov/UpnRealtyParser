@@ -13,11 +13,6 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         key: 'createdCheckedDatesSummary'
     },
     {
-        title: 'Проверен',
-        dataIndex: 'lastCheckDatePrintable',
-        key: 'lastCheckDate'
-    },
-    {
         title: 'Тип',
         dataIndex: 'flatType',
         key: 'flatType'
