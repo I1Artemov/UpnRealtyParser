@@ -5,6 +5,7 @@ import Header from './Header/header.jsx';
 import UpnSellFlatIndex from './UpnSellFlatIndex/upnSellFlatIndex.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
+import WebProxyIndex from './WebProxyIndex/webProxyIndex.jsx';
 import { Layout, Breadcrumb } from 'antd';
 
 const { Content, Footer } = Layout;
@@ -29,9 +30,9 @@ export default class App extends React.Component {
                                         <Route path="/sellflat" component={UpnSellFlatIndex} />
                                         <Route path="/house" component={UpnHouseIndex} />
                                         <Route path="/agency" component={UpnAgencyIndex} />
+										<Route path="/webproxy" component={WebProxyIndex} />
                                         {/*
                                         <Route path="/rentflat" component={UpnRentFlatIndex} />
-                                        <Route path="/webproxy" component={WebProxyIndex} />
                                         <Route path="/log" component={LogMessagesIndex} />
                                         */}
                                     </Switch>
