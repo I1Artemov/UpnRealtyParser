@@ -10,7 +10,7 @@ namespace UpnRealtyParser.Frontend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UpnSellFlatController : Controller
+    public class UpnSellFlatController : BaseController
     {
         private readonly EFGenericRepo<UpnFlat, RealtyParserContext> _upnFlatRepo;
         private readonly EFGenericRepo<UpnHouseInfo, RealtyParserContext> _upnHouseRepo;
@@ -46,6 +46,23 @@ namespace UpnRealtyParser.Frontend.Controllers
             apartmentHelper.FillApartmentsWithAdditionalInfo(filteredFlats);
 
             return Json(new {flatsList = filteredFlats, totalCount = totalCount});
+        }
+
+        [Route("getsingle")]
+        [HttpGet]
+        public IActionResult GetSingle(int? id)
+        {
+            if (!id.HasValue)
+                return makeErrorResult("Не указан ID квартиры");
+
+            UpnFlat foundFlat = _upnFlatRepo.GetWithoutTracking(x => x.Id == id.Value);
+            if (foundFlat == null)
+                return makeErrorResult(string.Format("не найдена квартира с ID = {0}", id.Value));
+
+            UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo);
+            apartmentHelper.FillSingleApartmentWithAdditionalInfo(foundFlat);
+
+            return Json(new {flatInfo = foundFlat});
         }
     }
 }

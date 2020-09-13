@@ -17,7 +17,7 @@ export default class Header extends React.Component {
                     </Menu.Item>
                     <SubMenu icon={<BankOutlined />}  key="sub1" title="Квартиры">
                         <Menu.Item key="2">
-                            <Link to="/sellflat">На продажу</Link>
+                            <Link to="/sellflats">На продажу</Link>
                         </Menu.Item>
                         <Menu.Item key="3">
                             <Link to="/rentflat">В аренду</Link>

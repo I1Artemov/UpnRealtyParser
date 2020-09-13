@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from './Header/header.jsx';
 import UpnSellFlatIndex from './UpnSellFlatIndex/upnSellFlatIndex.jsx';
+import UpnSellFlatRead from './UpnSellFlatRead/upnSellFlatRead.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
 import WebProxyIndex from './WebProxyIndex/webProxyIndex.jsx';
+
 import { Layout, Breadcrumb } from 'antd';
 
 const { Content, Footer } = Layout;
@@ -26,23 +28,22 @@ export default class App extends React.Component {
                                 </Breadcrumb>
                                 <main>
                                     <Switch>
-                                        {/*<Route path="/" component={UpnHomeIndex} />*/}
-                                        <Route path="/sellflat" component={UpnSellFlatIndex} />
+                                        <Route path="/sellflats" component={UpnSellFlatIndex} />
                                         <Route path="/house" component={UpnHouseIndex} />
                                         <Route path="/agency" component={UpnAgencyIndex} />
-										<Route path="/webproxy" component={WebProxyIndex} />
+                                        <Route path="/webproxy" component={WebProxyIndex} />
                                         {/*
                                         <Route path="/rentflat" component={UpnRentFlatIndex} />
                                         <Route path="/log" component={LogMessagesIndex} />
                                         */}
+
+                                        <Route exact path="/sellflat/:id" component={UpnSellFlatRead} />
                                     </Switch>
                                 </main>
                             </Content>
                             <Footer style={{ textAlign: 'center' }}>UpnRealtyParser ©2020 Created by AIV</Footer>
                         </Layout>
                     </Layout>
-
-                    
                 </div>
             </Router>
         );

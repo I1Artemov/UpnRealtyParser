@@ -1,3 +1,9 @@
 ﻿header menu {
     background-color: #f4fcff
 }
+
+#content td.ant-table-cell, #content th.ant-table-cell {
+    padding: 6px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}

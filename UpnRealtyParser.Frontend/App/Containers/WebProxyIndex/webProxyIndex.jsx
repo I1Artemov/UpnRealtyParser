@@ -20,7 +20,7 @@ class WebProxyIndex extends React.Component {
     }
 
     render() {
-        let proxiesData = this.props.flatsInfo.map(item => ({ ...item, key: item.id }));
+        let proxiesData = this.props.proxiesInfo.map(item => ({ ...item, key: item.id }));
         let totalProxiesCount = this.props.totalProxiesCount;
         let isProxiesLoading = this.props.isProxiesLoading;
 
