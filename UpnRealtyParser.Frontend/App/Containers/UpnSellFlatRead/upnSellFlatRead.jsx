@@ -2,6 +2,8 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getFlat, startReceivingFlat } from './upnSellFlatReadActions.jsx';
+import { Divider, Spin } from 'antd';
+import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
 
 import 'antd/dist/antd.css';
 
@@ -19,13 +21,15 @@ class UpnSellFlatRead extends React.Component {
 
         if (isLoading === true) {
             return (
-                <div>Загрузка квартиры...</div>
+                <div className="centered-content-div-w-margin">
+                    <Spin size="large" />
+                </div>
             );
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
             return (
                 <div>
-                    <div>Квартира загружена, id = {flatData.id}</div>
-                    <div>{flatData.description}</div>
+                    <Divider orientation={"center"}>Информация о квартире на продажу, ID {flatData.id}</Divider>
+                    <SingleFlatInfo flatData={flatData}/>
                 </div>
             );
         } else {

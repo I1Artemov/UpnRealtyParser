@@ -7,3 +7,9 @@
     padding-top: 6px;
     padding-bottom: 6px;
 }
+
+.centered-content-div-w-margin {
+    width: auto;
+    text-align: center;
+    margin-top: 100px;
+}
