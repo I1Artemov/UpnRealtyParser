@@ -7,6 +7,7 @@ import UpnSellFlatRead from './UpnSellFlatRead/upnSellFlatRead.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
 import WebProxyIndex from './WebProxyIndex/webProxyIndex.jsx';
+import LogEntryIndex from './LogEntryIndex/logEntryIndex.jsx';
 
 import { Layout, Breadcrumb } from 'antd';
 
@@ -32,9 +33,9 @@ export default class App extends React.Component {
                                         <Route path="/house" component={UpnHouseIndex} />
                                         <Route path="/agency" component={UpnAgencyIndex} />
                                         <Route path="/webproxy" component={WebProxyIndex} />
+                                        <Route path="/log" component={LogEntryIndex} />
                                         {/*
                                         <Route path="/rentflat" component={UpnRentFlatIndex} />
-                                        <Route path="/log" component={LogMessagesIndex} />
                                         */}
 
                                         <Route exact path="/sellflat/:id" component={UpnSellFlatRead} />

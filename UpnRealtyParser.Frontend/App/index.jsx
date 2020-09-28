@@ -9,6 +9,7 @@ import upnSellFlatReadReducer from './Containers/UpnSellFlatRead/upnSellFlatRead
 import upnHouseIndexReducer from './Containers/UpnHouseIndex/upnHouseIndexReducer.jsx';
 import upnAgencyIndexReducer from './Containers/UpnAgencyIndex/upnAgencyIndexReducer.jsx';
 import webProxyIndexReducer from './Containers/WebProxyIndex/webProxyIndexReducer.jsx';
+import logEntryIndexReducer from './Containers/LogEntryIndex/logEntryIndexReducer.jsx';
 
 import './site.css';
 
@@ -17,7 +18,8 @@ const rootReducer = combineReducers({
     upnSellFlatReadReducer,
 	upnHouseIndexReducer,
 	upnAgencyIndexReducer,
-	webProxyIndexReducer });
+    webProxyIndexReducer,
+    logEntryIndexReducer});
 
 function configureStore(initialState) {
     return createStore(rootReducer, initialState, applyMiddleware(thunk));
