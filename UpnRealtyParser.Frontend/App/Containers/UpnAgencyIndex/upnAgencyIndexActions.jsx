@@ -1,6 +1,16 @@
-﻿import { GET_ALL_AGENCIES_SUCCESS, GET_ALL_AGENCIES_ERROR } from './upnAgencyIndexConstants.jsx';
+﻿import {
+    GET_ALL_AGENCIES_SUCCESS,
+    GET_ALL_AGENCIES_ERROR,
+    GET_ALL_AGENCIES_LOADING_IN_PROGRESS
+} from './upnAgencyIndexConstants.jsx';
 import { Href_UpnAgencyController_GetAllAgencies } from "../../const.jsx";
 import "isomorphic-fetch";
+
+export function startReceivingAgencies() {
+    return {
+        type: GET_ALL_AGENCIES_LOADING_IN_PROGRESS
+    };
+}
 
 export function receiveAllAgencies(data) {
     return {
