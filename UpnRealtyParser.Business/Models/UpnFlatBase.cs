@@ -116,5 +116,8 @@ namespace UpnRealtyParser.Business.Models
 
         [NotMapped]
         public string AgencyName { get; set; }
+
+        [NotMapped]
+        public string SiteUrl { get; set; }
     }
 }

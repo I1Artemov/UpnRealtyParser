@@ -4,6 +4,7 @@ import { Row, Col } from 'antd';
 class SingleFlatInfo extends React.Component {
     render() {
         let flatData = this.props.flatData;
+        let upnSiteHref = "https://upn.ru" + this.props.flatData.siteUrl;
 
         return (
             <div>
@@ -75,6 +76,10 @@ class SingleFlatInfo extends React.Component {
                 <Row>
                     <Col span={4}>Добавлена/проверена</Col>
                     <Col span={20}>{flatData.createdCheckedDatesSummary}</Col>
+                </Row>
+                <Row>
+                    <Col span={4}>Ссылка на сайт</Col>
+                    <Col span={20}>{upnSiteHref}</Col>
                 </Row>
             </div>
         );

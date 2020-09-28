@@ -11,14 +11,17 @@ namespace UpnRealtyParser.Business.Helpers
         private readonly EFGenericRepo<UpnHouseInfo, RealtyParserContext> _upnHouseRepo;
         private readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
         private readonly EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
+        private readonly EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
 
         public UpnApartmentHelper(EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo,
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
-            EFGenericRepo<UpnAgency, RealtyParserContext> agencyRepo)
+            EFGenericRepo<UpnAgency, RealtyParserContext> agencyRepo,
+            EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo)
         {
             _upnHouseRepo = upnHouseRepo;
             _agencyRepo = agencyRepo;
             _subwayStationRepo = subwayStationRepo;
+            _pageLinkRepo = pageLinkRepo;
         }
 
         /// <summary>
@@ -50,6 +53,10 @@ namespace UpnRealtyParser.Business.Helpers
                 UpnAgency agency = _agencyRepo.GetWithoutTracking(x => x.Id == upnFlat.UpnAgencyId);
                 upnFlat.AgencyName = agency?.Name;
             }
+
+            PageLink foundLink = _pageLinkRepo.GetWithoutTracking(x => x.Id == upnFlat.Id);
+            if(foundLink != null)
+                upnFlat.SiteUrl = foundLink.Href;
         }
 
         private void fillHouseRelatedFields(UpnFlat upnFlat)
