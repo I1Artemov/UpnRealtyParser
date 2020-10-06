@@ -1,7 +1,9 @@
 ﻿import {
     GET_FLAT_SUCCESS,
     GET_FLAT_ERROR,
-    GET_FLAT_IN_PROGRESS
+    GET_FLAT_IN_PROGRESS,
+    SHOW_PHOTOS,
+    HIDE_PHOTOS
 } from './upnSellFlatReadConstants.jsx';
 
 import { Href_UpnSellFlatController_GetSingleFlat } from "../../const.jsx";
@@ -24,6 +26,18 @@ export function errorReceiveFlat(err) {
     return {
         type: GET_FLAT_ERROR,
         error: err
+    };
+}
+
+export function showFlatPhotos() {
+    return {
+        type: SHOW_PHOTOS
+    };
+}
+
+export function hideFlatPhotos() {
+    return {
+        type: HIDE_PHOTOS
     };
 }
 

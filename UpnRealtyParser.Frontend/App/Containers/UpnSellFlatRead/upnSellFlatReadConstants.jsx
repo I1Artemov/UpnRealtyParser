@@ -1,3 +1,5 @@
 ﻿export const GET_FLAT_SUCCESS = 'GET_FLAT_SUCCESS';
 export const GET_FLAT_ERROR = 'GET_FLAT_ERROR';
 export const GET_FLAT_IN_PROGRESS = 'GET_FLAT_IN_PROGRESS';
+export const SHOW_PHOTOS = 'SHOW_PHOTOS';
+export const HIDE_PHOTOS = 'HIDE_PHOTOS';

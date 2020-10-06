@@ -17,18 +17,21 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
         private readonly EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
         private readonly EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
+        private readonly EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _upnPhotoRepo;
 
         public UpnSellFlatController(EFGenericRepo<UpnFlat, RealtyParserContext> upnFlatRepo,
             EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo,
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<UpnAgency, RealtyParserContext> agencyRepo,
-            EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo)
+            EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo,
+            EFGenericRepo<UpnFlatPhoto, RealtyParserContext> upnPhotoRepo)
         {
             _upnFlatRepo = upnFlatRepo;
             _upnHouseRepo = upnHouseRepo;
             _agencyRepo = agencyRepo;
             _subwayStationRepo = subwayStationRepo;
             _pageLinkRepo = pageLinkRepo;
+            _upnPhotoRepo = upnPhotoRepo;
         }
 
         [Route("getall")]
@@ -45,7 +48,8 @@ namespace UpnRealtyParser.Frontend.Controllers
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 
-            UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo, _pageLinkRepo);
+            UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
+                _pageLinkRepo, _upnPhotoRepo);
             apartmentHelper.FillApartmentsWithAdditionalInfo(filteredFlats);
 
             return Json(new {flatsList = filteredFlats, totalCount = totalCount});
@@ -62,8 +66,10 @@ namespace UpnRealtyParser.Frontend.Controllers
             if (foundFlat == null)
                 return makeErrorResult(string.Format("не найдена квартира с ID = {0}", id.Value));
 
-            UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo, _pageLinkRepo);
+            UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
+                _pageLinkRepo, _upnPhotoRepo);
             apartmentHelper.FillSingleApartmentWithAdditionalInfo(foundFlat);
+            apartmentHelper.FillSingleApartmentWithPhotoHrefs(foundFlat);
 
             return Json(new {flatInfo = foundFlat});
         }

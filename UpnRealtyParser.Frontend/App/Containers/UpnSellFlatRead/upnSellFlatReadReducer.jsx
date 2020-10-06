@@ -1,13 +1,16 @@
 ﻿import {
     GET_FLAT_SUCCESS,
     GET_FLAT_ERROR,
-    GET_FLAT_IN_PROGRESS
+    GET_FLAT_IN_PROGRESS,
+    SHOW_PHOTOS,
+    HIDE_PHOTOS
 } from './upnSellFlatReadConstants.jsx';
 
 const initialState = {
     flatInfo: [{ id: 0, description: '' }],
     isLoading: false,
-    error: ""
+    error: "",
+    isShowApartmentPhotos: false
 };
 
 export default function flat(state = initialState, action) {
@@ -20,6 +23,12 @@ export default function flat(state = initialState, action) {
 
         case GET_FLAT_ERROR:
             return { ...state, error: action.error, isLoading: false };
+
+        case SHOW_PHOTOS:
+            return { ...state, isShowApartmentPhotos: true};
+
+        case HIDE_PHOTOS:
+            return { ...state, isShowApartmentPhotos: false };
 
         default:
             return state;

@@ -11,11 +11,6 @@ namespace UpnRealtyParser.Frontend.Controllers
     [ApiController]
     public class LogEntryController : BaseController
     {
-        public IActionResult Index()
-        {
-            return View();
-        }
-
         private readonly EFGenericRepo<ParsingState, RealtyParserContext> _logRepo;
 
         public LogEntryController(EFGenericRepo<ParsingState, RealtyParserContext> logRepo)

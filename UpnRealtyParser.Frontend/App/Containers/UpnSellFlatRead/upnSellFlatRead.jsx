@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import { getFlat, startReceivingFlat } from './upnSellFlatReadActions.jsx';
-import { Divider, Spin } from 'antd';
+import { getFlat, startReceivingFlat, showFlatPhotos, hideFlatPhotos } from './upnSellFlatReadActions.jsx';
+import { Divider, Spin, Button } from 'antd';
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
 
 import 'antd/dist/antd.css';
@@ -18,6 +18,7 @@ class UpnSellFlatRead extends React.Component {
         let flatData = this.props.flatInfo;
         let isLoading = this.props.isLoading;
         let errorMessage = this.props.error;
+        let isShowPhotos = this.props.isShowApartmentPhotos;
 
         if (isLoading === true) {
             return (
@@ -29,7 +30,21 @@ class UpnSellFlatRead extends React.Component {
             return (
                 <div>
                     <Divider orientation={"center"}>Информация о квартире на продажу, ID {flatData.id}</Divider>
-                    <SingleFlatInfo flatData={flatData}/>
+                    <SingleFlatInfo flatData={flatData} />
+                    <div style={{marginTop: "10px", textAlign: "center"}}>
+                        {
+                            flatData.photoCount > 0 && !isShowPhotos &&
+                            <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
+                                <Button type="primary" onClick={() => this.props.showFlatPhotos()}>Показать фото ({flatData.photoCount})</Button>
+                            </div>
+                        }
+                        {
+                            isShowPhotos &&
+                            flatData.photoHrefs.map((photoHref) => {
+                                return (<img key={photoHref} className="flat-photo-medium" src={photoHref}/>);
+                            })
+                        }
+                    </div>
                 </div>
             );
         } else {
@@ -46,14 +61,17 @@ let mapStateToProps = (state) => {
     return {
         flatInfo: state.upnSellFlatReadReducer.flatInfo,
         error: state.upnSellFlatReadReducer.error,
-        isLoading: state.upnSellFlatReadReducer.isLoading
+        isLoading: state.upnSellFlatReadReducer.isLoading,
+        isShowApartmentPhotos: state.upnSellFlatReadReducer.isShowApartmentPhotos
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
         getFlat: (id) => dispatch(getFlat(id)),
-        startReceivingFlat: () => dispatch(startReceivingFlat())
+        startReceivingFlat: () => dispatch(startReceivingFlat()),
+        showFlatPhotos: () => dispatch(showFlatPhotos()),
+        hideFlatPhotos: () => dispatch(hideFlatPhotos())
     };
 };
 

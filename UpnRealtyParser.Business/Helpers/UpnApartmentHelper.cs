@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Repositories;
@@ -12,16 +13,19 @@ namespace UpnRealtyParser.Business.Helpers
         private readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
         private readonly EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
         private readonly EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
+        private readonly EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _upnPhotoRepo;
 
         public UpnApartmentHelper(EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo,
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<UpnAgency, RealtyParserContext> agencyRepo,
-            EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo)
+            EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo,
+            EFGenericRepo<UpnFlatPhoto, RealtyParserContext> upnPhotoRepo)
         {
             _upnHouseRepo = upnHouseRepo;
             _agencyRepo = agencyRepo;
             _subwayStationRepo = subwayStationRepo;
             _pageLinkRepo = pageLinkRepo;
+            _upnPhotoRepo = upnPhotoRepo;
         }
 
         /// <summary>
@@ -57,6 +61,25 @@ namespace UpnRealtyParser.Business.Helpers
             PageLink foundLink = _pageLinkRepo.GetWithoutTracking(x => x.Id == upnFlat.Id);
             if(foundLink != null)
                 upnFlat.SiteUrl = foundLink.Href;
+
+            upnFlat.PhotoCount = _upnPhotoRepo
+                .GetAllWithoutTracking()
+                .Count(x => x.FlatId == upnFlat.Id);
+        }
+
+        /// <summary>
+        /// Заполняет квартиру списком ссылок на фото по ней
+        /// </summary>
+        /// <param name="upnFlat">Квартира для заполнения</param>
+        /// <param name="relationType">SellFlat или RentFlat</param>
+        public void FillSingleApartmentWithPhotoHrefs(UpnFlat upnFlat, string relationType = Const.LinkTypeSellFlat)
+        {
+            List<string> photoHrefs = _upnPhotoRepo.GetAllWithoutTracking()
+                .Where(x => x.FlatId == upnFlat.Id && x.RelationType == relationType)
+                .Select(x => x.Href)
+                .ToList();
+
+            upnFlat.PhotoHrefs = photoHrefs;
         }
 
         private void fillHouseRelatedFields(UpnFlat upnFlat)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UpnRealtyParser.Business.Models
@@ -119,5 +120,11 @@ namespace UpnRealtyParser.Business.Models
 
         [NotMapped]
         public string SiteUrl { get; set; }
+
+        [NotMapped]
+        public int PhotoCount { get; set; }
+
+        [NotMapped]
+        public List<string> PhotoHrefs { get; set; }
     }
 }

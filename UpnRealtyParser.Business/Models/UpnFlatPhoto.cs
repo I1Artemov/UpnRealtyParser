@@ -2,7 +2,7 @@ namespace UpnRealtyParser.Business.Models
 {
     public class UpnFlatPhoto : IdInfo
     {
-        // Rent или Sell
+        // RentFlat или SellFlat
         public string RelationType { get; set; }
 
         public string FileName { get; set; }

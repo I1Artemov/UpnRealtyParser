@@ -13,3 +13,9 @@
     text-align: center;
     margin-top: 100px;
 }
+
+.flat-photo-medium {
+    max-width: 128px;
+    max-height: 128px;
+    margin: 6px;
+}
