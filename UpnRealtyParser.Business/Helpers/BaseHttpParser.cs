@@ -9,21 +9,6 @@ namespace UpnRealtyParser.Business.Helpers
 {
     public class BaseHttpParser
     {
-        public List<IElement> GetApartmentAnchorElementsFromWebPage(string pageText, bool isRentFlats)
-        {
-            string saleOrRentText = isRentFlats ? "rent" : "sale";
-
-            Task<IDocument> htmlDocument = getPreparedHtmlDocument(pageText);
-            List<IElement> anchorElements = htmlDocument.Result.All
-                .Where(m => m.LocalName == "a" &&
-                    m.Attributes.GetNamedItem("href")?.Value != null &&
-                    m.Attributes.GetNamedItem("href").Value
-                        .Contains(string.Format("realty_eburg_flat_{0}_info", saleOrRentText)))
-                .ToList();
-
-            return anchorElements;
-        }
-
         public List<IElement> GetTdElementsFromWebPage(string pageText)
         {
             Task<IDocument> htmlDocument = getPreparedHtmlDocument(pageText);

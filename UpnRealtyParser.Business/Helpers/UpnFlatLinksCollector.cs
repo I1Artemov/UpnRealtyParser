@@ -50,13 +50,28 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public List<string> GetLinksFromSinglePage(string pageText, bool isRentFlats = false)
         {
-            List<IElement> anchorElements = GetApartmentAnchorElementsFromWebPage(pageText, isRentFlats);
+            List<IElement> anchorElements = getApartmentAnchorElementsFromWebPage(pageText, isRentFlats);
 
             List<string> hrefs = anchorElements
                 .Select(x => x.Attributes.GetNamedItem("href").Value)
                 .ToList();
 
             return hrefs;
+        }
+
+        protected List<IElement> getApartmentAnchorElementsFromWebPage(string pageText, bool isRentFlats)
+        {
+            string saleOrRentText = isRentFlats ? "rent" : "sale";
+
+            Task<IDocument> htmlDocument = getPreparedHtmlDocument(pageText);
+            List<IElement> anchorElements = htmlDocument.Result.All
+                .Where(m => m.LocalName == "a" &&
+                            m.Attributes.GetNamedItem("href")?.Value != null &&
+                            m.Attributes.GetNamedItem("href").Value
+                                .Contains(string.Format("realty_eburg_flat_{0}_info", saleOrRentText)))
+                .ToList();
+
+            return anchorElements;
         }
 
         /// <summary>

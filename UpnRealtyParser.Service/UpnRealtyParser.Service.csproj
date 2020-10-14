@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
 	<RuntimeIdentifier>win7-x64</RuntimeIdentifier>
 	<PublishSingleFile>true</PublishSingleFile>
+	<ApplicationIcon>favicon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
