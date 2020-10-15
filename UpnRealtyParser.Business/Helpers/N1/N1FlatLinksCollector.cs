@@ -76,7 +76,7 @@ namespace UpnRealtyParser.Business.Helpers
         {
             string rentOrSaleText = isRentFlats ? "snyat/dolgosrochno" : "kupit";
 
-            return string.Format("https://ekaterinburg.n1.ru/{0}/kvartiry/?limit=100&sort=-date&page=2", rentOrSaleText);
+            return "https://ekaterinburg.n1.ru/" + rentOrSaleText + "/kvartiry/?limit=100&sort=-date&page={0}";
         }
     }
 }
