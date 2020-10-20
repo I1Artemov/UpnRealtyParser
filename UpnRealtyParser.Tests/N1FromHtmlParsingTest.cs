@@ -10,8 +10,11 @@ namespace UpnRealtyParser.Tests.TestData
     {
         private const string TestDataPath = "\\UpnRealtyParser.Tests\\TestData\\02_N1WebPages";
 
+        /// <summary>
+        /// Не актуально! Сбор ссвлок при типе отображения "таблица"
+        /// </summary>
         [Fact]
-        public void GetSellFlatsLinksList_Test()
+        public void GetSellFlatsLinksList_AsTable_Test()
         {
             string webPageText = getTextFromFile(TestDataPath, "01_SampleN1FlatsTable.txt", "utf-8");
             N1FlatLinksCollector linksCollector = new N1FlatLinksCollector();
@@ -23,6 +26,24 @@ namespace UpnRealtyParser.Tests.TestData
             Assert.Equal(100, hrefs.Count);
             Assert.Equal(11686, totalApartmentsAmount);
             Assert.Equal(117, totalTablePages);
+        }
+
+        /// <summary>
+        /// Сбор ссылок при типе отображения "Список"
+        /// </summary>
+        [Fact]
+        public void GetSellFlatsLinksList_AsCards_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "03_SampleN1FlatsListCards.txt", "utf-8");
+            N1FlatLinksCollector linksCollector = new N1FlatLinksCollector();
+
+            List<string> hrefs = linksCollector.GetLinksFromSinglePage(webPageText);
+            int? totalApartmentsAmount = linksCollector.GetTotalEntriesInTable(webPageText);
+            int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
+
+            Assert.Equal(100, hrefs.Count);
+            Assert.Equal(11581, totalApartmentsAmount);
+            Assert.Equal(116, totalTablePages);
         }
 
         [Fact]
@@ -42,6 +63,16 @@ namespace UpnRealtyParser.Tests.TestData
 
             Assert.Equal(56, (int)Math.Floor(house.Latitude.Value));
             Assert.Equal(60, (int)Math.Floor(house.Longitude.Value));
+        }
+
+        [Fact]
+        public void GetBasicFilledFlats_FromTablePage_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "03_SampleN1FlatsListCards.txt", "utf-8");
+            N1ApartmentParser flatParser = new N1ApartmentParser();
+            List<N1FlatBase> flats = flatParser.GetN1ApartmentsFromTablePage(webPageText);
+
+            Assert.NotEmpty(flats);
         }
     }
 }

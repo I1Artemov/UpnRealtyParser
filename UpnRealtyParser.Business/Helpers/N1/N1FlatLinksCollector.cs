@@ -21,14 +21,14 @@ namespace UpnRealtyParser.Business.Helpers
             var htmlDocument = getPreparedHtmlDocument(pageText);
             string totalEntriesText = htmlDocument.Result.All
                 .Where(m => m.LocalName == "span" &&
-                            m.InnerHtml != null && m.InnerHtml.Contains(" объявлений"))
+                            m.InnerHtml != null && m.InnerHtml.Contains(" объявлени") && m.InnerHtml.Contains("breadcrumbs-list__dot"))
                 .Select(m => m.InnerHtml)
                 .FirstOrDefault();
 
             if (string.IsNullOrEmpty(totalEntriesText))
                 return 0;
 
-            int pLast = totalEntriesText.IndexOf(" объявлений");
+            int pLast = totalEntriesText.IndexOf(" объявлени");
             if (pLast < 0) return null;
 
             string totalValueStr = totalEntriesText.Substring(0, pLast);
@@ -64,9 +64,9 @@ namespace UpnRealtyParser.Business.Helpers
             List<IElement> anchorElements = htmlDocument.Result.All
                 .Where(m => m.LocalName == "a" &&
                             m.Attributes.GetNamedItem("href")?.Value != null &&
-                            m.ClassName == "first-line__link" &&
+                            (m.ClassName == "first-line__link" || m.ClassName == "link") &&
                             m.Attributes.GetNamedItem("href").Value
-                                .Contains("ekaterinburg.n1.ru/view/"))
+                                .Contains("/view/"))
                 .ToList();
 
             return anchorElements;
