@@ -8,13 +8,13 @@ namespace UpnRealtyParser.Business.Helpers
     public class N1ApartmentParser : BaseHttpParser
     {
 		/// <summary> Предварительное получение квартир прямо со страницы с их перечнем </summary>
-        public List<N1FlatBase> GetN1ApartmentsFromTablePage(string webPageText)
+        public List<N1FlatBase> GetN1ApartmentsFromTablePage(string webPageText, N1HouseParser houseParser)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
-            return GetN1ApartmentsFromTablePage(pageHtmlDoc, webPageText);
+            return GetN1ApartmentsFromTablePage(pageHtmlDoc, webPageText, houseParser);
         }
 
-        public List<N1FlatBase> GetN1ApartmentsFromTablePage(IDocument pageHtmlDoc, string webPageText)
+        public List<N1FlatBase> GetN1ApartmentsFromTablePage(IDocument pageHtmlDoc, string webPageText, N1HouseParser houseParser)
         {
             List<N1FlatBase> flats = new List<N1FlatBase>();
 
@@ -27,6 +27,8 @@ namespace UpnRealtyParser.Business.Helpers
                 N1FlatBase n1Flat = getN1FlatFromSingleHtmlCard(flatCard);
                 if (n1Flat != null)
                     flats.Add(n1Flat);
+
+                N1HouseInfo n1House = houseParser.GetBasicN1HouseFromSingleApartmentCard(flatCard);
             }
 
             return flats;
@@ -39,6 +41,7 @@ namespace UpnRealtyParser.Business.Helpers
             fillApartmentAreaFromSingleCard(flat, flatCard);
             fillApartmentPriceFromSingleCard(flat, flatCard);
             fillApartmentFloorFromSingleCard(flat, flatCard);
+            fillRoomAmountFromSingleCard(flat, flatCard);
 
             return flat;
         }
@@ -92,6 +95,24 @@ namespace UpnRealtyParser.Business.Helpers
             bool isParsed = int.TryParse(allFloorStr, out int floor);
             if (isParsed)
                 flat.FlatFloor = floor;
+        }
+
+        private void fillRoomAmountFromSingleCard(N1FlatBase flat, IElement flatCard)
+        {
+            string roomStr = flatCard.QuerySelector(".living-list-card__location .link-text")?.InnerHtml;
+
+            if (string.IsNullOrEmpty(roomStr))
+                return;
+
+            int roomLetterIndex = roomStr.IndexOf("-к");
+            if (roomLetterIndex <= 0)
+                return;
+
+            roomStr = roomStr.Substring(0, roomLetterIndex);
+
+            bool isParsed = int.TryParse(roomStr, out int roomAmount);
+            if (isParsed)
+                flat.RoomAmount = roomAmount;
         }
     }
 }
