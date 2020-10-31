@@ -27,13 +27,13 @@ namespace UpnRealtyParser.Business.Helpers
         /// Получает с гитхаба список всех прокси, затем - список статусов (живая или нет).
         /// Возвращает только живые прокси
         /// </summary>
-        public List<WebProxyInfo> GetAliveProxiesList()
+        public List<WebProxyInfo> GetAliveProxiesList(StateLogger stateLogger = null)
         {
-            List<string> rawProxies = getAllProxiesRaw();
+            List<string> rawProxies = getAllProxiesRaw(stateLogger);
             if(_writeToLogDelegate != null)
                 _writeToLogDelegate(string.Format("Загружен список из {0} прокси с Github", rawProxies.Count));
 
-            List<string> aliveProxyIps = getSuccessfullProxyIpsList();
+            List<string> aliveProxyIps = getSuccessfullProxyIpsList(stateLogger);
             if (_writeToLogDelegate != null)
                 _writeToLogDelegate(string.Format("Загружен список из {0} живых прокси", aliveProxyIps.Count));
 
@@ -46,29 +46,45 @@ namespace UpnRealtyParser.Business.Helpers
             return webProxies;
         }
 
-        protected List<string> getAllProxiesRaw()
+        protected List<string> getAllProxiesRaw(StateLogger stateLogger)
         {
             string contents;
             List<string> proxyStrs = new List<string>();
             using (var wc = new System.Net.WebClient())
             {
-                contents = wc.DownloadString(ProxyListUrl);
-                proxyStrs = contents.Split('\n').ToList();
+                try { 
+                    contents = wc.DownloadString(ProxyListUrl);
+                    proxyStrs = contents.Split('\n').ToList();
+                }
+                catch (Exception ex)
+                {
+                    _writeToLogDelegate("Не удалось загрузить новые прокси, продолжение со старым списком. Ошибка: " + ex.Message);
+                    if (stateLogger != null)
+                        stateLogger.LogProxiesDownloadError(Const.SiteNameUpn, ex.Message);
+                }
             }
             return proxyStrs;
         }
 
-        protected List<string> getSuccessfullProxyIpsList()
+        protected List<string> getSuccessfullProxyIpsList(StateLogger stateLogger)
         {
             string contents;
             List<string> proxyStatusStrs = new List<string>();
             List<string> aliveProxyIps = new List<string>();
             using (var wc = new System.Net.WebClient())
             {
-                contents = wc.DownloadString(ProxyStatusesListUrl);
-                proxyStatusStrs = contents.Split('\n').ToList();
+                try { 
+                    contents = wc.DownloadString(ProxyStatusesListUrl);
+                    proxyStatusStrs = contents.Split('\n').ToList();
+                }
+                catch (Exception ex)
+                {
+                    _writeToLogDelegate("Не удалось загрузить новые статусы прокси. Ошибка: " + ex.Message);
+                    if (stateLogger != null)
+                        stateLogger.LogProxiesDownloadError(Const.SiteNameUpn, ex.Message);
+                }
 
-                foreach(string proxyStatusStr in proxyStatusStrs)
+                foreach (string proxyStatusStr in proxyStatusStrs)
                 {
                     if (!proxyStatusStr.Contains("success"))
                         continue;
