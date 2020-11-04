@@ -75,5 +75,24 @@ namespace UpnRealtyParser.Tests.TestData
 
             Assert.NotEmpty(flats);
         }
+
+	[Fact]
+        public void SingleFlat_FlatFilling_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "02_SampleN1SingleFlatView.txt", "utf-8");
+
+            N1ApartmentParser flatParser = new N1ApartmentParser();
+            N1FlatBase flat = flatParser.GetN1FlatFromPageText(webPageText);
+
+            Assert.Equal(101, flat.SpaceSum);
+            Assert.Equal("изолированная", flat.PlanningType);
+            Assert.Equal("несколько", flat.BathroomType);
+            Assert.Equal("в отличном состоянии", flat.Condition);
+            Assert.Equal(3, flat.BalconyAmount);
+            Assert.Equal("частная", flat.PropertyType);
+            Assert.Equal(2, flat.RoomAmount);
+            Assert.Equal(10900000, flat.Price);
+            Assert.Contains("просторная, светлая квартира", flat.Description);
+        }
     }
 }
