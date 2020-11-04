@@ -13,7 +13,7 @@ namespace UpnRealtyParser.Business.Models
 
         public string BathroomType { get; set; }
 
-        public string BalconyAmount { get; set; }
+        public int? BalconyAmount { get; set; }
 
         public string Condition { get; set; }
 
