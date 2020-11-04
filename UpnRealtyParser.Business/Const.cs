@@ -7,6 +7,7 @@
 
         public const string SiteNameUpn = "Upn";
 
+        public const string ParsingStatusGettingProxies = "GettingProxies";
         public const string ParsingStatusDescriptionGatheringLinks = "GatheringLinks";
         public const string ParsingStatusDescriptionObservingFlats = "ObservingFlats";
         public const string ParsingStatusDescriptionGatheringLinksRent = "GatheringLinksRent";

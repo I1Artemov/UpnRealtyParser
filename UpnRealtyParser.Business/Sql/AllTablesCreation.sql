@@ -182,3 +182,82 @@ CREATE TABLE [UpnRentFlat] (
 
 CREATE INDEX idx_UpnRentFlat_UpnHouseInfoId ON [UpnRentFlat] ([UpnHouseInfoId]);
 CREATE INDEX idx_UpnRentFlat_UpnAgencyId ON [UpnRentFlat] ([UpnAgencyId]);
+
+-- 31.10.2020 Таблицы для квартир с N1
+CREATE TABLE [N1HouseInfo] (
+    [Id] int IDENTITY(1,1),
+    [CreationDateTime] datetime,
+    [Address] nvarchar(max),
+    [HouseType] nvarchar(256),
+    [BuildYear] int,
+    [WallMaterial] nvarchar(256),
+    [MaxFloor] int,
+    [Latitude] float,
+    [Longitude] float,
+	[ClosestSubwayStationId] int,
+	[ClosestSubwayStationRange] float,
+	[BuilderCompany] nvarchar(max), -- NEW
+	PRIMARY KEY ([Id])
+);
+
+ALTER TABLE [N1HouseInfo] ADD CONSTRAINT
+	FK_N1House_Subway_SubwayId FOREIGN KEY ([ClosestSubwayStationId]) REFERENCES [SubwayStation]([Id]);
+
+CREATE INDEX idx_N1House_ClosestSubwayId ON [N1HouseInfo] ([ClosestSubwayStationId]);
+
+CREATE TABLE [N1Agency] (
+    [Id] int IDENTITY(1,1),
+    [CreationDateTime] datetime,
+    [Name] nvarchar(max),
+    [AgentPhone] nvarchar(max),
+    [SiteUrl] nvarchar(max),
+	[AgentName] nvarchar(256), -- NEW
+	PRIMARY KEY ([Id])
+);
+
+CREATE TABLE [N1Flat] (
+    [Id] int IDENTITY(1,1),
+    [RemovalDate] datetime,
+    [CreationDateTime] datetime,
+    [LastCheckDate] datetime,
+    [N1HouseInfoId] int,
+    [N1AgencyId] int,
+    [RoomAmount] int,
+    [SpaceSum] float,
+    [SpaceLiving] float,
+    [SpaceKitchen] float,
+    [FlatFloor] int,
+    [Price] int,
+    [Description] nvarchar(max),
+	[PlanningType] nvarchar(max), -- NEW
+	[BathroomType] nvarchar(max), -- NEW
+	[BalconyAmount] int, -- NEW
+	[Condition] nvarchar(max), -- NEW
+	[PropertyType] nvarchar(max), -- NEW
+	[IsFilledCompletely] bit, -- NEW
+	[PageLinkId] int,
+	PRIMARY KEY ([Id])
+);
+
+ALTER TABLE [N1Flat] ADD CONSTRAINT
+	FK_N1Flat_N1House_HouseInfoId FOREIGN KEY ([N1HouseInfoId]) REFERENCES [N1HouseInfo]([Id]);
+ALTER TABLE [N1Flat] ADD CONSTRAINT
+	FK_N1Flat_N1Agency_N1AgencyId FOREIGN KEY ([N1AgencyId]) REFERENCES [N1Agency]([Id]);
+ALTER TABLE [N1Flat] ADD CONSTRAINT
+	FK_N1Flat_PageLink_PageLinkId FOREIGN KEY ([PageLinkId]) REFERENCES [PageLink]([Id]);
+
+CREATE INDEX idx_N1Flat_N1HouseInfoId ON [N1Flat] ([N1HouseInfoId]);
+CREATE INDEX idx_N1Flat_N1AgencyId ON [N1Flat] ([N1AgencyId]);
+
+CREATE TABLE [N1FlatPhoto] (
+    [Id] int IDENTITY(1,1),
+    [CreationDateTime] datetime,
+    [RelationType] nvarchar(64),
+    [FileName] nvarchar(max),
+    [FlatId] int, -- Без Constraint
+	[Href] nvarchar(max)
+	PRIMARY KEY ([Id])
+);
+
+CREATE INDEX idx_N1FlatPhoto_FlatId ON [N1FlatPhoto] ([FlatId]);
+CREATE INDEX idx_N1FlatPhoto_RelationType ON [N1FlatPhoto] ([RelationType]);

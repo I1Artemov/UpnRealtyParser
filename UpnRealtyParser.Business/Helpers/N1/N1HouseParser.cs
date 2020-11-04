@@ -28,6 +28,38 @@ namespace UpnRealtyParser.Business.Helpers
             return house;
         }
 
+        /// <summary>
+        /// При предварительном заполнении дома из таблицы с квартирами
+        /// </summary>
+        public N1HouseInfo GetBasicN1HouseFromSingleApartmentCard(IElement flatCard)
+        {
+            N1HouseInfo house = new N1HouseInfo();
+
+            // Адрес
+            string streetHouseStr = flatCard.QuerySelector(".living-list-card__location .link-text")?.InnerHtml;
+            int roomLetterIndex = streetHouseStr.IndexOf("-к");
+            if (roomLetterIndex > 0)
+                streetHouseStr = streetHouseStr.Substring(roomLetterIndex + 4);
+
+            if (string.IsNullOrEmpty(streetHouseStr))
+                return house;
+
+            string cityStr = flatCard.QuerySelector(".living-list-card-city-with-estate__item")?.InnerHtml;
+            cityStr = cityStr.Replace(",", "");
+
+            if (!string.IsNullOrEmpty(cityStr))
+                streetHouseStr = cityStr + ", " + streetHouseStr;
+
+            house.Address = streetHouseStr;
+
+            // Материал
+            string wallMaterialStr = flatCard.QuerySelector(".living-list-card__material")?.InnerHtml;
+            if (!string.IsNullOrEmpty(wallMaterialStr))
+                house.WallMaterial = wallMaterialStr;
+
+            return house;
+        }
+
         private void fillAddress(N1HouseInfo house, IDocument pageHtmlDoc)
         {
             string citySpan = pageHtmlDoc.All.FirstOrDefault(

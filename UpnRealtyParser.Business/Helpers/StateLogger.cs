@@ -181,5 +181,13 @@ namespace UpnRealtyParser.Business.Helpers
                 string.Format("Added for Id={0} Amount={1}", apartmentId, linksAmount),
                 Const.StatusTypeSuccess);
         }
+
+        public void LogProxiesDownloadError(string siteName, string errorMessage)
+        {
+            LogAnyMessage(siteName,
+                Const.ParsingStatusGettingProxies,
+                string.Format("No proxies get, ", errorMessage),
+                Const.StatusTypeFailure);
+        }
     }
 }

@@ -22,11 +22,7 @@ namespace UpnRealtyParser.Business.Models
         /// </summary>
         public string PropertyType { get; set; }
 
-        /// <summary>
-        /// Счетчик просмотров с сайта
-        /// </summary>
-        public int? UserViewsCount { get; set; }
-
         // TODO: Можно обновлять цену из сводной таблицы с квартирами, чтобы не залазить в каждую
+		public bool? IsFilledCompletely { get; set; }
     }
 }
