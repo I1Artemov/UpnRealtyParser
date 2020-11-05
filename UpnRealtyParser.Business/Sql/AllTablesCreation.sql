@@ -261,3 +261,6 @@ CREATE TABLE [N1FlatPhoto] (
 
 CREATE INDEX idx_N1FlatPhoto_FlatId ON [N1FlatPhoto] ([FlatId]);
 CREATE INDEX idx_N1FlatPhoto_RelationType ON [N1FlatPhoto] ([RelationType]);
+
+-- 05.11.2020 Новое поле в N1Agency
+ALTER TABLE [N1Agency] ADD [IsCompany] bit;

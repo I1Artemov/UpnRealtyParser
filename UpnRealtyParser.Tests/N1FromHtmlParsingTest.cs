@@ -76,7 +76,7 @@ namespace UpnRealtyParser.Tests.TestData
             Assert.NotEmpty(flats);
         }
 
-	[Fact]
+	    [Fact]
         public void SingleFlat_FlatFilling_Test()
         {
             string webPageText = getTextFromFile(TestDataPath, "02_SampleN1SingleFlatView.txt", "utf-8");
@@ -93,6 +93,21 @@ namespace UpnRealtyParser.Tests.TestData
             Assert.Equal(2, flat.RoomAmount);
             Assert.Equal(10900000, flat.Price);
             Assert.Contains("просторная, светлая квартира", flat.Description);
+        }
+
+        [Fact]
+        public void AgencyFilling_FromSingleFlatPage_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "02_SampleN1SingleFlatView.txt", "utf-8");
+
+            N1AgencyParser agencyParser = new N1AgencyParser();
+            N1Agency agency = agencyParser.GetN1AgencyFromPageText(webPageText);
+
+            Assert.Equal("Ориентир.Недвижимость", agency.Name);
+            Assert.Equal("Мария", agency.AgentName);
+            Assert.Equal("79126009432", agency.AgentPhone);
+            Assert.Equal("https://ekaterinburg.n1.ru/an/40191/", agency.SiteUrl);
+            Assert.True(agency.IsCompany);
         }
     }
 }
