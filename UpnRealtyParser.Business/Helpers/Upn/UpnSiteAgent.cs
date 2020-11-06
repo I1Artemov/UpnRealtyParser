@@ -11,114 +11,30 @@ using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
-    public class UpnSiteAgent : IDisposable
+    public class UpnSiteAgent : AnyRealtySiteParser
     {
-        protected HttpClient _webClient;
-        protected WebProxyInfo _currentProxy;
-        protected RealtyParserContext _dbContext;
-        protected Thread _LinksProcessingThread;
-        protected Thread _apartmentProcessingThread;
-        protected bool _isConnectionOpen;
-
-        protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         protected EFGenericRepo<UpnHouseInfo, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<UpnFlat, RealtyParserContext> _sellFlatRepo;
         protected EFGenericRepo<UpnRentFlat, RealtyParserContext> _rentFlatRepo;
         protected EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
         protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
 
-        protected StateLogger _stateLogger;
-        protected Action<string> _writeToLogDelegate;
-        protected bool _isUseProxy;
-        protected Random _random;
-        protected int _requestDelayInMs;
         protected int _upnTablePagesToSkip;
-        protected int _maxRetryAmountForSingleRequest;
-        protected int _maxRequestTimeoutInMs;
 
-        protected int _processedObjectsCount;
-        protected bool _isProcessingCompleted;
-        protected string _currentActionName;
-
-        public UpnSiteAgent(Action<string> writeToLogDelegate, AppSettings settings)
+        public UpnSiteAgent(Action<string> writeToLogDelegate, AppSettings settings) : 
+            base(writeToLogDelegate, settings)
         {
-            _writeToLogDelegate = writeToLogDelegate;
-            _requestDelayInMs = settings.RequestDelayInMs;
-            _isUseProxy = settings.IsUseProxies;
             _upnTablePagesToSkip = settings.UpnTablePagesToSkip;
-            _maxRetryAmountForSingleRequest = settings.MaxRetryAmountForSingleRequest;
-            _maxRequestTimeoutInMs = settings.MaxRequestTimeoutInMs;
-
-            // Берем прокси либо из списка, либо из сети (если они нужны)
-            if(settings.IsUseProxies && !settings.IsGetProxiesListFromGithub && settings.ProxyList != null && settings.ProxyList.Count != 0)
-            {
-                using (var realtyContext = new RealtyParserContext())
-                {
-                    OnlineProxyProvider proxyProvider = new OnlineProxyProvider(realtyContext, writeToLogDelegate);
-                    proxyProvider.GetProxiesFromIps(settings.ProxyList);
-                }
-            }
-            if(settings.IsUseProxies && settings.IsGetProxiesListFromGithub)
-            {
-                using (var realtyContext = new RealtyParserContext())
-                {
-                    OnlineProxyProvider proxyProvider = new OnlineProxyProvider(realtyContext, writeToLogDelegate);
-                    proxyProvider.GetAliveProxiesList();
-                }
-            }
-
-            _random = new Random();
         }
 
-        public string GetCurrentActionName() => _currentActionName;
-
-        public bool CheckIfProcessingCompleted() => _isProcessingCompleted;
-
-        public int GetProcessedRecordsAmount() => _processedObjectsCount;
-
-        public ThreadState GetApartmentThreadState()
+        protected override void initializeRepositories(RealtyParserContext context)
         {
-            return _apartmentProcessingThread.ThreadState;
-        }
-
-        public ThreadState GetLinksThreadState()
-        {
-            return _LinksProcessingThread.ThreadState;
-        }
-
-        public void OpenConnection()
-        {
-            if (_isConnectionOpen)
-                return;
-
-            _dbContext = new RealtyParserContext();
-            _webClient = createHttpClient();
-
-            initializeRepositories(_dbContext);
-
-            _isConnectionOpen = true;
-        }
-
-        public void CloseConnection()
-        {
-            if (!_isConnectionOpen)
-                return;
-
-            _dbContext.Dispose();
-            _webClient.Dispose();
-
-            _isConnectionOpen = false;
-        }
-
-        protected void initializeRepositories(RealtyParserContext context)
-        {
-            _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
+            base.initializeRepositories(context);
             _houseRepo = new EFGenericRepo<UpnHouseInfo, RealtyParserContext>(context);
             _sellFlatRepo = new EFGenericRepo<UpnFlat, RealtyParserContext>(context);
             _rentFlatRepo = new EFGenericRepo<UpnRentFlat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<UpnAgency, RealtyParserContext>(context);
             _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
-            _stateLogger = new StateLogger(context);
         }
 
         public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
@@ -128,9 +44,9 @@ namespace UpnRealtyParser.Business.Helpers
                 Const.ParsingStatusDescriptionGatheringLinks;
 
             ThreadStart threadMethod = delegate { this.GatherLinksAndInsertInDb(isRentFlats); };
-            _LinksProcessingThread = new Thread(threadMethod);
-            _LinksProcessingThread.IsBackground = true; // Для корректного завершения при закрытии окна
-            _LinksProcessingThread.Start();
+            _linksProcessingThread = new Thread(threadMethod);
+            _linksProcessingThread.IsBackground = true; // Для корректного завершения при закрытии окна
+            _linksProcessingThread.Start();
         }
 
         public void StartApartmentGatheringInSeparateThread(bool isRentFlats = false)
@@ -147,8 +63,8 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void StopProcessingInThreads()
         {
-            if (_LinksProcessingThread != null)
-                _LinksProcessingThread.Abort();
+            if (_linksProcessingThread != null)
+                _linksProcessingThread.Abort();
 
             if(_apartmentProcessingThread != null)
                 _apartmentProcessingThread.Abort();
@@ -167,7 +83,7 @@ namespace UpnRealtyParser.Business.Helpers
             string mainTableUrl = isRentFlats ? "https://upn.ru/realty_eburg_flat_rent.htm" : "https://upn.ru/realty_eburg_flat_sale.htm";
             string rentLogMessageAddition = isRentFlats ? " (аренда)" : "";
 
-            string firstTablePageHtml = DownloadString(mainTableUrl);
+            string firstTablePageHtml = downloadString(mainTableUrl, "windows-1251");
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
                 _writeToLogDelegate?.Invoke("Не удалось загрузить веб-страницу с перечнем квартир" + rentLogMessageAddition);
@@ -195,7 +111,7 @@ namespace UpnRealtyParser.Business.Helpers
             for (int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
-                string currentTablePageHtml = DownloadString(currentTablePageUrl);
+                string currentTablePageHtml = downloadString(currentTablePageUrl, "windows-1251");
 
                 if (string.IsNullOrEmpty(currentTablePageHtml)) {
                     _stateLogger.LogLinksPageLoadingFailure(currentPageNumber, isRentFlats);
@@ -336,7 +252,7 @@ namespace UpnRealtyParser.Business.Helpers
                 }
 
                 string fullApartmentHref = isAddSiteHref ? "https://upn.ru" + apartmentLink.Href : apartmentLink.Href;
-                string apartmentPageHtml = DownloadString(fullApartmentHref);
+                string apartmentPageHtml = downloadString(fullApartmentHref, "windows-1251");
 
                 if(apartmentPageHtml == "NotFound")
                 {
@@ -536,137 +452,20 @@ namespace UpnRealtyParser.Business.Helpers
                 hrefs.Count, apartmentId, isRentFlats));
         }
 
-        /// <summary>
-        /// Отмечает ссылку на квартиру как "Мертвую" (после того, как выдало 404).
-        /// Если к странице уже привязана квартира, то обновляет у нее RemovalDate
-        /// </summary>
-        private void markLinkAsDead(PageLink pageLink)
+        protected override void markLinkAsDead(PageLink pageLink)
         {
-            // Нужно отдельно достать ссылку из БД, т.к. изначально все они доставались как AsNoTracking
-            PageLink trackedPageLink = _pageLinkRepo.Get(pageLink.Id);
-
-            trackedPageLink.LastCheckDateTime = DateTime.Now;
-            trackedPageLink.IsDead = true;
-            try
-            {
-                _pageLinkRepo.Save();
-            }
-            catch (Exception ex)
-            {
-                _stateLogger.LogApartmentMarkedAsDeadError(pageLink.Href);
-                _writeToLogDelegate(string.Format("Не удалось отметить ссылку {0} как \"мертвую\": {1}", pageLink.Href, ex.Message));
-            }
+            base.markLinkAsDead(pageLink);
 
             UpnFlat linkedFlat = _sellFlatRepo.GetAll()
                 .FirstOrDefault(x => x.PageLinkId == pageLink.Id);
 
-            if(linkedFlat != null)
+            if (linkedFlat != null)
             {
                 linkedFlat.RemovalDate = DateTime.Now;
                 _sellFlatRepo.Update(linkedFlat);
                 _stateLogger.LogApartmentMarkedAsDead(pageLink.Href);
                 _writeToLogDelegate(string.Format("Квартира (Id {0}) отмечена как удаленная", linkedFlat.Id));
             }
-        }
-
-        private HttpClient createHttpClient()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            if (_isUseProxy) { 
-                _currentProxy = getRandomWebProxy();
-                clientHandler.Proxy = _currentProxy.WebProxy;
-                clientHandler.UseProxy = true;
-            }
-
-            HttpClient httpClient = new HttpClient(clientHandler);
-            httpClient.Timeout = TimeSpan.FromSeconds(20); // TODO: В параметры
-            return httpClient;
-        }
-
-        /// <summary>
-        /// Возвращает случайно выбранную прокси. Игнорирует прокси, у которых ранее был установлен признак IsNotResponding
-        /// </summary>
-        protected WebProxyInfo getRandomWebProxy()
-        {
-            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
-            return proxyProvider.GetRandomWebProxy(_random);
-        }
-
-        /// <summary>
-        /// Пытается загрузить веб-страницу по ссылке с использованием прокси (если задано) за несколько попыток
-        /// </summary>
-        string DownloadString(string uri) {
-            int triesCount = 0;
-            string currentProxyAddress = "";
-            while(triesCount < _maxRetryAmountForSingleRequest) { 
-                try {
-                    using (HttpClient wc = createHttpClient()) {
-                        currentProxyAddress = _currentProxy?.Ip.ToString();
-                        using (HttpResponseMessage response = wc.GetAsync(uri).Result)
-                        {
-                            if (response.IsSuccessStatusCode)
-                            {
-                                var responseContent = response.Content;
-                                byte[] contentBytes = responseContent.ReadAsByteArrayAsync().Result;
-                                string downloadedString = Encoding.GetEncoding("windows-1251").GetString(contentBytes);
-
-                                findProxyInDbAndAddSuccessAmount();
-
-                                return downloadedString;
-                            }
-                            else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
-                                return "NotFound";
-                            else
-                            {
-                                markProxyAsNotResponding();
-                                triesCount++;
-                            }
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex.Message.Contains("(404) Not Found"))
-                        return "NotFound";
-
-                    triesCount++;
-                    markProxyAsNotResponding();
-                    _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
-                        uri, triesCount, currentProxyAddress));
-                }
-                finally
-                {
-                    triesCount++;
-                }
-            }
-            return "LoadingFailed";
-        }
-
-        private void findProxyInDbAndAddSuccessAmount()
-        {
-            WebProxyInfo foundProxy = _currentProxy;
-
-            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
-            proxyProvider.AddSuccessAmountToProxyInDb(foundProxy);
-        }
-
-        /// <summary>
-        /// Почле неудачной попытки загрузить страницу через прокси отмечает проксю как NotResponding,
-        /// чтобы больше ее не использовать
-        /// </summary>
-        private void markProxyAsNotResponding()
-        {
-            WebProxyInfo foundProxy = _currentProxy;
-            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
-            proxyProvider.AddFailureAmountToProxyInDb(foundProxy);
-        }
-
-        public void Dispose()
-        {
-            _writeToLogDelegate("(ВНИМАНИЕ) Агент удален!");
-            throw new NotImplementedException();
         }
     }
 }
