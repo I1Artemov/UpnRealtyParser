@@ -7,10 +7,12 @@ namespace UpnRealtyParser.Business.Helpers
     public class StateLogger
     {
         protected EFGenericRepo<ParsingState, RealtyParserContext> _parsingStateRepo;
+        protected string _siteName;
 
-        public StateLogger(RealtyParserContext context)
+        public StateLogger(RealtyParserContext context, string siteName)
         {
             _parsingStateRepo = new EFGenericRepo<ParsingState, RealtyParserContext>(context);
+            _siteName = siteName;
         }
 
         public void LogAnyMessage(string siteName, string description, string details, string status, bool isSaveChanges = true)
@@ -34,7 +36,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogFirstPageLoading(int recordsAmount, int pagesAmount, bool isRentFlats)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusGettingRowsAndPagesAmount,
                 string.Format("Records={0} Pages={1} Rent={2}", recordsAmount, pagesAmount, isRentFlats),
                 Const.StatusTypeSuccess);
@@ -45,7 +47,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogFirstPageLoadingFailure(string reason)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusGettingRowsAndPagesAmount,
                 reason,
                 Const.StatusTypeFailure);
@@ -56,7 +58,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogLinksGatheringCompletion(bool isRentFlats)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusDescriptionGatheringLinks,
                 string.Format("Completed Rent={0}", isRentFlats),
                 Const.StatusTypeSuccess);
@@ -70,7 +72,7 @@ namespace UpnRealtyParser.Business.Helpers
             string detailsMessage = string.Format("PageNumber={0} AddedRows={1} UpdatedRows={2}",
                 pageNumber, addedRecordsNumber, updatedRecordsNumber);
 
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusMainTableSinglePageProcessing,
                 detailsMessage,
                 Const.StatusTypeSuccess);
@@ -81,7 +83,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogLinksPageLoadingFailure(int pageNumber, bool isRentFlats)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusMainTableSinglePageProcessing,
                 string.Format("PageNumber={0} Rent={1}", pageNumber, isRentFlats),
                 Const.StatusTypeFailure);
@@ -92,7 +94,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogApartmentsParsingStart(int apartmentsAmount, bool isRentFlats)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusDescriptionObservingFlats,
                 string.Format("Started LinksToProcess={0} Rent={1}", apartmentsAmount, isRentFlats),
                 Const.StatusTypeSuccess);
@@ -103,7 +105,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogApartmentParsingNotFoundOnSite(string pageHref, bool isRentFlats)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusDescriptionObservingFlats,
                 string.Format("NotFound Href={0} Rent={1}", pageHref, isRentFlats),
                 Const.StatusTypeSuccess);
@@ -114,7 +116,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogApartmentPageLoadingProplem(string pageHref, bool isRentFlats)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusDescriptionObservingFlats,
                 string.Format("NotLoaded Href={0} Rent={1}", pageHref, isRentFlats),
                 Const.StatusTypeFailure);
@@ -122,7 +124,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void LogApartmentMarkedAsDead(string pageHref)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusProcessingSingleFlat,
                 string.Format("MarkedAsDead Href={0}", pageHref),
                 Const.StatusTypeSuccess);
@@ -130,7 +132,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void LogApartmentMarkedAsDeadError(string pageHref)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusProcessingSingleFlat,
                 string.Format("ErrorMarkedAsDead Href={0}", pageHref),
                 Const.StatusTypeFailure);
@@ -141,7 +143,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogErrorProcessingHouse(string pageHref)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusProcessingHouse,
                 string.Format("NotProcessed Href={0}", pageHref),
                 Const.StatusTypeFailure);
@@ -152,7 +154,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public void LogHouseAddition(int id, string address)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusProcessingHouse,
                 string.Format("Added Id={0} Address={1}", id, address),
                 Const.StatusTypeSuccess);
@@ -160,7 +162,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void LogApartmentAddition(int id, int houseId, bool isRentFlat)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusProcessingSingleFlat,
                 string.Format("Added Id={0} HouseId={1} Rent={2}", id, houseId, isRentFlat),
                 Const.StatusTypeSuccess);
@@ -168,7 +170,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void LogAgencyAddition(int id)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusProcessingAgency,
                 string.Format("Added Id={0}", id),
                 Const.StatusTypeSuccess);
@@ -176,7 +178,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void LogApartmentPhotoHrefsAddition(int apartmentId, int linksAmount)
         {
-            LogAnyMessage(Const.SiteNameUpn,
+            LogAnyMessage(_siteName,
                 Const.ParsingStatusGettingApartmentPhotoLinks,
                 string.Format("Added for Id={0} Amount={1}", apartmentId, linksAmount),
                 Const.StatusTypeSuccess);

@@ -6,6 +6,7 @@
         public const string LinkTypeRentFlat = "RentFlat";
 
         public const string SiteNameUpn = "Upn";
+        public const string SiteNameN1 = "N1";
 
         public const string ParsingStatusGettingProxies = "GettingProxies";
         public const string ParsingStatusDescriptionGatheringLinks = "GatheringLinks";

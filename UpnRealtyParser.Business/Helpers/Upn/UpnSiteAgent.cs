@@ -35,6 +35,7 @@ namespace UpnRealtyParser.Business.Helpers
             _rentFlatRepo = new EFGenericRepo<UpnRentFlat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<UpnAgency, RealtyParserContext>(context);
             _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
+            _stateLogger = new StateLogger(context, Const.SiteNameUpn);
         }
 
         public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
@@ -83,7 +84,7 @@ namespace UpnRealtyParser.Business.Helpers
             string mainTableUrl = isRentFlats ? "https://upn.ru/realty_eburg_flat_rent.htm" : "https://upn.ru/realty_eburg_flat_sale.htm";
             string rentLogMessageAddition = isRentFlats ? " (аренда)" : "";
 
-            string firstTablePageHtml = downloadString(mainTableUrl, "windows-1251");
+            string firstTablePageHtml = downloadString(mainTableUrl, "windows-1251").Result;
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
                 _writeToLogDelegate?.Invoke("Не удалось загрузить веб-страницу с перечнем квартир" + rentLogMessageAddition);
@@ -111,7 +112,7 @@ namespace UpnRealtyParser.Business.Helpers
             for (int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
-                string currentTablePageHtml = downloadString(currentTablePageUrl, "windows-1251");
+                string currentTablePageHtml = downloadString(currentTablePageUrl, "windows-1251").Result;
 
                 if (string.IsNullOrEmpty(currentTablePageHtml)) {
                     _stateLogger.LogLinksPageLoadingFailure(currentPageNumber, isRentFlats);
@@ -252,7 +253,7 @@ namespace UpnRealtyParser.Business.Helpers
                 }
 
                 string fullApartmentHref = isAddSiteHref ? "https://upn.ru" + apartmentLink.Href : apartmentLink.Href;
-                string apartmentPageHtml = downloadString(fullApartmentHref, "windows-1251");
+                string apartmentPageHtml = downloadString(fullApartmentHref, "windows-1251").Result;
 
                 if(apartmentPageHtml == "NotFound")
                 {
