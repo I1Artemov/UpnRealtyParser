@@ -1,7 +1,9 @@
 ﻿using AngleSharp.Dom;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -205,6 +207,60 @@ namespace UpnRealtyParser.Business.Helpers
                                 triesCount++;
                             }
                         }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("(404) Not Found"))
+                        return "NotFound";
+
+                    triesCount++;
+                    markProxyAsNotResponding();
+                    _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
+                        uri, triesCount, currentProxyAddress));
+                }
+                finally
+                {
+                    triesCount++;
+                }
+            }
+            return "LoadingFailed";
+        }
+
+        protected async Task<string> downloadStringWithHttpRequest(string uri, string targetEncoding)
+        {
+            int triesCount = 0;
+            string currentProxyAddress = "";
+            while (triesCount < _maxRetryAmountForSingleRequest)
+            {
+                HttpWebRequest request = null;
+                try
+                {
+                    request = (HttpWebRequest)WebRequest.Create(uri);
+                }
+                catch (Exception ex)
+                {
+                    triesCount++;
+                    _writeToLogDelegate(string.Format("Ошибка при создании запроса {0} - неправильная ссылка: {1}", uri, ex.Message));
+                }
+
+                if (_isUseProxy)
+                {
+                    _currentProxy = getRandomWebProxy();
+                    request.Proxy = _currentProxy?.WebProxy;
+                }
+                currentProxyAddress = _currentProxy?.Ip.ToString();
+                request.Method = "GET";
+                request.Timeout = 60 * 1000;
+
+                try
+                {
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        string pageStr = reader.ReadToEnd();
+
+                        return pageStr;
                     }
                 }
                 catch (Exception ex)

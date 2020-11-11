@@ -71,7 +71,7 @@ namespace UpnRealtyParser.Tests.TestData
             string webPageText = getTextFromFile(TestDataPath, "03_SampleN1FlatsListCards.txt", "utf-8");
             N1ApartmentParser flatParser = new N1ApartmentParser();
             N1HouseParser houseParser = new N1HouseParser();
-            List<N1FlatBase> flats = flatParser.GetN1ApartmentsFromTablePage(webPageText, houseParser);
+            List<N1Flat> flats = flatParser.GetN1SellFlatsFromTablePage(webPageText, houseParser);
 
             Assert.NotEmpty(flats);
         }

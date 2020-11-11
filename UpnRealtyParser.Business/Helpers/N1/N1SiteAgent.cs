@@ -68,7 +68,7 @@ namespace UpnRealtyParser.Business.Helpers
                 "https://ekaterinburg.n1.ru/kupit/kvartiry?page=1&limit=100";
             string rentLogMessageAddition = isRentFlats ? " (аренда)" : "";
 
-            string firstTablePageHtml = downloadString(mainTableUrl, "utf-8").Result;
+            string firstTablePageHtml = downloadStringWithHttpRequest(mainTableUrl, "utf-8").Result;
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
                 _writeToLogDelegate?.Invoke("Не удалось загрузить веб-страницу с перечнем квартир" + rentLogMessageAddition);
@@ -93,19 +93,25 @@ namespace UpnRealtyParser.Business.Helpers
             _stateLogger.LogFirstPageLoading(totalApartmentsAmount.GetValueOrDefault(0), totalTablePages, isRentFlats);
 
             _processedObjectsCount = 0;
-            for (int currentPageNumber = 0; currentPageNumber <= totalTablePages; currentPageNumber++)
+            for (int currentPageNumber = 1; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
-                string currentTablePageHtml = downloadString(currentTablePageUrl, "utf-8").Result;
+                string currentTablePageHtml = downloadStringWithHttpRequest(currentTablePageUrl, "utf-8").Result;
+
+                List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml, isRentFlats);
+                insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameN1, currentPageNumber, isRentFlats);
+
+                // Со страницы с перечнем квартир предварительно заполняем и сами квартиры
+                N1ApartmentParser flatParser = new N1ApartmentParser();
+                N1HouseParser houseParser = new N1HouseParser();
+                List<N1Flat> prefilledFlats = flatParser.GetN1SellFlatsFromTablePage(currentTablePageHtml, houseParser);
+                insertPrefilledFlatsIntoDb(prefilledFlats);
 
                 if (string.IsNullOrEmpty(currentTablePageHtml))
                 {
                     _stateLogger.LogLinksPageLoadingFailure(currentPageNumber, isRentFlats);
                     continue;
                 }
-
-                List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml, isRentFlats);
-                insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameN1, currentPageNumber, isRentFlats);
 
                 if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
@@ -201,6 +207,42 @@ namespace UpnRealtyParser.Business.Helpers
 
         }
 
+        private void insertPrefilledFlatsIntoDb(List<N1Flat> flats)
+        {
+            foreach(N1Flat flat in flats)
+            {
+                // Обработка дома
+                if(flat.ConnectedHouseForAddition != null)
+                {
+                    bool isHouseCreatedSuccessfully = false;
+                    if (_houseRepo != null)
+                    {
+                        DistanceCalculator distanceCalc = new DistanceCalculator(_dbContext);
+                        distanceCalc.FindClosestSubwayForSingleHouse(flat.ConnectedHouseForAddition);
+                        isHouseCreatedSuccessfully = updateOrAddHouse(flat.ConnectedHouseForAddition);
+                    }
+                    if (!isHouseCreatedSuccessfully)
+                    {
+                        _stateLogger.LogErrorProcessingHouse(flat.Href);
+                        return;
+                    }
+                }
+
+                // Обработка самой квартиры (агентства нет)
+                PageLink foundLink = _pageLinkRepo.GetAll()
+                    .FirstOrDefault(x => x.Href == flat.Href && x.SiteName == Const.SiteNameN1);
+
+                if(foundLink == null || flat.ConnectedHouseForAddition.Id == null)
+                {
+                    _stateLogger.LogAnyMessage(Const.SiteNameN1, "AddingPrefilledFlats", "Не найдена ссылка или дом в БД",
+                        Const.StatusTypeFailure);
+                    continue;
+                }
+
+                updateOrAddSellFlat(flat, flat.ConnectedHouseForAddition.Id.GetValueOrDefault(-1), foundLink.Id, null);
+            }
+        }
+
         /// <summary>
         /// Считывает из БД ссылки на квартиры порциями по N штук и запускает обработку квартир по каждой ссылке
         /// </summary>
@@ -284,6 +326,62 @@ namespace UpnRealtyParser.Business.Helpers
                 _sellFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId);
 
             return isExisting;
+        }
+
+        /// <summary>
+        /// Проверяет, существует ли уже дом с таким адресом в базе данных.
+        /// Если нет, то добавляет в БД с сохранением. Если да, то объекту присваивает Id существующего дома
+        /// </summary>
+        private bool updateOrAddHouse(N1HouseInfo house)
+        {
+            var existingHouse = _houseRepo.GetAllWithoutTracking()
+                .FirstOrDefault(x => x.Address == house.Address);
+
+            if (existingHouse != null)
+            {
+                house.Id = existingHouse.Id;
+                _writeToLogDelegate(string.Format("Дом с адресом {1} уже существует (Id {0})", house.Id, house.Address));
+            }
+            else
+            {
+                _houseRepo.Add(house);
+                try
+                {
+                    _houseRepo.Save(); // TODO: Починить
+                    _stateLogger.LogHouseAddition(house.Id.Value, house.Address);
+                    _writeToLogDelegate(string.Format("Добавлен дом: Id {0}, адрес {1}", house.Id, house.Address));
+                }
+                catch (Exception ex)
+                {
+                    _writeToLogDelegate(string.Format("Не удалось добавить дом с адресом {0}. Ошибка: {1}", house.Address, ex.Message));
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private void updateOrAddSellFlat(N1Flat sellFlat, int houseId, int pageLinkId, int? agencyId)
+        {
+            sellFlat.N1HouseInfoId = houseId;
+            sellFlat.PageLinkId = pageLinkId;
+            sellFlat.LastCheckDate = DateTime.Now;
+
+            if (agencyId.HasValue)
+                sellFlat.N1AgencyId = agencyId;
+
+            N1Flat existingFlat = _sellFlatRepo.GetAllWithoutTracking()
+                    .Where(x => x.PageLinkId == pageLinkId)
+                    .FirstOrDefault();
+
+            if (existingFlat != null)
+                return;
+
+            _sellFlatRepo.Add(sellFlat);
+            _sellFlatRepo.Save();
+
+            _stateLogger.LogApartmentAddition(sellFlat.Id.Value, sellFlat.N1HouseInfoId.Value, false);
+            _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}, Аренда=false",
+                sellFlat.Id, houseId, pageLinkId));
         }
     }
 }
