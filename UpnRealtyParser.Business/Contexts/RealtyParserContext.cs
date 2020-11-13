@@ -22,7 +22,7 @@ namespace UpnRealtyParser.Business.Contexts
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // todo: Вынести в конфиг
-            optionsBuilder.UseSqlServer(@"Server=.\MSSQL14LOCAL;Database=RealtyParser;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Data Source=SHODAN;Database=RealtyParser;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
