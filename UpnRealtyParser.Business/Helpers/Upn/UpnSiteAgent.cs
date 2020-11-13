@@ -84,7 +84,7 @@ namespace UpnRealtyParser.Business.Helpers
             string mainTableUrl = isRentFlats ? "https://upn.ru/realty_eburg_flat_rent.htm" : "https://upn.ru/realty_eburg_flat_sale.htm";
             string rentLogMessageAddition = isRentFlats ? " (аренда)" : "";
 
-            string firstTablePageHtml = downloadString(mainTableUrl, "windows-1251").Result;
+            string firstTablePageHtml = downloadStringWithHttpRequest(mainTableUrl, "windows-1251").Result;
             if (string.IsNullOrEmpty(firstTablePageHtml))
             {
                 _writeToLogDelegate?.Invoke("Не удалось загрузить веб-страницу с перечнем квартир" + rentLogMessageAddition);
@@ -112,7 +112,7 @@ namespace UpnRealtyParser.Business.Helpers
             for (int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
-                string currentTablePageHtml = downloadString(currentTablePageUrl, "windows-1251").Result;
+                string currentTablePageHtml = downloadStringWithHttpRequest(currentTablePageUrl, "windows-1251").Result;
 
                 if (string.IsNullOrEmpty(currentTablePageHtml)) {
                     _stateLogger.LogLinksPageLoadingFailure(currentPageNumber, isRentFlats);
@@ -253,7 +253,7 @@ namespace UpnRealtyParser.Business.Helpers
                 }
 
                 string fullApartmentHref = isAddSiteHref ? "https://upn.ru" + apartmentLink.Href : apartmentLink.Href;
-                string apartmentPageHtml = downloadString(fullApartmentHref, "windows-1251").Result;
+                string apartmentPageHtml = downloadStringWithHttpRequest(fullApartmentHref, "windows-1251").Result;
 
                 if(apartmentPageHtml == "NotFound")
                 {

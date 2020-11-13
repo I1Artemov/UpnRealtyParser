@@ -20,7 +20,7 @@ export default class Header extends React.Component {
                             <Link to="/sellflats">На продажу</Link>
                         </Menu.Item>
                         <Menu.Item key="3">
-                            <Link to="/rentflat">В аренду</Link>
+                            <Link to="/rentflats">В аренду</Link>
                         </Menu.Item>
                     </SubMenu>
                     <Menu.Item icon={<HomeOutlined/>} key="4">

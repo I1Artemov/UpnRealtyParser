@@ -29,9 +29,9 @@ namespace UpnRealtyParser.Business.Helpers
         }
 
         /// <summary>
-        /// Заполняет квартиры информацией, взятой из данных о доме и об агентстве, для отображения в таблице
+        /// Заполняет квартиры на продажу информацией, взятой из данных о доме и об агентстве, для отображения в таблице
         /// </summary>
-        public void FillApartmentsWithAdditionalInfo(List<UpnFlat> upnFlats)
+        public void FillSellApartmentsWithAdditionalInfo(List<UpnFlat> upnFlats)
         {
             if (upnFlats == null || upnFlats.Count == 0)
                 return;
@@ -43,9 +43,23 @@ namespace UpnRealtyParser.Business.Helpers
         }
 
         /// <summary>
+        /// Заполняет квартиры под аренду информацией, взятой из данных о доме и об агентстве, для отображения в таблице
+        /// </summary>
+        public void FillRentApartmentsWithAdditionalInfo(List<UpnRentFlat> upnFlats)
+        {
+            if (upnFlats == null || upnFlats.Count == 0)
+                return;
+
+            foreach (UpnRentFlat upnFlat in upnFlats)
+            {
+                FillSingleApartmentWithAdditionalInfo(upnFlat);
+            }
+        }
+
+        /// <summary>
         /// Заполняет одну квартиру информацией, взятой из данных о доме и об агентстве, для отображения в таблице
         /// </summary>
-        public void FillSingleApartmentWithAdditionalInfo(UpnFlat upnFlat)
+        public void FillSingleApartmentWithAdditionalInfo(UpnFlatBase upnFlat)
         {
             if (upnFlat == null)
                 return;
@@ -72,7 +86,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         /// <param name="upnFlat">Квартира для заполнения</param>
         /// <param name="relationType">SellFlat или RentFlat</param>
-        public void FillSingleApartmentWithPhotoHrefs(UpnFlat upnFlat, string relationType = Const.LinkTypeSellFlat)
+        public void FillSingleApartmentWithPhotoHrefs(UpnFlatBase upnFlat, string relationType = Const.LinkTypeSellFlat)
         {
             List<string> photoHrefs = _upnPhotoRepo.GetAllWithoutTracking()
                 .Where(x => x.FlatId == upnFlat.Id && x.RelationType == relationType)
@@ -82,7 +96,7 @@ namespace UpnRealtyParser.Business.Helpers
             upnFlat.PhotoHrefs = photoHrefs;
         }
 
-        private void fillHouseRelatedFields(UpnFlat upnFlat)
+        private void fillHouseRelatedFields(UpnFlatBase upnFlat)
         {
             if (!upnFlat.UpnHouseInfoId.HasValue)
                 return;

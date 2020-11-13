@@ -283,7 +283,7 @@ namespace UpnRealtyParser.Business.Helpers
                 }
 
                 string fullApartmentHref = isAddSiteHref ? "https://ekaterinburg.n1.ru" + apartmentLink.Href : apartmentLink.Href;
-                string apartmentPageHtml = downloadString(fullApartmentHref, "utf-8").Result;
+                string apartmentPageHtml = downloadStringWithHttpRequest(fullApartmentHref, "utf-8").Result;
 
                 if (apartmentPageHtml == "NotFound")
                 {

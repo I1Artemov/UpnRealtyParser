@@ -256,7 +256,7 @@ namespace UpnRealtyParser.Business.Helpers
                 try
                 {
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    using (var reader = new StreamReader(response.GetResponseStream()))
+                    using (var reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(targetEncoding)))
                     {
                         string pageStr = reader.ReadToEnd();
 
