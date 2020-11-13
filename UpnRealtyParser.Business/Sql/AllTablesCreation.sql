@@ -264,3 +264,6 @@ CREATE INDEX idx_N1FlatPhoto_RelationType ON [N1FlatPhoto] ([RelationType]);
 
 -- 05.11.2020 Новое поле в N1Agency
 ALTER TABLE [N1Agency] ADD [IsCompany] bit;
+
+-- 11.11.2020 Новое поле для квартир N1
+ALTER TABLE [N1Flat] ADD [PublishingDateTime] datetime;

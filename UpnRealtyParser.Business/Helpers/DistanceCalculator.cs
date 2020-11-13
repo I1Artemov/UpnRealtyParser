@@ -24,7 +24,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// Берет все дома из БД, для каждого находит ближайшую станцию метро и расстояние до нее (если еще не заполнено).
         /// Вычисления сохраняет в БД
         /// </summary>
-        public void CalculateDistanceFromHousesToClosestSubway()
+        public void CalculateDistanceFromUpnHousesToClosestSubway()
         {
             int housesPerGathering = 1000;
             int skipAmount = 0;
@@ -49,7 +49,7 @@ namespace UpnRealtyParser.Business.Helpers
             }
         }
 
-        public void FindClosestSubwayForSingleHouse(UpnHouseInfo house)
+        public void FindClosestSubwayForSingleHouse(HouseInfoCore house)
         {
             if (house.Latitude == null || house.Longitude == null)
                 return;

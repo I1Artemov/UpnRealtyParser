@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace UpnRealtyParser.Business.Models
 {
@@ -24,5 +25,15 @@ namespace UpnRealtyParser.Business.Models
 
         // TODO: Можно обновлять цену из сводной таблицы с квартирами, чтобы не залазить в каждую
 		public bool? IsFilledCompletely { get; set; }
+
+        public int? N1HouseInfoId { get; set; }
+
+        public int? N1AgencyId { get; set; }
+
+        [NotMapped]
+        public N1HouseInfo ConnectedHouseForAddition { get; set; }
+
+        [NotMapped]
+        public string Href { get; set; }
     }
 }

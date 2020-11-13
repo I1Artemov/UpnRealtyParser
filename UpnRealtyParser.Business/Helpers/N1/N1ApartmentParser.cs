@@ -8,40 +8,38 @@ namespace UpnRealtyParser.Business.Helpers
     public class N1ApartmentParser : BaseHttpParser
     {
 		/// <summary> Предварительное получение квартир прямо со страницы с их перечнем </summary>
-        public List<N1FlatBase> GetN1ApartmentsFromTablePage(string webPageText, N1HouseParser houseParser)
+        public List<N1Flat> GetN1SellFlatsFromTablePage(string webPageText, N1HouseParser houseParser)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
-            return GetN1ApartmentsFromTablePage(pageHtmlDoc, webPageText, houseParser);
-        }
 
-        public List<N1FlatBase> GetN1ApartmentsFromTablePage(IDocument pageHtmlDoc, string webPageText, N1HouseParser houseParser)
-        {
-            List<N1FlatBase> flats = new List<N1FlatBase>();
+            List<N1Flat> flats = new List<N1Flat>();
 
             List<IElement> flatCards = pageHtmlDoc.All
                 .Where(x => x.LocalName == "div" && x.ClassName == "living-list-card__main-container")
                 .ToList();
 
-            foreach(IElement flatCard in flatCards)
+            foreach (IElement flatCard in flatCards)
             {
-                N1FlatBase n1Flat = getN1FlatFromSingleHtmlCard(flatCard);
+                N1Flat n1Flat = getN1SellFlatFromSingleHtmlCard(flatCard);
+                N1HouseInfo n1House = houseParser.GetBasicN1HouseFromSingleApartmentCard(flatCard);
+                n1Flat.ConnectedHouseForAddition = n1House;
+
                 if (n1Flat != null)
                     flats.Add(n1Flat);
-
-                N1HouseInfo n1House = houseParser.GetBasicN1HouseFromSingleApartmentCard(flatCard);
             }
 
             return flats;
         }
 
-        private N1FlatBase getN1FlatFromSingleHtmlCard(IElement flatCard)
+        private N1Flat getN1SellFlatFromSingleHtmlCard(IElement flatCard)
         {
-            N1FlatBase flat = new N1FlatBase();
+            N1Flat flat = new N1Flat();
 
             fillApartmentAreaFromSingleCard(flat, flatCard);
             fillApartmentPriceFromSingleCard(flat, flatCard);
             fillApartmentFloorFromSingleCard(flat, flatCard);
             fillRoomAmountFromSingleCard(flat, flatCard);
+            fillApartmentPageHref(flat, flatCard);
 
             return flat;
         }
@@ -115,7 +113,20 @@ namespace UpnRealtyParser.Business.Helpers
                 flat.RoomAmount = roomAmount;
         }
 
-	public N1FlatBase GetN1FlatFromPageText(string webPageText)
+        /// <summary>
+        /// Заполнение ссылки на страницу с квартирой нужно только для связывания квартиры и PageLink при вставке в БД
+        /// </summary>
+        private void fillApartmentPageHref(N1FlatBase flat, IElement flatCard)
+        {
+            string hrefStr = flatCard.QuerySelector("div.card-title.living-list-card__inner-block a.link")?.GetAttribute("href");
+
+            if (string.IsNullOrEmpty(hrefStr))
+                return;
+
+            flat.Href = hrefStr;
+        }
+
+	    public N1FlatBase GetN1FlatFromPageText(string webPageText)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
             return GetN1FlatFromPageText(pageHtmlDoc, webPageText);

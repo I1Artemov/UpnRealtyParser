@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import App from './Containers/app.jsx';
 import upnSellFlatIndexReducer from './Containers/UpnSellFlatIndex/upnSellFlatIndexReducer.jsx';
+import upnRentFlatIndexReducer from './Containers/UpnRentFlatIndex/upnRentFlatIndexReducer.jsx';
 import upnSellFlatReadReducer from './Containers/UpnSellFlatRead/upnSellFlatReadReducer.jsx';
 import upnHouseIndexReducer from './Containers/UpnHouseIndex/upnHouseIndexReducer.jsx';
 import upnAgencyIndexReducer from './Containers/UpnAgencyIndex/upnAgencyIndexReducer.jsx';
@@ -15,6 +16,7 @@ import './site.css';
 
 const rootReducer = combineReducers({ 
     upnSellFlatIndexReducer,
+    upnRentFlatIndexReducer,
     upnSellFlatReadReducer,
 	upnHouseIndexReducer,
 	upnAgencyIndexReducer,

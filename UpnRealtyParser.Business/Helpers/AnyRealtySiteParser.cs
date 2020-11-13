@@ -1,10 +1,13 @@
 ﻿using AngleSharp.Dom;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Repositories;
@@ -67,7 +70,6 @@ namespace UpnRealtyParser.Business.Helpers
         protected virtual void initializeRepositories(RealtyParserContext context)
         {
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
-            _stateLogger = new StateLogger(context);
         }
 
         public string GetCurrentActionName() => _currentActionName;
@@ -148,11 +150,16 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 _currentProxy = getRandomWebProxy();
                 clientHandler.Proxy = _currentProxy.WebProxy;
+                //clientHandler.Proxy = new System.Net.WebProxy("127.0.0.1:8888");
+                //clientHandler.Proxy = new System.Net.WebProxy("217.172.122.4:8080");
                 clientHandler.UseProxy = true;
+            } else
+            {
+                clientHandler.UseProxy = false;
             }
 
             HttpClient httpClient = new HttpClient(clientHandler);
-            httpClient.Timeout = TimeSpan.FromSeconds(20); // TODO: В параметры
+            httpClient.Timeout = TimeSpan.FromSeconds(400); // TODO: В параметры
             return httpClient;
         }
 
@@ -169,7 +176,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Пытается загрузить веб-страницу по ссылке с использованием прокси (если задано) за несколько попыток
         /// </summary>
-        protected string downloadString(string uri, string targetEncoding)
+        protected async Task<string> downloadString(string uri, string targetEncoding)
         {
             int triesCount = 0;
             string currentProxyAddress = "";
@@ -180,7 +187,7 @@ namespace UpnRealtyParser.Business.Helpers
                     using (HttpClient wc = createHttpClient())
                     {
                         currentProxyAddress = _currentProxy?.Ip.ToString();
-                        using (HttpResponseMessage response = wc.GetAsync(uri).Result)
+                        using (HttpResponseMessage response = await wc.GetAsync(uri))
                         {
                             if (response.IsSuccessStatusCode)
                             {
@@ -220,6 +227,60 @@ namespace UpnRealtyParser.Business.Helpers
             return "LoadingFailed";
         }
 
+        protected async Task<string> downloadStringWithHttpRequest(string uri, string targetEncoding)
+        {
+            int triesCount = 0;
+            string currentProxyAddress = "";
+            while (triesCount < _maxRetryAmountForSingleRequest)
+            {
+                HttpWebRequest request = null;
+                try
+                {
+                    request = (HttpWebRequest)WebRequest.Create(uri);
+                }
+                catch (Exception ex)
+                {
+                    triesCount++;
+                    _writeToLogDelegate(string.Format("Ошибка при создании запроса {0} - неправильная ссылка: {1}", uri, ex.Message));
+                }
+
+                if (_isUseProxy)
+                {
+                    _currentProxy = getRandomWebProxy();
+                    request.Proxy = _currentProxy?.WebProxy;
+                }
+                currentProxyAddress = _currentProxy?.Ip.ToString();
+                request.Method = "GET";
+                request.Timeout = 60 * 1000;
+
+                try
+                {
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+                    using (var reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(targetEncoding)))
+                    {
+                        string pageStr = reader.ReadToEnd();
+
+                        return pageStr;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("(404) Not Found"))
+                        return "NotFound";
+
+                    triesCount++;
+                    markProxyAsNotResponding();
+                    _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
+                        uri, triesCount, currentProxyAddress));
+                }
+                finally
+                {
+                    triesCount++;
+                }
+            }
+            return "LoadingFailed";
+        }
+
         private void findProxyInDbAndAddSuccessAmount()
         {
             WebProxyInfo foundProxy = _currentProxy;
@@ -229,7 +290,7 @@ namespace UpnRealtyParser.Business.Helpers
         }
 
         /// <summary>
-        /// Почле неудачной попытки загрузить страницу через прокси отмечает проксю как NotResponding,
+        /// После неудачной попытки загрузить страницу через прокси отмечает проксю как NotResponding,
         /// чтобы больше ее не использовать
         /// </summary>
         private void markProxyAsNotResponding()

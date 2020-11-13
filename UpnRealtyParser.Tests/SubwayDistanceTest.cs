@@ -12,7 +12,7 @@ namespace UpnRealtyParser.Tests
             using (var realtyContext = new RealtyParserContext())
             {
                 DistanceCalculator calculator = new DistanceCalculator(realtyContext);
-                calculator.CalculateDistanceFromHousesToClosestSubway();
+                calculator.CalculateDistanceFromUpnHousesToClosestSubway();
             }
         }
     }

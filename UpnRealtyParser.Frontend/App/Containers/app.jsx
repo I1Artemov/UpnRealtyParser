@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Header from './Header/header.jsx';
 import UpnSellFlatIndex from './UpnSellFlatIndex/upnSellFlatIndex.jsx';
+import UpnRentFlatIndex from './UpnRentFlatIndex/upnRentFlatIndex.jsx';
 import UpnSellFlatRead from './UpnSellFlatRead/upnSellFlatRead.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
@@ -34,10 +35,7 @@ export default class App extends React.Component {
                                         <Route path="/agency" component={UpnAgencyIndex} />
                                         <Route path="/webproxy" component={WebProxyIndex} />
                                         <Route path="/log" component={LogEntryIndex} />
-                                        {/*
-                                        <Route path="/rentflat" component={UpnRentFlatIndex} />
-                                        */}
-
+                                        <Route path="/rentflats" component={UpnRentFlatIndex} />
                                         <Route exact path="/sellflat/:id" component={UpnSellFlatRead} />
                                     </Switch>
                                 </main>
