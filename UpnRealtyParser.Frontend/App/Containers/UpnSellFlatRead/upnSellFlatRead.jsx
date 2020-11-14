@@ -10,13 +10,11 @@ import 'antd/dist/antd.css';
 
 import L from 'leaflet';
 
-delete L.Icon.Default.prototype._getIconUrl;
-
-L.Icon.Default.mergeOptions({
-    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
-    iconUrl: require('leaflet/dist/images/marker-icon.png'),
-    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
-});
+const customMarker = new L.icon({
+    iconUrl: '/images/leaf-marker.png',
+    iconSize: [25, 41],
+    iconAnchor: [12, 20],
+}); 
 
 class UpnSellFlatRead extends React.Component {
     componentDidMount() {
@@ -61,7 +59,7 @@ class UpnSellFlatRead extends React.Component {
                           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
-                        <Marker position={[flatData.houseLatitude, flatData.houseLongitude]}></Marker>
+                        <Marker position={[flatData.houseLatitude, flatData.houseLongitude]} icon={customMarker}></Marker>
                     </MapContainer>
                 </div>
             );
