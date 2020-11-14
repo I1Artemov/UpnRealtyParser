@@ -3,9 +3,20 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getFlat, startReceivingFlat, showFlatPhotos, hideFlatPhotos } from './upnSellFlatReadActions.jsx';
 import { Divider, Spin, Button } from 'antd';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
 
 import 'antd/dist/antd.css';
+
+import L from 'leaflet';
+
+delete L.Icon.Default.prototype._getIconUrl;
+
+L.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png')
+});
 
 class UpnSellFlatRead extends React.Component {
     componentDidMount() {
@@ -45,6 +56,13 @@ class UpnSellFlatRead extends React.Component {
                             })
                         }
                     </div>
+                    <MapContainer center={[56.8519, 60.6122]} zoom={13} scrollWheelZoom={false} style={{ height: "360px", marginTop: "10px" }}>
+                        <TileLayer
+                          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Marker position={[flatData.houseLatitude, flatData.houseLongitude]}></Marker>
+                    </MapContainer>
                 </div>
             );
         } else {
