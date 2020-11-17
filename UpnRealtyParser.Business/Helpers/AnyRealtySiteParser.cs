@@ -229,6 +229,8 @@ namespace UpnRealtyParser.Business.Helpers
 
         protected async Task<string> downloadStringWithHttpRequest(string uri, string targetEncoding)
         {
+            System.Net.ServicePointManager.DefaultConnectionLimit = 1600;
+
             int triesCount = 0;
             string currentProxyAddress = "";
             while (triesCount < _maxRetryAmountForSingleRequest)
@@ -252,13 +254,16 @@ namespace UpnRealtyParser.Business.Helpers
                 currentProxyAddress = _currentProxy?.Ip.ToString();
                 request.Method = "GET";
                 request.Timeout = 60 * 1000;
+                request.ServicePoint.ConnectionLimit = 1600;
 
                 try
                 {
+                    triesCount++;
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-                    using (var reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(targetEncoding)))
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(targetEncoding)))
                     {
                         string pageStr = reader.ReadToEnd();
+                        findProxyInDbAndAddSuccessAmount();
 
                         return pageStr;
                     }
@@ -272,10 +277,6 @@ namespace UpnRealtyParser.Business.Helpers
                     markProxyAsNotResponding();
                     _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
                         uri, triesCount, currentProxyAddress));
-                }
-                finally
-                {
-                    triesCount++;
                 }
             }
             return "LoadingFailed";
