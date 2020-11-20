@@ -17,6 +17,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<N1Flat> N1Flats { get; set; }
         public DbSet<N1HouseInfo> N1HouseInfos { get; set; }
         public DbSet<N1Agency> N1Agencies { get; set; }
+        public DbSet<N1FlatPhoto> N1FlatPhotos { get; set; }
 
         public RealtyParserContext(DbContextOptions<RealtyParserContext> options) : base(options) { }
 

@@ -149,6 +149,21 @@ namespace UpnRealtyParser.Business.Helpers
             return flat;
         }
 
+        /// <summary>
+        /// Выбирает из текста веб-страницы все ссылки на фотографии квартир. Возварщает список HREF-ов на jpg
+        /// </summary>
+        public List<string> GetPhotoHrefsFromPage(string pageText)
+        {
+            // a data-v-1aa2889c="" href="https://n1st.ru/cache/realty/photo/e1ae19f41edfd70cc5f0092af780e733_1200_900_p.jpg"
+            var htmlDocument = getPreparedHtmlDocument(pageText).Result;
+            List<IElement> anchorElements = htmlDocument.QuerySelectorAll("div.offer-card-gallery a.link")
+                .ToList();
+
+            return anchorElements
+                .Select(x => x.GetAttribute("href"))
+                .ToList();
+        }
+
         private void fillPriceAndRoomAmount(N1FlatBase flat, string webPageText)
         {
             // Продам - руб. - N1

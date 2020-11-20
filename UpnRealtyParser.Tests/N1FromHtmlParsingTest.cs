@@ -109,5 +109,15 @@ namespace UpnRealtyParser.Tests.TestData
             Assert.Equal("https://ekaterinburg.n1.ru/an/40191/", agency.SiteUrl);
             Assert.True(agency.IsCompany);
         }
+
+        [Fact]
+        public void N1_ApartmentPhotoHrefs_Test()
+        {
+            string webPageText = getTextFromFile(TestDataPath, "02_SampleN1SingleFlatView.txt", "utf-8");
+
+            N1ApartmentParser parser = new N1ApartmentParser();
+            List<string> hrefs = parser.GetPhotoHrefsFromPage(webPageText);
+            Assert.Equal(27, hrefs.Count);
+        }
     }
 }

@@ -16,7 +16,8 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<N1HouseInfo, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<N1Flat, RealtyParserContext> _sellFlatRepo;
         protected EFGenericRepo<N1Agency, RealtyParserContext> _agencyRepo;
-        // TODO: RentFlat, Photo
+        protected EFGenericRepo<N1FlatPhoto, RealtyParserContext> _photoRepo;
+        // TODO: RentFlat
 
         public N1SiteAgent(Action<string> writeToLogDelegate, AppSettings settings) :
             base(writeToLogDelegate, settings)
@@ -28,8 +29,9 @@ namespace UpnRealtyParser.Business.Helpers
             _houseRepo = new EFGenericRepo<N1HouseInfo, RealtyParserContext>(context);
             _sellFlatRepo = new EFGenericRepo<N1Flat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<N1Agency, RealtyParserContext>(context);
+            _photoRepo = new EFGenericRepo<N1FlatPhoto, RealtyParserContext>(context);
             _stateLogger = new StateLogger(context, Const.SiteNameN1);
-            // TODO: RentFlat, Photo
+            // TODO: RentFlat
         }
 
         public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
@@ -188,7 +190,6 @@ namespace UpnRealtyParser.Business.Helpers
                     _writeToLogDelegate("Ошибка обновления арендной квартиры " + foundRentFlat.Id + " по ссылке на страницу: " + ex.Message);
                 }
             }*/
-            // TODO: sell flats
             
             N1Flat foundSellFlat = _sellFlatRepo.GetAll().FirstOrDefault(x => x.PageLinkId == foundLink.Id);
             if (foundSellFlat != null)
@@ -300,7 +301,6 @@ namespace UpnRealtyParser.Business.Helpers
                     continue;
                 }
 
-                // TODO: insert
                 processAllDataAboutSingleApartmentAndUpdateDb(apartmentPageHtml, apartmentLink, isRentFlats);
 
                 if (_requestDelayInMs >= 0)
@@ -371,6 +371,7 @@ namespace UpnRealtyParser.Business.Helpers
             if (existingFlat != null)
             {
                 updateSellFlatPreviouslyFilled(existingFlat, sellFlat, houseId, pageLinkId, agencyId);
+                sellFlat.Id = existingFlat.Id;
                 return;
             }
 
@@ -457,8 +458,8 @@ namespace UpnRealtyParser.Business.Helpers
             //}
 
             // TODO: Сбор ссылок на фотографии квартиры
-            //List<string> photoHrefs = apartmentParser.GetPhotoHrefsFromPage(apartmentPageHtml);
-            //updateOrAddPhotoHrefs(photoHrefs, flatId, isRentFlats);
+            List<string> photoHrefs = apartmentParser.GetPhotoHrefsFromPage(apartmentPageHtml);
+            updateOrAddPhotoHrefs(photoHrefs, flatId, isRentFlats);
         }
 
         private void updateOrAddAgency(N1Agency agency)
@@ -480,6 +481,26 @@ namespace UpnRealtyParser.Business.Helpers
                 _stateLogger.LogAgencyAddition(agency.Id.Value);
                 _writeToLogDelegate(string.Format("Добавлено агентство: Id {0}, телефон агента {1}", agency.Id, agency.AgentPhone));
             }
+        }
+
+        protected void updateOrAddPhotoHrefs(List<string> hrefs, int apartmentId, bool isRentFlats)
+        {
+            string targetRelationType = isRentFlats ? Const.LinkTypeRentFlat : Const.LinkTypeSellFlat;
+            foreach (string href in hrefs)
+            {
+                N1FlatPhoto photo = new N1FlatPhoto
+                {
+                    CreationDateTime = DateTime.Now,
+                    RelationType = targetRelationType,
+                    FlatId = apartmentId,
+                    Href = href
+                };
+                _photoRepo.Add(photo);
+            }
+            _photoRepo.Save();
+            _stateLogger.LogApartmentPhotoHrefsAddition(apartmentId, hrefs.Count);
+            _writeToLogDelegate(string.Format("Обнаружено {0} ссылок на фото для квартиры (Id = {1} Rent = {2})",
+                hrefs.Count, apartmentId, isRentFlats));
         }
     }
 }
