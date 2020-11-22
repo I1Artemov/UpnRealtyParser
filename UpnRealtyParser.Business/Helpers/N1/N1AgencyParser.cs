@@ -36,6 +36,9 @@ namespace UpnRealtyParser.Business.Helpers
         {
             string agentName = pageHtmlDoc.QuerySelector(".offer-card-contacts__agency-owner-name")?.InnerHtml;
             if (string.IsNullOrEmpty(agentName))
+                agentName = pageHtmlDoc.QuerySelector(".offer-card-contacts__owner-name")?.InnerHtml;
+
+            if (string.IsNullOrEmpty(agentName))
                 return;
 
             agency.AgentName = agentName;

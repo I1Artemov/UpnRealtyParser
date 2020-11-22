@@ -13,6 +13,7 @@ import webProxyIndexReducer from './Containers/WebProxyIndex/webProxyIndexReduce
 import logEntryIndexReducer from './Containers/LogEntryIndex/logEntryIndexReducer.jsx';
 
 import './site.css';
+import '../node_modules/leaflet/dist/leaflet.css';
 
 const rootReducer = combineReducers({ 
     upnSellFlatIndexReducer,

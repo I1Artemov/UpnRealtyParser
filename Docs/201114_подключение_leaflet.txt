@@ -1,0 +1,6 @@
+npm install leaflet
+npm install leaflet-react
+babel update 6 -> 7
+Пришлось транспилировать все js-файлы из @leaflet-react/esm и leaflet-react на сайте https://babeljs.io
+Заинклудил css в index.js
+Имправил проблему с маркером (кастомная иконка, скопированная из node_modules)

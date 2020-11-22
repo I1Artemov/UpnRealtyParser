@@ -168,6 +168,14 @@ namespace UpnRealtyParser.Business.Helpers
                 Const.StatusTypeSuccess);
         }
 
+        public void LogApartmentRefilling(int id, int houseId, bool isRentFlat)
+        {
+            LogAnyMessage(_siteName,
+                Const.ParsingStatusProcessingSingleFlat,
+                string.Format("Refilled Id={0} HouseId={1} Rent={2}", id, houseId, isRentFlat),
+                Const.StatusTypeSuccess);
+        }
+
         public void LogAgencyAddition(int id)
         {
             LogAnyMessage(_siteName,

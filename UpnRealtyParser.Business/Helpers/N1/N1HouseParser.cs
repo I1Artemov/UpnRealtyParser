@@ -87,6 +87,9 @@ namespace UpnRealtyParser.Business.Helpers
             if (!string.IsNullOrEmpty(houseNumber))
                 houseNumber = houseNumber.Replace(", ", "");
 
+            if (string.IsNullOrEmpty(citySpan))
+                citySpan = "Екатеринбург"; // Город не заполняется у квартир в архиве
+
             List<string> addressElements = new List<string>{ citySpan, street, houseNumber };
 
             if(!string.IsNullOrEmpty(citySpan) || !string.IsNullOrEmpty(street) || !string.IsNullOrEmpty(houseNumber))
@@ -178,7 +181,7 @@ namespace UpnRealtyParser.Business.Helpers
         {
             //string template = "location\":{\"latitude\":56.795919,\"longtitude\":60.765082,\"precision\":\"exact\"}";
             int endIndex = webPageText.IndexOf(",\"precision\":\"exact\"}");
-            int startIndex = endIndex - 45;
+            int startIndex = endIndex - 50;
 
             if (startIndex <= 0 || endIndex <= 0)
                 return;

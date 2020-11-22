@@ -126,18 +126,19 @@ namespace UpnRealtyParser.Business.Helpers
             flat.Href = hrefStr;
         }
 
-	    public N1FlatBase GetN1FlatFromPageText(string webPageText)
+	    public N1Flat GetN1FlatFromPageText(string webPageText)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
             return GetN1FlatFromPageText(pageHtmlDoc, webPageText);
         }
 
-        public N1FlatBase GetN1FlatFromPageText(IDocument pageHtmlDoc, string webPageText)
+        public N1Flat GetN1FlatFromPageText(IDocument pageHtmlDoc, string webPageText)
         {
-            N1FlatBase flat = new N1FlatBase();
+            N1Flat flat = new N1Flat();
 
             fillPriceAndRoomAmount(flat, webPageText);
             fillSpace(flat, pageHtmlDoc);
+            fillSpaceLiving(flat, pageHtmlDoc);
             fillPlanningType(flat, pageHtmlDoc);
             fillBathroomType(flat, pageHtmlDoc);
             fillFlatCondition(flat, pageHtmlDoc);
@@ -146,6 +147,21 @@ namespace UpnRealtyParser.Business.Helpers
             fillDescription(flat, pageHtmlDoc);
 
             return flat;
+        }
+
+        /// <summary>
+        /// Выбирает из текста веб-страницы все ссылки на фотографии квартир. Возварщает список HREF-ов на jpg
+        /// </summary>
+        public List<string> GetPhotoHrefsFromPage(string pageText)
+        {
+            // a data-v-1aa2889c="" href="https://n1st.ru/cache/realty/photo/e1ae19f41edfd70cc5f0092af780e733_1200_900_p.jpg"
+            var htmlDocument = getPreparedHtmlDocument(pageText).Result;
+            List<IElement> anchorElements = htmlDocument.QuerySelectorAll("div.offer-card-gallery a.link")
+                .ToList();
+
+            return anchorElements
+                .Select(x => x.GetAttribute("href"))
+                .ToList();
         }
 
         private void fillPriceAndRoomAmount(N1FlatBase flat, string webPageText)
@@ -180,12 +196,26 @@ namespace UpnRealtyParser.Business.Helpers
         private void fillSpace(N1FlatBase flat, IDocument pageHtmlDoc)
         {
             string spaceSumStr = getValueFromLivingContentParamsList("Общая площадь", pageHtmlDoc);
-            if (!string.IsNullOrEmpty(spaceSumStr))
-                spaceSumStr = spaceSumStr.Substring(0, spaceSumStr.Length - 3);
+            if (string.IsNullOrEmpty(spaceSumStr))
+                return;
+
+            spaceSumStr = spaceSumStr.Substring(0, spaceSumStr.Length - 3);
 
             bool isSpaceSumParsed = double.TryParse(spaceSumStr.Replace('.', '.'), out double spaceSum);
             if (isSpaceSumParsed)
                 flat.SpaceSum = spaceSum;
+        }
+
+        private void fillSpaceLiving(N1FlatBase flat, IDocument pageHtmlDoc)
+        {
+            string spaceLivingStr = getValueFromLivingContentParamsList("Жилая площадь", pageHtmlDoc);
+            if (string.IsNullOrEmpty(spaceLivingStr))
+                return;
+            spaceLivingStr = spaceLivingStr.Substring(0, spaceLivingStr.Length - 3);
+
+            bool isSpaceLivingParsed = double.TryParse(spaceLivingStr.Replace('.', '.'), out double spaceLiving);
+            if (isSpaceLivingParsed)
+                flat.SpaceLiving = spaceLiving;
         }
 
         private void fillPlanningType(N1FlatBase flat, IDocument pageHtmlDoc)
