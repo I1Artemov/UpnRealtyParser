@@ -15,7 +15,7 @@ export default class Header extends React.Component {
                     <Menu.Item key="1">
                         <Link to="/">Недвижимость УПН</Link>
                     </Menu.Item>
-                    <SubMenu icon={<BankOutlined />}  key="sub1" title="Квартиры">
+                    <SubMenu icon={<BankOutlined />}  key="sub1" title="Квартиры UPN">
                         <Menu.Item key="2">
                             <Link to="/sellflats">На продажу</Link>
                         </Menu.Item>
@@ -23,17 +23,25 @@ export default class Header extends React.Component {
                             <Link to="/rentflats">В аренду</Link>
                         </Menu.Item>
                     </SubMenu>
-                    <Menu.Item icon={<HomeOutlined/>} key="4">
+                    <SubMenu icon={<BankOutlined />} key="sub2" title="Квартиры N1">
+                        <Menu.Item key="4">
+                            <Link to="/n1sellflats">На продажу</Link>
+                        </Menu.Item>
+                        <Menu.Item key="5">
+                            <Link to="/n1rentflats">В аренду</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <Menu.Item icon={<HomeOutlined/>} key="6">
                         <Link to="/house">Дома</Link>
                     </Menu.Item>
-                    <Menu.Item icon={<TeamOutlined />} key="5">
+                    <Menu.Item icon={<TeamOutlined />} key="7">
                         <Link to="/agency">Агентства</Link>
                     </Menu.Item>
                     <SubMenu icon={<ToolOutlined />} key="sub3" title="Администрирование">
-                        <Menu.Item key="6">
+                        <Menu.Item key="8">
                             <Link to="/webproxy">Прокси</Link>
                         </Menu.Item>
-                        <Menu.Item key="7">
+                        <Menu.Item key="9">
                             <Link to="/log">Лог</Link>
                         </Menu.Item>
                     </SubMenu>

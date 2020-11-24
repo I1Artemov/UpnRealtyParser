@@ -7,3 +7,5 @@ export const Href_UpnHouseController_GetAllFlats = "api/UpnHouse/getall";
 export const Href_UpnAgencyController_GetAllAgencies = "api/UpnAgency/getall";
 export const Href_WebProxyController_GetAllProxies = "api/WebProxy/getall";
 export const Href_ParsingStateController_GetAllStates = "api/LogEntry/getall";
+
+export const Href_N1SellFlatController_GetAllFlats = "api/N1SellFlat/getall";

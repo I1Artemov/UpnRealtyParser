@@ -336,6 +336,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private bool updateOrAddHouse(N1HouseInfo house)
         {
+            // TODO: дозаполнение домов
             var existingHouse = _houseRepo.GetAllWithoutTracking()
                 .FirstOrDefault(x => x.Address == house.Address);
 
