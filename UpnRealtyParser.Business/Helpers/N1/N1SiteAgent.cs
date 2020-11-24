@@ -278,6 +278,11 @@ namespace UpnRealtyParser.Business.Helpers
             _processedObjectsCount = 0;
             foreach (PageLink apartmentLink in apartmentHrefs)
             {
+                if (isFlatAlreadyInDbAndFilled(apartmentLink.Id, isRentFlats))
+                { // Не трогаем ссылки на уже полностью заполненные квартиры
+                    _processedObjectsCount++;
+                    continue;
+                }
                 string fullApartmentHref = isAddSiteHref ? "https://ekaterinburg.n1.ru" + apartmentLink.Href : apartmentLink.Href;
                 string apartmentPageHtml = downloadStringWithHttpRequest(fullApartmentHref, "utf-8").Result;
 
@@ -311,16 +316,18 @@ namespace UpnRealtyParser.Business.Helpers
             _writeToLogDelegate("Обработка квартир завершена" + rentLogMessageAddition);
         }
 
-        private bool isFlatAlreadyInDb(int pageLinkId, bool isRentFlats)
+        private bool isFlatAlreadyInDbAndFilled(int pageLinkId, bool isRentFlats)
         {
             // TODO: Rent flats
             /*var isExisting = isRentFlats ?
                 _rentFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId) :
                 _sellFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId);*/
-            var isExisting = 
-                _sellFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId);
+            var foundFlat = 
+                _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
+            if (foundFlat != null && foundFlat.IsFilledCompletely.GetValueOrDefault(false))
+                return true;
 
-            return isExisting;
+            return false;
         }
 
         /// <summary>
