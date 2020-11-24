@@ -220,7 +220,7 @@ namespace UpnRealtyParser.Business.Helpers
                     {
                         DistanceCalculator distanceCalc = new DistanceCalculator(_dbContext);
                         distanceCalc.FindClosestSubwayForSingleHouse(flat.ConnectedHouseForAddition);
-                        isHouseCreatedSuccessfully = updateOrAddHouse(flat.ConnectedHouseForAddition);
+                        isHouseCreatedSuccessfully = updateOrAddHouse(flat.ConnectedHouseForAddition, false);
                     }
                     if (!isHouseCreatedSuccessfully)
                     {
@@ -332,18 +332,21 @@ namespace UpnRealtyParser.Business.Helpers
 
         /// <summary>
         /// Проверяет, существует ли уже дом с таким адресом в базе данных.
-        /// Если нет, то добавляет в БД с сохранением. Если да, то объекту присваивает Id существующего дома
+        /// Если нет, то добавляет в БД с сохранением. Если да, то объекту присваивает Id существующего дома.
+        /// Если существующий дом еще не до конца заполнен, то заполняет его данными из нового объекта
         /// </summary>
-        private bool updateOrAddHouse(N1HouseInfo house)
+        private bool updateOrAddHouse(N1HouseInfo house, bool isFillingFromApartPage)
         {
-            // TODO: дозаполнение домов
-            var existingHouse = _houseRepo.GetAllWithoutTracking()
+            var existingHouse = _houseRepo.GetAll()
                 .FirstOrDefault(x => x.Address == house.Address);
 
             if (existingHouse != null)
             {
                 house.Id = existingHouse.Id;
-                _writeToLogDelegate(string.Format("Дом с адресом {1} уже существует (Id {0})", house.Id, house.Address));
+                if (isFillingFromApartPage && !existingHouse.IsFilledCompletely.GetValueOrDefault(false))
+                    fillExistingHouseCompletely(existingHouse, house);
+                else
+                    _writeToLogDelegate(string.Format("Дом с адресом {1} уже существует (Id {0})", house.Id, house.Address));
             }
             else
             {
@@ -361,6 +364,27 @@ namespace UpnRealtyParser.Business.Helpers
                 }
             }
             return true;
+        }
+
+        /// <summary>
+        /// Дозаполнение существующего дома с полной страницы с квартирой
+        /// </summary>
+        private void fillExistingHouseCompletely(N1HouseInfo existingHouse, N1HouseInfo filledHouse)
+        {
+            existingHouse.BuilderCompany = filledHouse.BuilderCompany;
+            existingHouse.BuildYear = filledHouse.BuildYear;
+            existingHouse.ClosestSubwayStationId = filledHouse.ClosestSubwayStationId;
+            existingHouse.ClosestSubwayStationRange = filledHouse.ClosestSubwayStationRange;
+            existingHouse.HouseType = filledHouse.HouseType;
+            existingHouse.Latitude = filledHouse.Latitude;
+            existingHouse.Longitude = filledHouse.Longitude;
+            existingHouse.MaxFloor = filledHouse.MaxFloor;
+            existingHouse.WallMaterial = filledHouse.WallMaterial;
+            existingHouse.IsFilledCompletely = true;
+
+            _houseRepo.Update(existingHouse);
+            _houseRepo.Save();
+            _writeToLogDelegate(string.Format("Дом с адресом {1} был дозаполнен (Id {0})", existingHouse.Id, existingHouse.Address));
         }
 
         private void updateOrAddSellFlat(N1Flat sellFlat, int houseId, int pageLinkId, int? agencyId)
@@ -435,7 +459,7 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 DistanceCalculator distanceCalc = new DistanceCalculator(_dbContext);
                 distanceCalc.FindClosestSubwayForSingleHouse(house);
-                isHouseCreatedSuccessfully = updateOrAddHouse(house);
+                isHouseCreatedSuccessfully = updateOrAddHouse(house, true);
             }
             if (!isHouseCreatedSuccessfully)
             {
