@@ -139,6 +139,7 @@ namespace UpnRealtyParser.Business.Helpers
             fillPriceAndRoomAmount(flat, webPageText);
             fillSpace(flat, pageHtmlDoc);
             fillSpaceLiving(flat, pageHtmlDoc);
+            fillSpaceKitchen(flat, pageHtmlDoc);
             fillPlanningType(flat, pageHtmlDoc);
             fillBathroomType(flat, pageHtmlDoc);
             fillFlatCondition(flat, pageHtmlDoc);
@@ -216,6 +217,18 @@ namespace UpnRealtyParser.Business.Helpers
             bool isSpaceLivingParsed = double.TryParse(spaceLivingStr.Replace('.', '.'), out double spaceLiving);
             if (isSpaceLivingParsed)
                 flat.SpaceLiving = spaceLiving;
+        }
+
+        private void fillSpaceKitchen(N1FlatBase flat, IDocument pageHtmlDoc)
+        {
+            string spaceKitchenStr = getValueFromLivingContentParamsList("Кухня", pageHtmlDoc);
+            if (string.IsNullOrEmpty(spaceKitchenStr))
+                return;
+            spaceKitchenStr = spaceKitchenStr.Substring(0, spaceKitchenStr.Length - 3);
+
+            bool isSpaceLivingParsed = double.TryParse(spaceKitchenStr.Replace('.', '.'), out double spaceKitchen);
+            if (isSpaceLivingParsed)
+                flat.SpaceKitchen = spaceKitchen;
         }
 
         private void fillPlanningType(N1FlatBase flat, IDocument pageHtmlDoc)

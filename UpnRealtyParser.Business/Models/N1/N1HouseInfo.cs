@@ -6,5 +6,7 @@
         /// Название фирмы-застройщика
         /// </summary>
         public string BuilderCompany { get; set; }
+
+        public bool? IsFilledCompletely { get; set; }
     }
 }

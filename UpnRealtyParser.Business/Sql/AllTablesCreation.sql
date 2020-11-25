@@ -267,3 +267,6 @@ ALTER TABLE [N1Agency] ADD [IsCompany] bit;
 
 -- 11.11.2020 Новое поле для квартир N1
 ALTER TABLE [N1Flat] ADD [PublishingDateTime] datetime;
+
+-- 24.11.2020 Поле IsFilledCompletely у домов N1
+ALTER TABLE [N1HouseInfo] ADD [IsFilledCompletely] bit;
