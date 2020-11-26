@@ -181,7 +181,7 @@ namespace UpnRealtyParser.Business.Helpers
         {
             //string template = "location\":{\"latitude\":56.795919,\"longtitude\":60.765082,\"precision\":\"exact\"}";
             int endIndex = webPageText.IndexOf(",\"precision\":\"exact\"}");
-            int startIndex = endIndex - 50;
+            int startIndex = endIndex - 75;
 
             if (startIndex <= 0 || endIndex <= 0)
                 return;

@@ -343,8 +343,9 @@ namespace UpnRealtyParser.Business.Helpers
             if (existingHouse != null)
             {
                 house.Id = existingHouse.Id;
-                if (isFillingFromApartPage && !existingHouse.IsFilledCompletely.GetValueOrDefault(false))
-                    fillExistingHouseCompletely(existingHouse, house);
+                if (isFillingFromApartPage && (!existingHouse.IsFilledCompletely.GetValueOrDefault(false) ||
+                    !existingHouse.Latitude.GetValueOrDefault(0).ToString().Contains(',')))
+                        fillExistingHouseCompletely(existingHouse, house);
                 else
                     _writeToLogDelegate(string.Format("Дом с адресом {1} уже существует (Id {0})", house.Id, house.Address));
             }
