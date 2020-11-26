@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllFlats, startReceivingFlats } from './n1SellFlatIndexActions.jsx';
 import { SELL_FLATS_TABLE_COLUMNS } from './n1SellFlatIndexConstants.jsx';
-import { Table } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 
 import 'antd/dist/antd.css';
 
@@ -25,6 +25,12 @@ class N1SellFlatIndex extends React.Component {
         let isFlatsLoading = this.props.isFlatsLoading;
 
         return (
+            <div>
+            <Breadcrumb style={{ margin: '16px 0' }}>
+                <Breadcrumb.Item>N1</Breadcrumb.Item>
+                <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
+                <Breadcrumb.Item>На продажу</Breadcrumb.Item>
+            </Breadcrumb>
             <Table
                 dataSource={flatsData}
                 columns={SELL_FLATS_TABLE_COLUMNS}
@@ -32,6 +38,7 @@ class N1SellFlatIndex extends React.Component {
                 pagination={{ total: totalFlatsCount }}
                 loading={isFlatsLoading}
             />
+            </div>
         );
     }
 }

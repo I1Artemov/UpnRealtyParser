@@ -16,3 +16,10 @@ where uf.[UpnHouseInfoId] IN (
 and uf.[FlatType] = 'Квартира'
 and uf.Price < 2000000
 order by uf.CreationDateTime desc;
+
+
+select * from [N1Flat] fl
+left join [N1HouseInfo] hou
+on fl.N1HouseInfoId = hou.Id
+where hou.IsFilledCompletely is null
+and fl.IsFilledCompletely is not null;

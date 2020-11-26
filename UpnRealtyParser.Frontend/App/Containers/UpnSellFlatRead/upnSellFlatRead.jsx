@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getFlat, startReceivingFlat, showFlatPhotos, hideFlatPhotos } from './upnSellFlatReadActions.jsx';
-import { Divider, Spin, Button } from 'antd';
+import { Divider, Spin, Button, Breadcrumb } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
 
@@ -38,6 +38,10 @@ class UpnSellFlatRead extends React.Component {
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
             return (
                 <div>
+                    <Breadcrumb style={{ margin: '16px 0' }}>
+                        <Breadcrumb.Item>Upn</Breadcrumb.Item>
+                        <Breadcrumb.Item>Квартира на продажу</Breadcrumb.Item>
+                    </Breadcrumb>
                     <Divider orientation={"center"}>Информация о квартире на продажу, ID {flatData.id}</Divider>
                     <SingleFlatInfo flatData={flatData} />
                     <div style={{marginTop: "10px", textAlign: "center"}}>

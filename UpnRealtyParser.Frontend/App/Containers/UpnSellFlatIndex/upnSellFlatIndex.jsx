@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllFlats, startReceivingFlats } from './upnSellFlatIndexActions.jsx';
 import { SELL_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
-import { Table } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 
 import 'antd/dist/antd.css';
 
@@ -25,13 +25,20 @@ class UpnSellFlatIndex extends React.Component {
         let isFlatsLoading = this.props.isFlatsLoading;
 
         return (
+            <div>
+            <Breadcrumb style={{ margin: '16px 0' }}>
+                <Breadcrumb.Item>Upn</Breadcrumb.Item>
+                <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
+                <Breadcrumb.Item>На продажу</Breadcrumb.Item>
+            </Breadcrumb>
             <Table
                 dataSource={flatsData}
                 columns={SELL_FLATS_TABLE_COLUMNS}
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{total: totalFlatsCount}}
                 loading={isFlatsLoading}
-            />
+                />
+            </div>
         );
     }
 }
