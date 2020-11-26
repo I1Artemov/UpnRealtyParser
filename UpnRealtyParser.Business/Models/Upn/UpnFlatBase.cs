@@ -22,5 +22,11 @@ namespace UpnRealtyParser.Business.Models
         public string WindowsType { get; set; }
 
         public string Furniture { get; set; }
+
+        [NotMapped]
+        public override int? AgencyId => UpnAgencyId;
+
+        [NotMapped]
+        public override int? HouseInfoId => UpnHouseInfoId;
     }
 }

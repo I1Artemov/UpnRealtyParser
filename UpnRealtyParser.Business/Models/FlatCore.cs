@@ -108,5 +108,11 @@ namespace UpnRealtyParser.Business.Models
 
         [NotMapped]
         public List<string> PhotoHrefs { get; set; }
+
+        [NotMapped]
+        public virtual int? AgencyId => null;
+
+        [NotMapped]
+        public virtual int? HouseInfoId => null;
     }
 }

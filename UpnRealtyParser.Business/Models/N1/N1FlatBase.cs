@@ -35,5 +35,11 @@ namespace UpnRealtyParser.Business.Models
 
         [NotMapped]
         public string Href { get; set; }
+
+        [NotMapped]
+        public override int? AgencyId => N1AgencyId;
+
+        [NotMapped]
+        public override int? HouseInfoId => N1HouseInfoId;
     }
 }
