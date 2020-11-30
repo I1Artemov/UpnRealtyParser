@@ -322,12 +322,24 @@ namespace UpnRealtyParser.Business.Helpers
             /*var isExisting = isRentFlats ?
                 _rentFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId) :
                 _sellFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId);*/
-            var foundFlat = 
-                _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
-            if (foundFlat != null && foundFlat.IsFilledCompletely.GetValueOrDefault(false))
+            var foundFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
+            if (foundFlat == null)
                 return true;
 
-            return false;
+            var foundHouse = _houseRepo.GetAllWithoutTracking().FirstOrDefault(x => x.Id == foundFlat.HouseInfoId);
+
+            if (!foundFlat.IsFilledCompletely.GetValueOrDefault(false))
+                return false;
+
+            // Если квартира заполнена, но связанный дом - не заполнен, то все равно обрабатываем
+            if(foundFlat.IsFilledCompletely.GetValueOrDefault(false) &&
+                foundHouse != null && !foundHouse.IsFilledCompletely.GetValueOrDefault(false))
+            {
+                _writeToLogDelegate("Найдена заполненная квартира с незаполненным домом");
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -335,22 +347,34 @@ namespace UpnRealtyParser.Business.Helpers
         /// Если нет, то добавляет в БД с сохранением. Если да, то объекту присваивает Id существующего дома.
         /// Если существующий дом еще не до конца заполнен, то заполняет его данными из нового объекта
         /// </summary>
-        private bool updateOrAddHouse(N1HouseInfo house, bool isFillingFromApartPage)
+        private bool updateOrAddHouse(N1HouseInfo house, bool isFillingFromApartPage, PageLink existingApartmentLink = null)
         {
-            var existingHouse = _houseRepo.GetAll()
-                .FirstOrDefault(x => x.Address == house.Address);
+            N1Flat existingFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == existingApartmentLink.Id);
+            N1HouseInfo existingHouse = _houseRepo.GetAll()
+                .FirstOrDefault(x => x.Id == existingFlat.N1HouseInfoId);
+
+            if(existingHouse == null)
+            {
+                existingHouse = _houseRepo.GetAll()
+                    .FirstOrDefault(x => x.Address == house.Address);
+            }
 
             if (existingHouse != null)
             {
                 house.Id = existingHouse.Id;
                 if (isFillingFromApartPage && (!existingHouse.IsFilledCompletely.GetValueOrDefault(false) ||
                     !existingHouse.Latitude.GetValueOrDefault(0).ToString().Contains(',')))
-                        fillExistingHouseCompletely(existingHouse, house);
+                {
+                    fillExistingHouseCompletely(existingHouse, house);
+                }
                 else
                     _writeToLogDelegate(string.Format("Дом с адресом {1} уже существует (Id {0})", house.Id, house.Address));
             }
             else
             {
+                if (isFillingFromApartPage)
+                    house.IsFilledCompletely = true;
+
                 _houseRepo.Add(house);
                 try
                 {
@@ -460,7 +484,7 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 DistanceCalculator distanceCalc = new DistanceCalculator(_dbContext);
                 distanceCalc.FindClosestSubwayForSingleHouse(house);
-                isHouseCreatedSuccessfully = updateOrAddHouse(house, true);
+                isHouseCreatedSuccessfully = updateOrAddHouse(house, true, apartmentLink);
             }
             if (!isHouseCreatedSuccessfully)
             {
@@ -528,7 +552,11 @@ namespace UpnRealtyParser.Business.Helpers
                     FlatId = apartmentId,
                     Href = href
                 };
-                _photoRepo.Add(photo);
+                bool isPhotoExists = _photoRepo.GetAllWithoutTracking()
+                    .Any(x => x.FlatId == apartmentId && x.Href == href);
+
+                if(!isPhotoExists)
+                    _photoRepo.Add(photo);
             }
             _photoRepo.Save();
             _stateLogger.LogApartmentPhotoHrefsAddition(apartmentId, hrefs.Count);

@@ -23,3 +23,27 @@ left join [N1HouseInfo] hou
 on fl.N1HouseInfoId = hou.Id
 where hou.IsFilledCompletely is null
 and fl.IsFilledCompletely is not null;
+
+
+select pgl.[Href], count(*) from [N1FlatPhoto] pgl
+group by pgl.[Href]
+having count(*) > 1;
+
+-- Удаление дублирующихся ссылок на фото
+WITH cte AS (
+    SELECT 
+        [Href],
+		[FlatId],
+        ROW_NUMBER() OVER (
+            PARTITION BY 
+                [FlatId], 
+                [Href]
+            ORDER BY 
+                [FlatId], 
+                [Href]
+        ) row_num
+     FROM 
+        [N1FlatPhoto]
+)
+DELETE FROM cte
+WHERE row_num > 1;
