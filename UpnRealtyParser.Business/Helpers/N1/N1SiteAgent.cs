@@ -349,6 +349,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private bool updateOrAddHouse(N1HouseInfo house, bool isFillingFromApartPage, PageLink existingApartmentLink = null)
         {
+            // Сначала пытаемся найти дом для дозаполнения по ID, но если он неизвестен, то проверяем адрес
             N1Flat existingFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == existingApartmentLink.Id);
             N1HouseInfo existingHouse = _houseRepo.GetAll()
                 .FirstOrDefault(x => x.Id == existingFlat.N1HouseInfoId);

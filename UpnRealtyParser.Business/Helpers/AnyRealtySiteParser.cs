@@ -265,11 +265,13 @@ namespace UpnRealtyParser.Business.Helpers
                         string pageStr = reader.ReadToEnd();
                         findProxyInDbAndAddSuccessAmount();
 
+                        request.Abort();
                         return pageStr;
                     }
                 }
                 catch (Exception ex)
                 {
+                    request.Abort();
                     if (ex.Message.Contains("(404) Not Found"))
                         return "NotFound";
 
