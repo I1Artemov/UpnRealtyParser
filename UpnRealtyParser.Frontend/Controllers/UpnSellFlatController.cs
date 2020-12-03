@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UpnRealtyParser.Business.Contexts;
@@ -36,17 +37,23 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getall")]
         [HttpGet]
-        public IActionResult GetAllFlats(int? page, int? pageSize)
+        public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
             IQueryable<UpnFlat> allSellFlats = _upnFlatRepo.GetAllWithoutTracking();
-            int totalCount = allSellFlats.Count();
+            
+            if (!isShowArchived.GetValueOrDefault(true))
+            { 
+                allSellFlats = allSellFlats.Where(x => !x.RemovalDate.HasValue &&
+                    (DateTime.Now - x.LastCheckDate.GetValueOrDefault(DateTime.MinValue)).Days <= 7);
+            }
 
             List<UpnFlat> filteredFlats = allSellFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
+            int totalCount = allSellFlats.Count();
 
             UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
                 _pageLinkRepo, _upnPhotoRepo);

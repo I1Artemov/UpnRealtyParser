@@ -1,7 +1,8 @@
 ﻿import {
     GET_ALL_FLATS_SUCCESS,
     GET_ALL_FLATS_ERROR,
-    GET_ALL_FLATS_LOADING_IN_PROGRESS
+    GET_ALL_FLATS_LOADING_IN_PROGRESS,
+    SET_SHOW_ARCHIVED
 } from './upnSellFlatIndexConstants.jsx';
 
 import { Href_UpnSellFlatController_GetAllFlats } from "../../const.jsx";
@@ -28,13 +29,24 @@ export function errorReceiveAllFlats(err) {
     };
 }
 
-export function getAllFlats(pagination) {
+export function setShowArchived(ev) {
+    let isShow = ev.target.checked;
+    return {
+        type: SET_SHOW_ARCHIVED,
+        payload: isShow
+    };
+}
+
+export function getAllFlats(pagination, isShowArchived, minPrice, maxPrice, excludeFirstFloor, excludeLastFloor,
+    minBuildYear) {
 
     let targetPage = !pagination.current ? 1 : pagination.current;
     let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
 
     return (dispatch) => {
         let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
+        if (isShowArchived !== null && isShowArchived !== undefined)
+            queryTrailer += '&isShowArchived=' + isShowArchived;
 
         fetch(Href_UpnSellFlatController_GetAllFlats + queryTrailer)
             .then((response) => {

@@ -63,9 +63,15 @@ namespace UpnRealtyParser.Business.Helpers
                 flat.AgencyName = agency?.Name;
             }
 
-            PageLink foundLink = _pageLinkRepo.GetWithoutTracking(x => x.Id == flat.Id);
-            if (foundLink != null)
+            PageLink foundLink = _pageLinkRepo.GetWithoutTracking(x => x.Id == flat.PageLinkId);
+            if (foundLink != null) { 
                 flat.SiteUrl = foundLink.Href;
+            }
+            if(flat.RemovalDate.HasValue || (DateTime.Now - flat.LastCheckDate.GetValueOrDefault(DateTime.MinValue)).Days > 7 ||
+                (foundLink != null && foundLink.IsDead.GetValueOrDefault(false)))
+            {
+                flat.IsArchived = true;
+            }
 
             flat.PhotoCount = _photoRepo
                 .GetAllWithoutTracking()

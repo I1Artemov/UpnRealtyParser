@@ -7,7 +7,7 @@ class SingleFlatInfo extends React.Component {
         let upnSiteHref = "https://upn.ru" + this.props.flatData.siteUrl;
 
         return (
-            <Descriptions bordered>
+            <Descriptions bordered column={3}>
                 <Descriptions.Item label="Адрес" span={2}>{flatData.houseAddress}</Descriptions.Item>
                 <Descriptions.Item label="Цена">{flatData.price} руб.</Descriptions.Item>
                 <Descriptions.Item label="Этаж">{flatData.floorSummary}</Descriptions.Item>
@@ -24,7 +24,7 @@ class SingleFlatInfo extends React.Component {
                 <Descriptions.Item label="Год постройки">{flatData.houseBuildYear}</Descriptions.Item>
                 <Descriptions.Item label="Агентство">{flatData.agencyName}</Descriptions.Item>
                 <Descriptions.Item label="Добавлена/проверена">{flatData.createdCheckedDatesSummary}</Descriptions.Item>
-                <Descriptions.Item label="Ссылка на сайт" span={2}>{upnSiteHref}</Descriptions.Item>
+                <Descriptions.Item label="Ссылка на сайт">{upnSiteHref}</Descriptions.Item>
                 <Descriptions.Item label="Описание" span={3}>{flatData.description}</Descriptions.Item>
             </Descriptions>
         );

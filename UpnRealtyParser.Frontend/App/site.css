@@ -23,3 +23,11 @@
     max-height: 128px;
     margin: 6px;
 }
+
+tr.archived-flat {
+    color: #737373;
+}
+
+tr.archived-flat a {
+    color: #609ed0;
+}

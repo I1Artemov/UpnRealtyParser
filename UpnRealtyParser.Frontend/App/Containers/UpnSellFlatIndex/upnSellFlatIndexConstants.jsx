@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 export const GET_ALL_FLATS_SUCCESS = 'GET_ALL_FLATS_SUCCESS';
 export const GET_ALL_FLATS_ERROR = 'GET_ALL_FLATS_ERROR';
 export const GET_ALL_FLATS_LOADING_IN_PROGRESS = 'GET_ALL_FLATS_LOADING_IN_PROGRESS';
+export const SET_SHOW_ARCHIVED = 'SET_SHOW_ARCHIVED';
 
 export const SELL_FLATS_TABLE_COLUMNS = [
     {

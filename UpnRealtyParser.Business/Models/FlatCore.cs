@@ -110,6 +110,9 @@ namespace UpnRealtyParser.Business.Models
         public List<string> PhotoHrefs { get; set; }
 
         [NotMapped]
+        public bool? IsArchived { get; set; }
+
+        [NotMapped]
         public virtual int? AgencyId => null;
 
         [NotMapped]
