@@ -14,22 +14,15 @@ using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
-    public class AnyRealtySiteParser : IDisposable
+    public class AnyRealtySiteParser : BaseSiteAgent, IDisposable
     {
-        protected HttpClient _webClient;
-        protected WebProxyInfo _currentProxy;
-        protected RealtyParserContext _dbContext;
         protected Thread _linksProcessingThread;
         protected Thread _apartmentProcessingThread;
-        protected bool _isConnectionOpen;
 
         protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         
         protected StateLogger _stateLogger;
-        protected bool _isUseProxy;
-        protected Random _random;
         protected int _requestDelayInMs;
-        protected Action<string> _writeToLogDelegate;
 
         protected int _maxRetryAmountForSingleRequest;
         protected int _maxRequestTimeoutInMs;
@@ -39,8 +32,8 @@ namespace UpnRealtyParser.Business.Helpers
         protected string _currentActionName;
 
         public AnyRealtySiteParser(Action<string> writeToLogDelegate, AppSettings settings)
+            : base(settings.IsUseProxies, writeToLogDelegate)
         {
-            _writeToLogDelegate = writeToLogDelegate;
             _requestDelayInMs = settings.RequestDelayInMs;
             _isUseProxy = settings.IsUseProxies;
             _maxRetryAmountForSingleRequest = settings.MaxRetryAmountForSingleRequest;
@@ -63,11 +56,9 @@ namespace UpnRealtyParser.Business.Helpers
                     proxyProvider.GetAliveProxiesList();
                 }
             }
-
-            _random = new Random();
         }
 
-        protected virtual void initializeRepositories(RealtyParserContext context)
+        protected override void initializeRepositories(RealtyParserContext context)
         {
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
         }
@@ -86,30 +77,6 @@ namespace UpnRealtyParser.Business.Helpers
         public ThreadState GetLinksThreadState()
         {
             return _linksProcessingThread.ThreadState;
-        }
-
-        public void OpenConnection()
-        {
-            if (_isConnectionOpen)
-                return;
-
-            _dbContext = new RealtyParserContext();
-            _webClient = createHttpClient();
-
-            initializeRepositories(_dbContext);
-
-            _isConnectionOpen = true;
-        }
-
-        public void CloseConnection()
-        {
-            if (!_isConnectionOpen)
-                return;
-
-            _dbContext.Dispose();
-            _webClient.Dispose();
-
-            _isConnectionOpen = false;
         }
 
         public void Dispose()
@@ -139,38 +106,6 @@ namespace UpnRealtyParser.Business.Helpers
                 _stateLogger.LogApartmentMarkedAsDeadError(pageLink.Href);
                 _writeToLogDelegate(string.Format("Не удалось отметить ссылку {0} как \"мертвую\": {1}", pageLink.Href, ex.Message));
             }
-        }
-
-        private HttpClient createHttpClient()
-        {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            HttpClientHandler clientHandler = new HttpClientHandler();
-            if (_isUseProxy)
-            {
-                _currentProxy = getRandomWebProxy();
-                clientHandler.Proxy = _currentProxy.WebProxy;
-                //clientHandler.Proxy = new System.Net.WebProxy("127.0.0.1:8888");
-                //clientHandler.Proxy = new System.Net.WebProxy("217.172.122.4:8080");
-                clientHandler.UseProxy = true;
-            } else
-            {
-                clientHandler.UseProxy = false;
-            }
-
-            HttpClient httpClient = new HttpClient(clientHandler);
-            httpClient.Timeout = TimeSpan.FromSeconds(400); // TODO: В параметры
-            return httpClient;
-        }
-
-
-        /// <summary>
-        /// Возвращает случайно выбранную прокси. Игнорирует прокси, у которых ранее был установлен признак IsNotResponding
-        /// </summary>
-        protected WebProxyInfo getRandomWebProxy()
-        {
-            OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
-            return proxyProvider.GetRandomWebProxy(_random);
         }
 
         /// <summary>
@@ -259,15 +194,16 @@ namespace UpnRealtyParser.Business.Helpers
                 try
                 {
                     triesCount++;
+                    string pageStr = null;
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
                     using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.GetEncoding(targetEncoding)))
                     {
-                        string pageStr = reader.ReadToEnd();
+                        pageStr = reader.ReadToEnd();
                         findProxyInDbAndAddSuccessAmount();
 
                         request.Abort();
-                        return pageStr;
                     }
+                    return pageStr;
                 }
                 catch (Exception ex)
                 {

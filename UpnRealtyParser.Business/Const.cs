@@ -24,5 +24,8 @@
         public const string StatusTypeFailure = "Failure";
 
         public const string AppSettingsFileName = "AppSettings.xml";
+
+        public const string UpnPhotoFolder = "C:\\Docs\\UpnPhotos\\";
+        public const string N1PhotoFolder = "C:\\Docs\\N1Photos\\";
     }
 }
