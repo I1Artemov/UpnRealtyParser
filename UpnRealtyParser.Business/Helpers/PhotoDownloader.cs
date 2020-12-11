@@ -16,7 +16,9 @@ namespace UpnRealtyParser.Business.Helpers
         protected const int PhotoPortionAmount = 1000;
         protected const int MaxRetryAmountForSingleRequest = 100;
         protected const long NormalResponseSizeThreshold = 4096;
+
         protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
+        protected Thread _upnPhotoThread;
 
         public PhotoDownloader(bool isUseProxy, int requestDelayInMs, Action<string> writeToLogDelegate)
             : base(isUseProxy, requestDelayInMs, writeToLogDelegate)
@@ -25,6 +27,17 @@ namespace UpnRealtyParser.Business.Helpers
         protected override void initializeRepositories(RealtyParserContext context)
         {
             _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
+        }
+
+        public void StartUpnPhotosGatheringInSeparateThread(bool isRentFlats = false)
+        {
+            _isProcessingCompleted = false;
+            _currentActionName = Const.ParsingStatusGettingUpnPhotos;
+
+            ThreadStart threadMethod = delegate { this.DownloadSinglePhotoForAllUpnFlats(); };
+            _upnPhotoThread = new Thread(threadMethod);
+            _upnPhotoThread.IsBackground = true; // Для корректного завершения при закрытии окна
+            _upnPhotoThread.Start();
         }
 
         /// <summary>
@@ -54,6 +67,7 @@ namespace UpnRealtyParser.Business.Helpers
                     continue;
 
                 DownloadAndSaveUpnPhoto(firstPhotoInfo);
+                _processedObjectsCount++;
 
                 if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
@@ -101,10 +115,15 @@ namespace UpnRealtyParser.Business.Helpers
                         {
                             photoInfo.FileName = "ERR";
                             File.Delete(Const.UpnPhotoFolder + fileName);
+                            if (_writeToLogDelegate != null)
+                                _writeToLogDelegate(string.Format("Фото {0} больше нет на сайте", fileName));
                         }
                         else
                         {
                             photoInfo.FileName = fileName;
+                            if (_writeToLogDelegate != null)
+                                _writeToLogDelegate(string.Format("Фото {0} загружено ({1} Б)",
+                                    fileName, responseSize.GetValueOrDefault(0)));
                         }
 
                         if (_photoRepo != null)
@@ -123,8 +142,8 @@ namespace UpnRealtyParser.Business.Helpers
                     triesCount++;
                     if(_writeToLogDelegate != null)
                     {
-                        _writeToLogDelegate(string.Format("Не удалось загрузить ссылку {0}, попытка {1}, прокси {2}",
-                        photoInfo.Href, triesCount, currentProxyAddress));
+                        _writeToLogDelegate(string.Format("Не удалось загрузить {0}, попытка {1}, прокси {2}",
+                        fileName, triesCount, currentProxyAddress));
                     }
                 }
                 finally

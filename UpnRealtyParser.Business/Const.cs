@@ -20,6 +20,8 @@
         public const string ParsingStatusProcessingSingleFlat = "ProcessingSingleFlat";
         public const string ParsingStatusGettingApartmentPhotoLinks = "GettingApartmentPhotoLinks";
 
+        public const string ParsingStatusGettingUpnPhotos = "ParsingStatusGettingUpnPhotos";
+
         public const string StatusTypeSuccess = "Success";
         public const string StatusTypeFailure = "Failure";
 

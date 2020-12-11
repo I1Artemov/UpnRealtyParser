@@ -26,10 +26,6 @@ namespace UpnRealtyParser.Business.Helpers
         protected int _maxRetryAmountForSingleRequest;
         protected int _maxRequestTimeoutInMs;
 
-        protected int _processedObjectsCount;
-        protected bool _isProcessingCompleted;
-        protected string _currentActionName;
-
         public AnyRealtySiteParser(Action<string> writeToLogDelegate, AppSettings settings)
             : base(settings.IsUseProxies, settings.RequestDelayInMs, writeToLogDelegate)
         {
@@ -60,12 +56,6 @@ namespace UpnRealtyParser.Business.Helpers
         {
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
         }
-
-        public string GetCurrentActionName() => _currentActionName;
-
-        public bool CheckIfProcessingCompleted() => _isProcessingCompleted;
-
-        public int GetProcessedRecordsAmount() => _processedObjectsCount;
 
         public ThreadState GetApartmentThreadState()
         {

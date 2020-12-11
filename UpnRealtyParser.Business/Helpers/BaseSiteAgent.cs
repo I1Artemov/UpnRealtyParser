@@ -15,6 +15,9 @@ namespace UpnRealtyParser.Business.Helpers
         protected RealtyParserContext _dbContext;
         protected Action<string> _writeToLogDelegate;
         protected bool _isConnectionOpen;
+        protected int _processedObjectsCount;
+        protected bool _isProcessingCompleted;
+        protected string _currentActionName;
 
         public BaseSiteAgent(bool isUseProxy, int requestDelayInMs, Action<string> writeToLogDelegate)
         {
@@ -44,6 +47,12 @@ namespace UpnRealtyParser.Business.Helpers
 
             _isConnectionOpen = false;
         }
+
+        public string GetCurrentActionName() => _currentActionName;
+
+        public bool CheckIfProcessingCompleted() => _isProcessingCompleted;
+
+        public int GetProcessedRecordsAmount() => _processedObjectsCount;
 
         protected virtual void initializeRepositories(RealtyParserContext context)
         { }

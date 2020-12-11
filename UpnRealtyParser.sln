@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UpnRealtyParser.Frontend", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpnRealtyParser.Service.N1", "UpnRealtyParser.Service.N1\UpnRealtyParser.Service.N1.csproj", "{2EEF9D57-1A0D-43ED-AE86-80971DFD437A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpnRealtyParser.Service.Photo", "UpnRealtyParser.Service.Photo\UpnRealtyParser.Service.Photo.csproj", "{8D45A83F-244B-4B87-9C35-28F8035B96A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{2EEF9D57-1A0D-43ED-AE86-80971DFD437A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EEF9D57-1A0D-43ED-AE86-80971DFD437A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EEF9D57-1A0D-43ED-AE86-80971DFD437A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D45A83F-244B-4B87-9C35-28F8035B96A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D45A83F-244B-4B87-9C35-28F8035B96A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D45A83F-244B-4B87-9C35-28F8035B96A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D45A83F-244B-4B87-9C35-28F8035B96A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
