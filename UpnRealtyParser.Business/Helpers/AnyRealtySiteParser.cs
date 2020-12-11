@@ -22,7 +22,6 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         
         protected StateLogger _stateLogger;
-        protected int _requestDelayInMs;
 
         protected int _maxRetryAmountForSingleRequest;
         protected int _maxRequestTimeoutInMs;
@@ -32,9 +31,8 @@ namespace UpnRealtyParser.Business.Helpers
         protected string _currentActionName;
 
         public AnyRealtySiteParser(Action<string> writeToLogDelegate, AppSettings settings)
-            : base(settings.IsUseProxies, writeToLogDelegate)
+            : base(settings.IsUseProxies, settings.RequestDelayInMs, writeToLogDelegate)
         {
-            _requestDelayInMs = settings.RequestDelayInMs;
             _isUseProxy = settings.IsUseProxies;
             _maxRetryAmountForSingleRequest = settings.MaxRetryAmountForSingleRequest;
             _maxRequestTimeoutInMs = settings.MaxRequestTimeoutInMs;

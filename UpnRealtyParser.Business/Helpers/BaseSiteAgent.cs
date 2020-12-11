@@ -10,14 +10,16 @@ namespace UpnRealtyParser.Business.Helpers
     {
         protected WebProxyInfo _currentProxy;
         protected bool _isUseProxy;
+        protected int _requestDelayInMs;
         protected Random _random;
         protected RealtyParserContext _dbContext;
         protected Action<string> _writeToLogDelegate;
         protected bool _isConnectionOpen;
 
-        public BaseSiteAgent(bool isUseProxy, Action<string> writeToLogDelegate)
+        public BaseSiteAgent(bool isUseProxy, int requestDelayInMs, Action<string> writeToLogDelegate)
         {
             _isUseProxy = isUseProxy;
+            _requestDelayInMs = requestDelayInMs;
             _random = new Random();
             _writeToLogDelegate = writeToLogDelegate;
         }

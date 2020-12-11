@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
@@ -15,10 +15,11 @@ namespace UpnRealtyParser.Business.Helpers
     {
         protected const int PhotoPortionAmount = 1000;
         protected const int MaxRetryAmountForSingleRequest = 100;
+        protected const long NormalResponseSizeThreshold = 4096;
         protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
 
-        public PhotoDownloader(bool isUseProxy, Action<string> writeToLogDelegate)
-            : base(isUseProxy, writeToLogDelegate)
+        public PhotoDownloader(bool isUseProxy, int requestDelayInMs, Action<string> writeToLogDelegate)
+            : base(isUseProxy, requestDelayInMs, writeToLogDelegate)
         { }
 
         protected override void initializeRepositories(RealtyParserContext context)
@@ -26,6 +27,10 @@ namespace UpnRealtyParser.Business.Helpers
             _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
         }
 
+        /// <summary>
+        /// Находит для всех квартир УПН (аренда и продажа) первые попавшиеся ссылки на фото и скачивает их.
+        /// Фото сразу сохраняются в виде файла в каталог
+        /// </summary>
         public void DownloadSinglePhotoForAllUpnFlats()
         {
             int photosCount = _photoRepo.GetAllWithoutTracking().Count();
@@ -49,9 +54,15 @@ namespace UpnRealtyParser.Business.Helpers
                     continue;
 
                 DownloadAndSaveUpnPhoto(firstPhotoInfo);
+
+                if (_requestDelayInMs >= 0)
+                    Thread.Sleep(_requestDelayInMs);
             }
         }
-
+        
+        /// <summary>
+        /// Берет ссылку на фото для одной квартиры, скачивает файл и сохраняет на диск
+        /// </summary>
         public void DownloadAndSaveUpnPhoto(UpnFlatPhoto photoInfo)
         {
             int fileNameStartIndex = photoInfo.Href.IndexOf("filename=");
@@ -84,7 +95,18 @@ namespace UpnRealtyParser.Business.Helpers
                             await response.Content.CopyToAsync(fs);
                         }
 
-                        photoInfo.FileName = fileName;
+                        // Маленький ответ => скачали не фото, а ответ с ошибкой от сервера
+                        long? responseSize = response.Content.Headers.ContentLength;
+                        if (responseSize.GetValueOrDefault(0) < NormalResponseSizeThreshold)
+                        {
+                            photoInfo.FileName = "ERR";
+                            File.Delete(Const.UpnPhotoFolder + fileName);
+                        }
+                        else
+                        {
+                            photoInfo.FileName = fileName;
+                        }
+
                         if (_photoRepo != null)
                         {
                             _photoRepo.Update(photoInfo);
