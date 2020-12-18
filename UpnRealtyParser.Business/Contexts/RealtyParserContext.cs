@@ -7,6 +7,7 @@ namespace UpnRealtyParser.Business.Contexts
     {
         public DbSet<PageLink> PageLinks { get; set; }
         public DbSet<UpnFlat> UpnFlats { get; set; }
+        public DbSet<UpnFlatVmForTable> UpnFlatVmForTables { get; set; }
         public DbSet<UpnRentFlat> UpnRentFlats { get; set; }
         public DbSet<UpnHouseInfo> UpnHouseInfos { get; set; }
         public DbSet<UpnAgency> UpnAgencies { get; set; }
@@ -34,6 +35,7 @@ namespace UpnRealtyParser.Business.Contexts
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.RemovePluralizingTableNameConvention();
+            modelBuilder.Entity<UpnFlatVmForTable>(entity => {entity.ToTable("vUpnFlatAdditional");});
         }
     }
 }

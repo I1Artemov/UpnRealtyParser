@@ -19,7 +19,7 @@ const initialState = {
     isExcludeLastFloor: false,
     minPrice: 0,
     maxPrice: 40000,
-    minBuildYear: 1900,
+    minBuildYear: null,
     error: ""
 };
 

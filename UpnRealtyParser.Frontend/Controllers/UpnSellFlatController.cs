@@ -14,6 +14,7 @@ namespace UpnRealtyParser.Frontend.Controllers
     public class UpnSellFlatController : BaseController
     {
         private readonly EFGenericRepo<UpnFlat, RealtyParserContext> _upnFlatRepo;
+        private readonly EFGenericRepo<UpnFlatVmForTable, RealtyParserContext> _upnFlatVmRepo;
         private readonly EFGenericRepo<UpnHouseInfo, RealtyParserContext> _upnHouseRepo;
         private readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
         private readonly EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
@@ -25,7 +26,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<UpnAgency, RealtyParserContext> agencyRepo,
             EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo,
-            EFGenericRepo<UpnFlatPhoto, RealtyParserContext> upnPhotoRepo)
+            EFGenericRepo<UpnFlatPhoto, RealtyParserContext> upnPhotoRepo,
+            EFGenericRepo<UpnFlatVmForTable, RealtyParserContext> upnFlatVmRepo)
         {
             _upnFlatRepo = upnFlatRepo;
             _upnHouseRepo = upnHouseRepo;
@@ -33,32 +35,36 @@ namespace UpnRealtyParser.Frontend.Controllers
             _subwayStationRepo = subwayStationRepo;
             _pageLinkRepo = pageLinkRepo;
             _upnPhotoRepo = upnPhotoRepo;
+            _upnFlatVmRepo = upnFlatVmRepo;
         }
 
         [Route("getall")]
         [HttpGet]
         public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived, bool? isExcludeFirstFloor,
-            bool isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear)
+            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
-            IQueryable<UpnFlat> allSellFlats = _upnFlatRepo.GetAllWithoutTracking();
+            IQueryable<UpnFlatVmForTable> allSellFlats = _upnFlatVmRepo.GetAllWithoutTracking();
             
             if (!isShowArchived.GetValueOrDefault(true))
-            { 
-                allSellFlats = allSellFlats.Where(x => !x.RemovalDate.HasValue &&
-                    (DateTime.Now - x.LastCheckDate.GetValueOrDefault(DateTime.MinValue)).Days <= 7);
-            }
+                allSellFlats = allSellFlats.Where(x => x.IsArchived.GetValueOrDefault(0) == 0);
+            if (isExcludeFirstFloor.GetValueOrDefault(false))
+                allSellFlats = allSellFlats.Where(x => x.FlatFloor > 1);
+            if (isExcludeLastFloor.GetValueOrDefault(false))
+                allSellFlats = allSellFlats.Where(x => x.FlatFloor < x.HouseMaxFloor);
+            /*if (minPrice.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.Price >= minPrice.Value * 1000);
+            if (maxPrice.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.Price <= maxPrice.Value * 1000);*/
+            if (minBuildYear.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.HouseBuildYear >= minBuildYear.Value);
 
-            List<UpnFlat> filteredFlats = allSellFlats
+            List<UpnFlatVmForTable> filteredFlats = allSellFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
             int totalCount = allSellFlats.Count();
-
-            UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
-                _pageLinkRepo, _upnPhotoRepo);
-            apartmentHelper.FillSellApartmentsWithAdditionalInfo(filteredFlats);
 
             return Json(new {flatsList = filteredFlats, totalCount = totalCount});
         }

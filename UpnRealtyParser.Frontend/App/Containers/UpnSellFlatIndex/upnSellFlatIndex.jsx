@@ -62,7 +62,7 @@ class UpnSellFlatIndex extends React.Component {
                     onChange={this.handleTableChange.bind(this)}
                     pagination={{total: totalFlatsCount}}
                     loading={isFlatsLoading}
-                    rowClassName={(record, index) => (record.isArchived === true ? "archived-flat" : "active-flat")}
+                    rowClassName={(record, index) => (record.isArchived === 1 ? "archived-flat" : "active-flat")}
                     />
             </div>
         );

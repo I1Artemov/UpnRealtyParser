@@ -168,13 +168,13 @@ namespace UpnRealtyParser.Business.Helpers
 
             // Фильтруем по дате последнего успешного подключения уже не в БД (иначе - ошибка)
             workingProxies = workingProxies
-                .Where(x => (x.LastSuccessDateTime - DateTime.Now).Value.Days < 7
+                .Where(x => (x.LastSuccessDateTime - DateTime.Now).Value.Days < 31
                     && x.SuccessRate >= 0.32d)
                 .ToList();
             if(workingProxies.Count == 0)
                 workingProxies = _proxyRepo.GetAllWithoutTracking()
                     .Where(x => x.LastSuccessDateTime != null)
-                    .Where(x => (x.LastSuccessDateTime - DateTime.Now).Value.Days < 7
+                    .Where(x => (x.LastSuccessDateTime - DateTime.Now).Value.Days < 31
                         && x.SuccessRate >= 0.20d)
                     .ToList();
 
