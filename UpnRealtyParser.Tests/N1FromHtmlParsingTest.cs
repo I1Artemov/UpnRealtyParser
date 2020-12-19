@@ -16,7 +16,7 @@ namespace UpnRealtyParser.Tests.TestData
         [Fact]
         public void GetSellFlatsLinksList_AsTable_Test()
         {
-            string webPageText = getTextFromFile(TestDataPath, "01_SampleN1FlatsTable.txt", "utf-8");
+            string webPageText = getTextFromFile(TestDataPath, "04_N1FlatsTable_OldVersion.txt", "utf-8");
             N1FlatLinksCollector linksCollector = new N1FlatLinksCollector();
 
             List<string> hrefs = linksCollector.GetLinksFromSinglePage(webPageText);
@@ -24,32 +24,14 @@ namespace UpnRealtyParser.Tests.TestData
             int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
 
             Assert.Equal(100, hrefs.Count);
-            Assert.Equal(11686, totalApartmentsAmount);
-            Assert.Equal(117, totalTablePages);
-        }
-
-        /// <summary>
-        /// Сбор ссылок при типе отображения "Список"
-        /// </summary>
-        [Fact]
-        public void GetSellFlatsLinksList_AsCards_Test()
-        {
-            string webPageText = getTextFromFile(TestDataPath, "03_SampleN1FlatsListCards.txt", "utf-8");
-            N1FlatLinksCollector linksCollector = new N1FlatLinksCollector();
-
-            List<string> hrefs = linksCollector.GetLinksFromSinglePage(webPageText);
-            int? totalApartmentsAmount = linksCollector.GetTotalEntriesInTable(webPageText);
-            int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
-
-            Assert.Equal(100, hrefs.Count);
-            Assert.Equal(11581, totalApartmentsAmount);
-            Assert.Equal(116, totalTablePages);
+            Assert.Equal(7397, totalApartmentsAmount);
+            Assert.Equal(74, totalTablePages);
         }
 
         [Fact]
         public void SingleFlat_HouseFilling_Test()
         {
-            string webPageText = getTextFromFile(TestDataPath, "02_SampleN1SingleFlatView.txt", "utf-8");
+            string webPageText = getTextFromFile(TestDataPath, "05_N1Apartment_OldVersion.txt", "utf-8");
 
             N1HouseParser houseParser = new N1HouseParser();
             N1HouseInfo house = houseParser.GetN1HouseFromPageText(webPageText);
