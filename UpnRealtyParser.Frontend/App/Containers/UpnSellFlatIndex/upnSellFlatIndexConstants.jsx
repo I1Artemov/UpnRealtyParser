@@ -19,6 +19,15 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         key: 'id'
     },
     {
+        title: 'Фото',
+        dataIndex: 'firstPhotoFile',
+        key: 'firstPhotoFile',
+        render: (text, row) => (
+            (text === null || text === 'ERR') ? <p>--</p> :
+                <img src={"/images/upnphotos/" + text} width="48" height="48"></img>
+        )
+    },
+    {
         title: 'Создан/проверен',
         dataIndex: 'createdCheckedDatesSummary',
         key: 'createdCheckedDatesSummary'

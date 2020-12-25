@@ -10,7 +10,7 @@ namespace UpnRealtyParser.Business.Models
         public virtual string ClosestSubwayName { get; set; }
         public double? ClosestSubwayStationRange { get; set; }
         public string Description { get; set; }
-
+        public string FirstPhotoFile { get; set; }
 
         /* ------------------------ Свойства для отображения -------------------------- */
 
