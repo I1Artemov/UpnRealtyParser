@@ -83,11 +83,11 @@ namespace UpnRealtyParser.Tests.TestData
         [Fact]
         public void N1_ApartmentPhotoHrefs_Test()
         {
-            string webPageText = getTextFromFile(TestDataPath, "02_SampleN1SingleFlatView.txt", "utf-8");
+            string webPageText = getTextFromFile(TestDataPath, "05_N1Apartment_OldVersion.txt", "utf-8");
 
             N1ApartmentParser parser = new N1ApartmentParser();
             List<string> hrefs = parser.GetPhotoHrefsFromPage(webPageText);
-            Assert.Equal(27, hrefs.Count);
+            Assert.Equal(32, hrefs.Count);
         }
     }
 }

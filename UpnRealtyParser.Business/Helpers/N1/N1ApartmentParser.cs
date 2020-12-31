@@ -174,13 +174,13 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public List<string> GetPhotoHrefsFromPage(string pageText)
         {
-            // a data-v-1aa2889c="" href="https://n1st.ru/cache/realty/photo/e1ae19f41edfd70cc5f0092af780e733_1200_900_p.jpg"
             var htmlDocument = getPreparedHtmlDocument(pageText).Result;
-            List<IElement> anchorElements = htmlDocument.QuerySelectorAll("div.offer-card-gallery a.link")
+            List<IElement> anchorElements = htmlDocument.QuerySelectorAll(".card__personal-photos img.card__photo-image")
                 .ToList();
 
             return anchorElements
-                .Select(x => x.GetAttribute("href"))
+                .Select(x => x.GetAttribute("src"))
+                .Distinct()
                 .ToList();
         }
 
