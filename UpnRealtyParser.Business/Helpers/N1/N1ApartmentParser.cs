@@ -159,10 +159,6 @@ namespace UpnRealtyParser.Business.Helpers
         {
             N1Flat flat = new N1Flat();
 
-            fillPriceAndRoomAmount(flat, webPageText);
-            fillSpace(flat, pageHtmlDoc);
-            fillSpaceLiving(flat, pageHtmlDoc);
-            fillSpaceKitchen(flat, pageHtmlDoc);
             fillPlanningType(flat, pageHtmlDoc);
             fillBathroomType(flat, pageHtmlDoc);
             fillFlatCondition(flat, pageHtmlDoc);
@@ -188,72 +184,6 @@ namespace UpnRealtyParser.Business.Helpers
                 .ToList();
         }
 
-        private void fillPriceAndRoomAmount(N1FlatBase flat, string webPageText)
-        {
-            // Продам - руб. - N1
-            int startIndex = webPageText.IndexOf("Продам");
-            int endIndex = webPageText.IndexOf("руб. — N1");
-
-            if (startIndex <= 0 || endIndex <= 0 || startIndex >= endIndex)
-                return;
-
-            string priceAndRoomContainingStr = webPageText.Substring(startIndex, endIndex - startIndex);
-
-            string roomAmountStr = priceAndRoomContainingStr.Substring(7, 1);
-            bool isParsedRoomAmount = int.TryParse(roomAmountStr, out int roomAmount);
-            if (isParsedRoomAmount)
-                flat.RoomAmount = roomAmount;
-            // TODO: студии!
-
-            int priceStartIndex = priceAndRoomContainingStr.LastIndexOf(", ");
-            if (priceStartIndex <= 0)
-                return;
-
-            string priceStr = priceAndRoomContainingStr.Substring(priceStartIndex + 1,
-                priceAndRoomContainingStr.Length - priceStartIndex - 1);
-
-            bool isParsedPrice = int.TryParse(priceStr.Replace(" ", ""), out int price);
-            if (isParsedPrice)
-                flat.Price = price;
-        }
-
-        private void fillSpace(N1FlatBase flat, IDocument pageHtmlDoc)
-        {
-            string spaceSumStr = getValueFromLivingContentParamsList("Общая площадь", pageHtmlDoc);
-            if (string.IsNullOrEmpty(spaceSumStr))
-                return;
-
-            spaceSumStr = spaceSumStr.Substring(0, spaceSumStr.Length - 3);
-
-            bool isSpaceSumParsed = double.TryParse(spaceSumStr.Replace('.', '.'), out double spaceSum);
-            if (isSpaceSumParsed)
-                flat.SpaceSum = spaceSum;
-        }
-
-        private void fillSpaceLiving(N1FlatBase flat, IDocument pageHtmlDoc)
-        {
-            string spaceLivingStr = getValueFromLivingContentParamsList("Жилая площадь", pageHtmlDoc);
-            if (string.IsNullOrEmpty(spaceLivingStr))
-                return;
-            spaceLivingStr = spaceLivingStr.Substring(0, spaceLivingStr.Length - 3);
-
-            bool isSpaceLivingParsed = double.TryParse(spaceLivingStr.Replace('.', '.'), out double spaceLiving);
-            if (isSpaceLivingParsed)
-                flat.SpaceLiving = spaceLiving;
-        }
-
-        private void fillSpaceKitchen(N1FlatBase flat, IDocument pageHtmlDoc)
-        {
-            string spaceKitchenStr = getValueFromLivingContentParamsList("Кухня", pageHtmlDoc);
-            if (string.IsNullOrEmpty(spaceKitchenStr))
-                return;
-            spaceKitchenStr = spaceKitchenStr.Substring(0, spaceKitchenStr.Length - 3);
-
-            bool isSpaceLivingParsed = double.TryParse(spaceKitchenStr.Replace('.', '.'), out double spaceKitchen);
-            if (isSpaceLivingParsed)
-                flat.SpaceKitchen = spaceKitchen;
-        }
-
         private void fillPlanningType(N1FlatBase flat, IDocument pageHtmlDoc)
         {
             string planningBlockStr = getValueFromLivingContentParamsList("Планировка", pageHtmlDoc);
@@ -277,10 +207,15 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillBalconyAmount(N1FlatBase flat, IDocument pageHtmlDoc)
         {
-            string balconyAmountStr = getValueFromLivingContentParamsList("Количество лоджий", pageHtmlDoc);
+            string balconyAmountStr = getValueFromLivingContentParamsList("Лоджия", pageHtmlDoc);
             if (string.IsNullOrEmpty(balconyAmountStr))
                 return;
 
+            int spaceIndex = balconyAmountStr.IndexOf(" ");
+            if (spaceIndex < 0)
+                return;
+
+            balconyAmountStr = balconyAmountStr.Substring(0, spaceIndex);
             bool isParsed = int.TryParse(balconyAmountStr, out int balconyAmount);
             if (isParsed)
                 flat.BalconyAmount = balconyAmount;
@@ -295,17 +230,11 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillDescription(N1FlatBase flat, IDocument pageHtmlDoc)
         {
-            string descriptionText = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "div" &&
-                     m.ClassName == "text" &&
-                     m.Attributes.GetNamedItem("_v-36737051")?.Value != null)?.InnerHtml;
-
+            string descriptionText = pageHtmlDoc.QuerySelector(".card__comments-section p")?.TextContent;
             if (string.IsNullOrEmpty(descriptionText))
                 return;
 
-            descriptionText = descriptionText.Replace("<br>", "");
-            descriptionText = descriptionText.Replace("\n", "");
-
+            descriptionText = descriptionText.Replace("<br>", "").Replace("\n", "").Replace("\t", "");
             flat.Description = descriptionText;
         }
 
@@ -316,11 +245,14 @@ namespace UpnRealtyParser.Business.Helpers
         private string getValueFromLivingContentParamsList(string titleContains, IDocument pageHtmlDoc)
         {
             var livingContentBlock = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "li" &&
-                     m.ClassName == "card-living-content-params-list__item" &&
+                m => m.LocalName == "dl" &&
                      m.InnerHtml != null && m.InnerHtml.Contains(titleContains));
 
-            string livingContentBlockStr = livingContentBlock?.LastChild?.TextContent;
+            string livingContentBlockStr = livingContentBlock?.LastElementChild?.TextContent;
+            if (string.IsNullOrEmpty(livingContentBlockStr))
+                return null;
+
+            livingContentBlockStr = livingContentBlockStr.Replace("   ", "").Replace("\n", "").Trim();
             return livingContentBlockStr;
         }
     }
