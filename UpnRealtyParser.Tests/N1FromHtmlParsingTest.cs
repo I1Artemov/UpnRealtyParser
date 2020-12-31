@@ -33,12 +33,8 @@ namespace UpnRealtyParser.Tests.TestData
             N1HouseParser houseParser = new N1HouseParser();
             N1HouseInfo house = houseParser.GetN1HouseFromPageText(webPageText);
 
-            Assert.Equal("Екатеринбург, Шевченко, 20", house.Address);
-            Assert.Equal("спецпроект", house.HouseType);
-            Assert.Equal("бетонные блоки", house.WallMaterial);
-            Assert.Equal(2010, house.BuildYear);
-            Assert.Equal(20, house.MaxFloor);
-            Assert.Equal("Стройкапитал, ООО", house.BuilderCompany);
+            Assert.Equal("Спецпроект", house.HouseType);
+            Assert.Equal(2009, house.BuildYear);
 
             Assert.Equal(56, (int)Math.Floor(house.Latitude.Value));
             Assert.Equal(60, (int)Math.Floor(house.Longitude.Value));
