@@ -69,16 +69,15 @@ namespace UpnRealtyParser.Tests.TestData
         [Fact]
         public void AgencyFilling_FromSingleFlatPage_Test()
         {
-            string webPageText = getTextFromFile(TestDataPath, "02_SampleN1SingleFlatView.txt", "utf-8");
+            string webPageText = getTextFromFile(TestDataPath, "05_N1Apartment_OldVersion.txt", "utf-8");
 
             N1AgencyParser agencyParser = new N1AgencyParser();
             N1Agency agency = agencyParser.GetN1AgencyFromPageText(webPageText);
 
-            Assert.Equal("Ориентир.Недвижимость", agency.Name);
-            Assert.Equal("Мария", agency.AgentName);
-            Assert.Equal("79126009432", agency.AgentPhone);
-            Assert.Equal("https://ekaterinburg.n1.ru/an/40191/", agency.SiteUrl);
-            Assert.True(agency.IsCompany);
+            Assert.Null(agency.Name);
+            Assert.Equal("Элеонора", agency.AgentName);
+            Assert.Equal("79226000836", agency.AgentPhone);
+            Assert.Equal("a.nevolina@inbox.ru", agency.SiteUrl);
         }
 
         [Fact]

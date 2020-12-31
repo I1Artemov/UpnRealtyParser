@@ -223,7 +223,7 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillPropertyType(N1FlatBase flat, IDocument pageHtmlDoc)
         {
-            string propertyTypeStr = getValueFromLivingContentParamsList("Тип собственности", pageHtmlDoc);
+            string propertyTypeStr = getValueFromLivingContentParamsList("Форма собственности", pageHtmlDoc);
             if (!string.IsNullOrEmpty(propertyTypeStr))
                 flat.PropertyType = propertyTypeStr;
         }
