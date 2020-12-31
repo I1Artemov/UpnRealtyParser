@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 namespace UpnRealtyParser.Business.Helpers
 {
     public static class Utils
@@ -19,6 +20,20 @@ namespace UpnRealtyParser.Business.Helpers
             string replacedText = textBefore + newText + textAfter;
 
             return replacedText;
+        }
+
+        /// <summary>
+        /// Преобразует строку в дату по формату. Если не удалось, вернет NULL
+        /// </summary>
+        public static DateTime? TryGetDateTimeFromString(string dateTimeStr, string format)
+        {
+            bool isParsed = DateTime.TryParseExact(dateTimeStr, format, System.Globalization.CultureInfo.InvariantCulture,
+                 System.Globalization.DateTimeStyles.None, out DateTime parsedDate);
+
+            if (isParsed)
+                return parsedDate;
+
+            return null;
         }
     }
 }
