@@ -24,7 +24,7 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         key: 'firstPhotoFile',
         render: (text, row) => (
             (text === null || text === 'ERR') ? <p>--</p> :
-                <img src={"/images/upnphotos/" + text} width="48" height="48"></img>
+                <img src={"/images/upnphotos/" + text} width="64" height="64"></img>
         )
     },
     {

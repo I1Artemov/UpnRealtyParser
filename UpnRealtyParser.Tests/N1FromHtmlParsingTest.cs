@@ -10,9 +10,6 @@ namespace UpnRealtyParser.Tests.TestData
     {
         private const string TestDataPath = "\\UpnRealtyParser.Tests\\TestData\\02_N1WebPages";
 
-        /// <summary>
-        /// Не актуально! Сбор ссылок при типе отображения "таблица"
-        /// </summary>
         [Fact]
         public void GetSellFlatsLinksList_AsTable_Test()
         {
