@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { getAllFlats, startReceivingFlats } from './upnRentFlatIndexActions.jsx';
 // Используем те же колонки, что и у квартир на продажу
 import { SELL_FLATS_TABLE_COLUMNS } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
-import { Table } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 
 import 'antd/dist/antd.css';
 
@@ -34,13 +34,21 @@ class UpnRentFlatIndex extends React.Component {
                 );
         } else {
             return (
+                <div>
+                <Breadcrumb style={{ margin: '16px 0' }}>
+                    <Breadcrumb.Item>Upn</Breadcrumb.Item>
+                    <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
+                    <Breadcrumb.Item>В аренду</Breadcrumb.Item>
+                </Breadcrumb>
                 <Table
                     dataSource={flatsData}
                     columns={SELL_FLATS_TABLE_COLUMNS}
                     onChange={this.handleTableChange.bind(this)}
                     pagination={{ total: totalFlatsCount }}
                     loading={isFlatsLoading}
-                />
+                    rowClassName={(record, index) => (record.isArchived === true ? "archived-flat" : "active-flat")}
+                    />
+                </div>
             );
         }
     }

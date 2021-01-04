@@ -34,28 +34,23 @@ namespace UpnRealtyParser.Service
 
         protected static void watchdogProcessingAndLogging(AppSettings loadedSettings)
         {
-            N1SiteAgent n1Agent = new N1SiteAgent(WriteDebugLog, loadedSettings);
-            //UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
+            UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
 
             // Начинаем со сбора ссылок, на сбор квартир переключит watchdog
             Console.WriteLine("Начат сбор ссылок на квартиры на продажу");
-            //upnAgent.OpenConnection();
-            //upnAgent.StartLinksGatheringInSeparateThread();
-            n1Agent.OpenConnection();
-            n1Agent.StartLinksGatheringInSeparateThread();
+            upnAgent.OpenConnection();
+            upnAgent.StartLinksGatheringInSeparateThread();
 
             Thread.Sleep(700000);
             int previouslyProcessedAmount = 0;
 
             while (true)
             {
-                //int currentlyProcessedAmount = upnAgent.GetProcessedRecordsAmount();
-                int currentlyProcessedAmount = n1Agent.GetProcessedRecordsAmount();
-                WriteDebugLog(string.Format("Проверка состояния. Обработано {0} записей.", currentlyProcessedAmount));
+                int currentlyProcessedAmount = upnAgent.GetProcessedRecordsAmount();
 
                 if(currentlyProcessedAmount == previouslyProcessedAmount)
                 {
-                    /*if (upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
+                    if (upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionGatheringLinks)
                     {
                         // Если завершился сбор ссылок, то начинаем сбор квартир
                         WriteDebugLog("Переключение на сбор квартир на продажу.");
@@ -99,15 +94,14 @@ namespace UpnRealtyParser.Service
                         {
                             WriteDebugLog("Возможно, поток завис. Перезапуск отключен!");
                         }
-                    }*/
+                    }
                 }
 
                 previouslyProcessedAmount = currentlyProcessedAmount;
                 Thread.Sleep(300000);
             }
 
-            //upnAgent.CloseConnection();
-            n1Agent.CloseConnection();
+            upnAgent.CloseConnection();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Row, Col } from 'antd';
+import { Row, Col, Descriptions } from 'antd';
 
 class SingleFlatInfo extends React.Component {
     render() {
@@ -7,81 +7,26 @@ class SingleFlatInfo extends React.Component {
         let upnSiteHref = "https://upn.ru" + this.props.flatData.siteUrl;
 
         return (
-            <div>
-                <Row>
-                    <Col span={4}>Адрес</Col>
-                    <Col span={20}>{flatData.houseAddress}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Цена</Col>
-                    <Col span={20}>{flatData.price} руб.</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Этаж</Col>
-                    <Col span={20}>{flatData.floorSummary}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Общая площадь</Col>
-                    <Col span={20}>{flatData.spaceSum}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Раздельные сан. узлы</Col>
-                    <Col span={20}>{flatData.separateBathrooms}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Совмещенные сан. узлы</Col>
-                    <Col span={20}>{flatData.jointBathrooms}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Ремонт</Col>
-                    <Col span={20}>{flatData.renovationType}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Перепланировка</Col>
-                    <Col span={20}>{flatData.redevelopmentType}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Стеклопакеты</Col>
-                    <Col span={20}>{flatData.windowsType}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Мебель</Col>
-                    <Col span={20}>{flatData.furniture}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Ближайшее метро</Col>
-                    <Col span={20}>{flatData.subwaySummary}</Col>
-                </Row>
-
-                <Row>
-                    <Col span={4}>Тип дома</Col>
-                    <Col span={20}>{flatData.houseType}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Материал дома</Col>
-                    <Col span={20}>{flatData.houseWallMaterial}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Год постройки</Col>
-                    <Col span={20}>{flatData.houseBuildYear}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Описание</Col>
-                    <Col span={20}>{flatData.description}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Агентство</Col>
-                    <Col span={20}>{flatData.agencyName}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Добавлена/проверена</Col>
-                    <Col span={20}>{flatData.createdCheckedDatesSummary}</Col>
-                </Row>
-                <Row>
-                    <Col span={4}>Ссылка на сайт</Col>
-                    <Col span={20}>{upnSiteHref}</Col>
-                </Row>
-            </div>
+            <Descriptions bordered column={3}>
+                <Descriptions.Item label="Адрес" span={2}>{flatData.houseAddress}</Descriptions.Item>
+                <Descriptions.Item label="Цена">{flatData.price} руб.</Descriptions.Item>
+                <Descriptions.Item label="Этаж">{flatData.floorSummary}</Descriptions.Item>
+                <Descriptions.Item label="Общая площадь">{flatData.spaceSum}</Descriptions.Item>
+                <Descriptions.Item label="Раздельные сан. узлы">{flatData.separateBathrooms}</Descriptions.Item>
+                <Descriptions.Item label="Совмещенные сан. узлы">{flatData.jointBathrooms}</Descriptions.Item>
+                <Descriptions.Item label="Ремонт">{flatData.renovationType}</Descriptions.Item>
+                <Descriptions.Item label="Перепланировка">{flatData.redevelopmentType}</Descriptions.Item>
+                <Descriptions.Item label="Стеклопакеты">{flatData.windowsType}</Descriptions.Item>
+                <Descriptions.Item label="Мебель">{flatData.furniture}</Descriptions.Item>
+                <Descriptions.Item label="Ближайшее метро">{flatData.subwaySummary}</Descriptions.Item>
+                <Descriptions.Item label="Тип дома">{flatData.houseType}</Descriptions.Item>
+                <Descriptions.Item label="Материал дома">{flatData.houseWallMaterial}</Descriptions.Item>
+                <Descriptions.Item label="Год постройки">{flatData.houseBuildYear}</Descriptions.Item>
+                <Descriptions.Item label="Агентство">{flatData.agencyName}</Descriptions.Item>
+                <Descriptions.Item label="Добавлена/проверена">{flatData.createdCheckedDatesSummary}</Descriptions.Item>
+                <Descriptions.Item label="Ссылка на сайт">{upnSiteHref}</Descriptions.Item>
+                <Descriptions.Item label="Описание" span={3}>{flatData.description}</Descriptions.Item>
+            </Descriptions>
         );
     }
 }

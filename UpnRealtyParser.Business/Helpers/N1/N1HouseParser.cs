@@ -17,10 +17,7 @@ namespace UpnRealtyParser.Business.Helpers
         {
             N1HouseInfo house = new N1HouseInfo();
 
-            fillAddress(house, pageHtmlDoc);
             fillBuildYear(house, pageHtmlDoc);
-            fillMaxFloor(house, pageHtmlDoc);
-            fillWallMaterial(house, pageHtmlDoc);
             fillHouseType(house, pageHtmlDoc);
             fillBuilderCompany(house, pageHtmlDoc);
             fillLatitudeAndLongitude(house, webPageText);
@@ -35,74 +32,76 @@ namespace UpnRealtyParser.Business.Helpers
         {
             N1HouseInfo house = new N1HouseInfo();
 
-            // Адрес
-            string streetHouseStr = flatCard.QuerySelector(".living-list-card__location .link-text")?.InnerHtml;
-            int roomLetterIndex = streetHouseStr.IndexOf("-к");
-            if (roomLetterIndex > 0)
-                streetHouseStr = streetHouseStr.Substring(roomLetterIndex + 4);
+            fillAddressFromSingleApartmentCard(house, flatCard);
+            fillWallMaterialFromSingleApartmentCard(house, flatCard);
+            fillMaxFloorFromSingleApartmentCard(house, flatCard);
+
+            return house;
+        }
+
+        private void fillAddressFromSingleApartmentCard(N1HouseInfo house, IElement flatCard)
+        {
+            string streetHouseStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_address")?.TextContent;
 
             if (string.IsNullOrEmpty(streetHouseStr))
-                return house;
+                return;
 
-            string cityStr = flatCard.QuerySelector(".living-list-card-city-with-estate__item")?.InnerHtml;
-            cityStr = cityStr.Replace(",", "");
+            string cityStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_city")?.TextContent;
 
             if (!string.IsNullOrEmpty(cityStr))
                 streetHouseStr = cityStr + ", " + streetHouseStr;
 
             house.Address = streetHouseStr;
-
-            // Материал
-            string wallMaterialStr = flatCard.QuerySelector(".living-list-card__material")?.InnerHtml;
-            if (!string.IsNullOrEmpty(wallMaterialStr))
-                house.WallMaterial = wallMaterialStr;
-
-            return house;
         }
 
-        private void fillAddress(N1HouseInfo house, IDocument pageHtmlDoc)
+        private void fillWallMaterialFromSingleApartmentCard(N1HouseInfo house, IElement flatCard)
         {
-            string citySpan = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "a" &&
-                     m.Attributes.GetNamedItem("data-v-7f258678")?.Value != null &&
-                     m.Attributes.GetNamedItem("href")?.Value == "https://ekaterinburg.n1.ru/kupit/kvartiry/")?.InnerHtml;
+            string wallMaterialStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_floor")?.TextContent;
+            if (string.IsNullOrEmpty(wallMaterialStr))
+                return;
 
-            if (!string.IsNullOrEmpty(citySpan))
+            int spaceIndex = wallMaterialStr.LastIndexOf((char)160);
+
+            if (spaceIndex <= 0)
+                return;
+            wallMaterialStr = wallMaterialStr.Substring(spaceIndex + 1, wallMaterialStr.Length - spaceIndex - 1);
+
+            switch (wallMaterialStr)
             {
-                int startIndex = citySpan.IndexOf("\">");
-                int endIndex = citySpan.IndexOf("</span>");
-                if (startIndex < endIndex)
-                    citySpan = citySpan.Substring(startIndex + 2, endIndex - startIndex - 2);
+                case "п": house.WallMaterial = "Панельный"; break;
+                case "км": house.WallMaterial = "Кирпич-монолит"; break;
+                case "бтб": house.WallMaterial = "Бетонные блоки"; break;
+                case "м": house.WallMaterial = "Монолитный"; break;
+                case "к": house.WallMaterial = "Кирпичный"; break;
+                case "д": house.WallMaterial = "Деревянный"; break;
+                case "ш": house.WallMaterial = "Шлакоблочный"; break;
+                case "др": house.WallMaterial = "Другой"; break;
+                default: house.WallMaterial = wallMaterialStr; break;
             }
+        }
 
-            string street = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "div" && m.ClassName == "address")?.InnerHtml;
+        private void fillMaxFloorFromSingleApartmentCard(N1HouseInfo house, IElement flatCard)
+        {
+            string allFloorStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_floor span")?.TextContent;
 
-            if (!string.IsNullOrEmpty(street))
-                street = street.Replace(", ", "");
+            if (string.IsNullOrEmpty(allFloorStr))
+                return;
 
-            string houseNumber = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "div" && m.ClassName == "house-number")?.InnerHtml;
+            int slashIndex = allFloorStr.IndexOf('/');
+            if (slashIndex <= 0)
+                return;
 
-            if (!string.IsNullOrEmpty(houseNumber))
-                houseNumber = houseNumber.Replace(", ", "");
+            int spaceIndex = allFloorStr.LastIndexOf((char)160);
+            string lastFloorStr = allFloorStr.Substring(slashIndex + 2, spaceIndex - slashIndex - 2);
 
-            if (string.IsNullOrEmpty(citySpan))
-                citySpan = "Екатеринбург"; // Город не заполняется у квартир в архиве
-
-            List<string> addressElements = new List<string>{ citySpan, street, houseNumber };
-
-            if(!string.IsNullOrEmpty(citySpan) || !string.IsNullOrEmpty(street) || !string.IsNullOrEmpty(houseNumber))
-                house.Address = string.Join(", ", addressElements);
+            bool isParsed = int.TryParse(lastFloorStr, out int maxFloor);
+            if (isParsed)
+                house.MaxFloor = maxFloor;
         }
 
         private void fillBuildYear(N1HouseInfo house, IDocument pageHtmlDoc)
         {
-            string buildYearStr = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "span" &&
-                     m.ClassName == "card-living-content-params-list__value" &&
-                     m.InnerHtml != null && m.InnerHtml.Contains(" г."))?.InnerHtml;
-
+            string buildYearStr = getValueFromLivingContentParamsList("Год постройки", pageHtmlDoc);
             if (string.IsNullOrEmpty(buildYearStr))
                 return;
 
@@ -113,50 +112,13 @@ namespace UpnRealtyParser.Business.Helpers
                 house.BuildYear = buildYear;
         }
 
-        private void fillMaxFloor(N1HouseInfo house, IDocument pageHtmlDoc)
-        {
-            string floorsStr = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "span" &&
-                     m.ClassName == "card-living-content-params-list__value" &&
-                     m.InnerHtml != null && m.InnerHtml.Contains(" из "))?.InnerHtml;
-
-            if (string.IsNullOrEmpty(floorsStr))
-                return;
-
-            int startIndex = floorsStr.IndexOf("из ");
-            floorsStr = floorsStr.Substring(startIndex + 3, floorsStr.Length - startIndex - 3);
-            bool isParsed = int.TryParse(floorsStr, out int maxFloor);
-
-            if (isParsed)
-                house.MaxFloor = maxFloor;
-        }
-
-        private void fillWallMaterial(N1HouseInfo house, IDocument pageHtmlDoc)
-        {
-            string wallStr = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "span" &&
-                     m.Attributes.GetNamedItem("data-test")?.Value == "offer-card-param-house-material-type")?.InnerHtml;
-
-            if (string.IsNullOrEmpty(wallStr))
-                return;
-
-            house.WallMaterial = wallStr;
-        }
-
         private void fillHouseType(N1HouseInfo house, IDocument pageHtmlDoc)
         {
-            var houseTypeBlock = pageHtmlDoc.All.FirstOrDefault(
-                m => m.LocalName == "li" &&
-                     m.ClassName == "card-living-content-params-list__item" &&
-                     m.InnerHtml != null && m.InnerHtml.Contains("Тип дома"));
-
-            string houseTypeStr = houseTypeBlock?.LastChild?.TextContent;
-
+            string houseTypeStr = getValueFromLivingContentParamsList("Тип дома", pageHtmlDoc);
             if (string.IsNullOrEmpty(houseTypeStr))
                 return;
 
             house.HouseType = houseTypeStr;
-
         }
 
         private void fillBuilderCompany(N1HouseInfo house, IDocument pageHtmlDoc)
@@ -179,33 +141,33 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillLatitudeAndLongitude(N1HouseInfo house, string webPageText)
         {
-            //string template = "location\":{\"latitude\":56.795919,\"longtitude\":60.765082,\"precision\":\"exact\"}";
-            int endIndex = webPageText.IndexOf(",\"precision\":\"exact\"}");
-            int startIndex = endIndex - 50;
+            //string template = "141992221\",\"longitude\":\"60.629808407400000\",\"latitude\":\"56.799732576900000\""
+            int endIndex = webPageText.IndexOf(",\"utm_source\":\"realty_similar_card\"");
+            int startIndex = endIndex - 75;
 
             if (startIndex <= 0 || endIndex <= 0)
                 return;
 
             string latLonPartText = webPageText.Substring(startIndex, endIndex - startIndex);
 
-            int latStartIndex = latLonPartText.IndexOf("latitude");
-            int latEndIndex = latLonPartText.IndexOf(",\"long");
-            if (latStartIndex < latEndIndex)
-            {
-                string latitudeStr = latLonPartText.Substring(latStartIndex + "latitude\":".Length, latEndIndex - latStartIndex - "latitude\":".Length);
-                bool isParsedLat = double.TryParse(latitudeStr.Replace('.', ','), out double latitude);
-                if (isParsedLat)
-                    house.Latitude = latitude;
-            }
-
-            int lonStartIndex = latLonPartText.IndexOf("longtitude");
-            int lonEndIndex = latLonPartText.Length;
+            int lonStartIndex = latLonPartText.IndexOf("longitude");
+            int lonEndIndex = latLonPartText.IndexOf("\",\"lati");
             if (lonStartIndex < lonEndIndex)
             {
-                string longitudeStr = latLonPartText.Substring(lonStartIndex + "longtitude\":".Length, lonEndIndex - lonStartIndex - "longtitude\":".Length);
+                string longitudeStr = latLonPartText.Substring(lonStartIndex + "longitude\":\"".Length, lonEndIndex - lonStartIndex - "longitude\":\"".Length);
                 bool isParsedLon = double.TryParse(longitudeStr.Replace('.', ','), out double longitude);
                 if (isParsedLon)
                     house.Longitude = longitude;
+            }
+
+            int latStartIndex = latLonPartText.IndexOf("latitude\":\"");
+            int latEndIndex = latLonPartText.Length - 1;
+            if (latStartIndex < latEndIndex)
+            {
+                string latitudeStr = latLonPartText.Substring(latStartIndex + "latitude\":\"".Length, latEndIndex - latStartIndex - "latitude\":\"".Length);
+                bool isParsedLat = double.TryParse(latitudeStr.Replace('.', ','), out double latitude);
+                if (isParsedLat)
+                    house.Latitude = latitude;
             }
         }
     }

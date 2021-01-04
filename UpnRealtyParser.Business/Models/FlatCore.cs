@@ -26,48 +26,6 @@ namespace UpnRealtyParser.Business.Models
 
         public int PageLinkId { get; set; }
 
-        /* ------------------------ Свойства для отображения -------------------------- */
-
-        public string LastCheckDatePrintable =>
-            LastCheckDate == null ? "" : LastCheckDate.Value.ToString("dd.MM.yyyy");
-
-        /// <summary>
-        /// Этаж = "(этаж квартиры) / (этажей в доме)"
-        /// </summary>
-        public string FloorSummary
-        {
-            get
-            {
-                string flatFloorStr = FlatFloor?.ToString() ?? "?";
-                string maxFloorStr = HouseMaxFloor?.ToString() ?? "?";
-                return flatFloorStr + "/" + maxFloorStr;
-            }
-        }
-
-        /// <summary>
-        /// До метро: "(станция метро) ((расстояние) м.)"
-        /// </summary>
-        public string SubwaySummary
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(ClosestSubwayName) || string.IsNullOrEmpty(ClosestSubwayRangeStr))
-                    return "н/у";
-
-                return string.Format("{0} ({1} м.)", ClosestSubwayName, ClosestSubwayRangeStr);
-            }
-        }
-
-        /// <summary>
-        /// Даты создания и проверки наличия на сайте через тире
-        /// </summary>
-        public string CreatedCheckedDatesSummary =>
-            string.Format("{0} - {1}", CreationDatePrintable, LastCheckDatePrintable);
-
-        public string ShortenedDescription =>
-            (string.IsNullOrEmpty(Description) || Description.Length <= 150) ? Description
-                : Description.Substring(0, 147) + "...";
-
         /* ---------------------- NotMapped-свойства для таблицы ---------------------- */
 
         [NotMapped]
@@ -108,5 +66,57 @@ namespace UpnRealtyParser.Business.Models
 
         [NotMapped]
         public List<string> PhotoHrefs { get; set; }
+
+        [NotMapped]
+        public bool? IsArchived { get; set; }
+
+        [NotMapped]
+        public virtual int? AgencyId => null;
+
+        [NotMapped]
+        public virtual int? HouseInfoId => null;
+
+        // TODO: Удалить, когда будет вьюшка для N1
+        /* ------------------------ Свойства для отображения -------------------------- */
+
+        public string LastCheckDatePrintable =>
+            LastCheckDate == null ? "" : LastCheckDate.Value.ToString("dd.MM.yyyy");
+
+        /// <summary>
+        /// Этаж = "(этаж квартиры) / (этажей в доме)"
+        /// </summary>
+        public string FloorSummary
+        {
+            get
+            {
+                string flatFloorStr = FlatFloor?.ToString() ?? "?";
+                string maxFloorStr = HouseMaxFloor?.ToString() ?? "?";
+                return flatFloorStr + "/" + maxFloorStr;
+            }
+        }
+
+        /// <summary>
+        /// До метро: "(станция метро) ((расстояние) м.)"
+        /// </summary>
+        public string SubwaySummary
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(ClosestSubwayName) || !string.IsNullOrEmpty(ClosestSubwayRangeStr))
+                    return "н/у";
+
+                return string.Format("{0} ({1} м.)", ClosestSubwayName, ClosestSubwayRangeStr);
+            }
+        }
+
+        /// <summary>
+        /// Даты создания и проверки наличия на сайте через тире
+        /// </summary>
+        public string CreatedCheckedDatesSummary =>
+            string.Format("{0} - {1}", CreationDatePrintable, LastCheckDatePrintable);
+
+        public string ShortenedDescription =>
+            (string.IsNullOrEmpty(Description) || Description.Length <= 150) ? Description
+                : Description.Substring(0, 147) + "...";
     }
 }

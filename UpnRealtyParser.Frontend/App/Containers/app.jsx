@@ -10,8 +10,9 @@ import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
 import WebProxyIndex from './WebProxyIndex/webProxyIndex.jsx';
 import LogEntryIndex from './LogEntryIndex/logEntryIndex.jsx';
+import SiteIndex from '../Stateless/siteIndex.jsx';
 
-import { Layout, Breadcrumb } from 'antd';
+import { Layout } from 'antd';
 
 const { Content, Footer } = Layout;
 
@@ -25,10 +26,7 @@ export default class App extends React.Component {
                         <Layout className="site-layout">
                             {/*<Header className="site-layout-background" style={{ padding: 0 }} />*/}
                             <Content style={{ margin: '0 16px' }}>
-                                <Breadcrumb style={{ margin: '16px 0' }}>
-                                    <Breadcrumb.Item>Upn</Breadcrumb.Item>
-                                    <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
-                                </Breadcrumb>
+                                
                                 <main>
                                     <Switch>
                                         <Route path="/sellflats" component={UpnSellFlatIndex} />
@@ -40,6 +38,7 @@ export default class App extends React.Component {
                                         <Route path="/n1sellflats" component={N1SellFlatIndex} />
                                         {/*<Route path="/n1rentflats" component={N1RentFlatIndex} />*/}
                                         <Route exact path="/sellflat/:id" component={UpnSellFlatRead} />
+                                        <Route path="/" component={SiteIndex} />
                                     </Switch>
                                 </main>
                             </Content>

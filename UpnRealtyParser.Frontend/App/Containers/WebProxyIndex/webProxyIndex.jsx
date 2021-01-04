@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllProxies, startReceivingProxies } from './webProxyIndexActions.jsx';
 import { PROXIES_TABLE_COLUMNS } from './webProxyIndexConstants.jsx';
-import { Table } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 
 import 'antd/dist/antd.css';
 
@@ -25,6 +25,11 @@ class WebProxyIndex extends React.Component {
         let isProxiesLoading = this.props.isProxiesLoading;
 
         return (
+            <div>
+            <Breadcrumb style={{ margin: '16px 0' }}>
+                <Breadcrumb.Item>Администрирование</Breadcrumb.Item>
+                <Breadcrumb.Item>Прокси</Breadcrumb.Item>
+            </Breadcrumb>
             <Table
                 dataSource={proxiesData}
                 columns={PROXIES_TABLE_COLUMNS}
@@ -32,6 +37,7 @@ class WebProxyIndex extends React.Component {
                 pagination={{total: totalProxiesCount}}
                 loading={isProxiesLoading}
             />
+            </div>
         );
     }
 }

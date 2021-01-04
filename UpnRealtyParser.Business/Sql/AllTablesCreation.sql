@@ -270,3 +270,45 @@ ALTER TABLE [N1Flat] ADD [PublishingDateTime] datetime;
 
 -- 24.11.2020 Поле IsFilledCompletely у домов N1
 ALTER TABLE [N1HouseInfo] ADD [IsFilledCompletely] bit;
+
+-- 18.12.2020 Вьюшка с квартирами УПН, дозаполненными информацией из других таблиц
+create view [vUpnFlatAdditional] as
+((select
+	uf.[Id],
+	uf.[RemovalDate],
+	uf.[CreationDateTime],
+	uf.[LastCheckDate],
+	uf.[FlatType],
+	uf.[RoomAmount],
+	uf.[SpaceSum],
+	uf.[SpaceLiving],
+	uf.[SpaceKitchen],
+	uf.[FlatFloor],
+	uf.[JointBathrooms],
+	uf.[SeparateBathrooms],
+	uf.[RenovationType],
+	uf.[RedevelopmentType],
+	uf.[WindowsType],
+	uf.[Furniture],
+	uf.[Price],
+	uf.[Description],
+	uf.[SellCondition],
+	hou.[Address] as [HouseAddress],
+	hou.[BuildYear] as [HouseBuildYear],
+	hou.[HouseType],
+	hou.[MaxFloor] as [HouseMaxFloor],
+	hou.[WallMaterial] as [HouseWallMaterial],
+	station.[Name] as [ClosestSubwayName],
+	hou.[ClosestSubwayStationRange],
+	hou.[Latitude] as [HouseLatitude],
+	hou.[Longitude] as [HouseLongitude],
+	COALESCE(ag.[AgentPhone], ag.[CompanyPhone]) as [SellerPhone],
+	ag.[Name] as [AgencyName],
+	(select top 1 pht.[FileName] from [UpnFlatPhoto] pht where pht.[FlatId] = uf.[Id]) as [FirstPhotoFile],
+	(
+	IIF(DATEADD(DAY, 7, uf.[LastCheckDate]) < (select max(uftmp.[LastCheckDate]) from [UpnFlat] uftmp ), 1, 0)
+	) as [IsArchived]
+from [UpnFlat] uf 
+inner join [UpnHouseInfo] hou on uf.UpnHouseInfoId = hou.Id
+inner join [SubwayStation] station on station.Id = hou.ClosestSubwayStationId
+inner join [UpnAgency] ag on uf.UpnAgencyId = ag.Id));

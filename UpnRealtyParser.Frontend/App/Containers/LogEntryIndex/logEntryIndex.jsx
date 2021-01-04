@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllLogEntries, startReceivingLogEntries } from './logEntryIndexActions.jsx';
 import { LOG_ENTRIES_TABLE_COLUMNS } from './logEntryIndexConstants.jsx';
-import { Table } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 
 import 'antd/dist/antd.css';
 
@@ -25,6 +25,11 @@ class LogEntryIndex extends React.Component {
         let isLogEntriesLoading = this.props.isLogEntriesLoading;
 
         return (
+            <div>
+            <Breadcrumb style={{ margin: '16px 0' }}>
+                <Breadcrumb.Item>Администрирование</Breadcrumb.Item>
+                <Breadcrumb.Item>Лог</Breadcrumb.Item>
+            </Breadcrumb>
             <Table
                 dataSource={logEntriesData}
                 columns={LOG_ENTRIES_TABLE_COLUMNS}
@@ -32,6 +37,7 @@ class LogEntryIndex extends React.Component {
                 pagination={{ total: totalLogEntriesCount }}
                 loading={isLogEntriesLoading}
             />
+            </div>
         );
     }
 }

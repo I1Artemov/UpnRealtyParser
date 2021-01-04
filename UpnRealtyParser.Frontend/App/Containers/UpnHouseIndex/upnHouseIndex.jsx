@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllHouses } from './upnHouseIndexActions.jsx';
 import { HOUSES_TABLE_COLUMNS } from './upnHouseIndexConstants.jsx';
-import { Table } from 'antd';
+import { Table, Breadcrumb } from 'antd';
 
 import 'antd/dist/antd.css';
 
@@ -21,12 +21,18 @@ class UpnHouseIndex extends React.Component {
         let totalHousesCount = this.props.totalHousesCount;
 
         return (
+            <div>
+            <Breadcrumb style={{ margin: '16px 0' }}>
+                <Breadcrumb.Item>Upn</Breadcrumb.Item>
+                <Breadcrumb.Item>Дома</Breadcrumb.Item>
+            </Breadcrumb>
             <Table
                 dataSource={housesData}
                 columns={HOUSES_TABLE_COLUMNS}
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{ total: totalHousesCount }}
             />
+            </div>
         );
     }
 }

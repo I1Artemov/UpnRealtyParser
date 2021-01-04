@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getFlat, startReceivingFlat, showFlatPhotos, hideFlatPhotos } from './upnSellFlatReadActions.jsx';
-import { Divider, Spin, Button } from 'antd';
+import { Divider, Spin, Button, Breadcrumb } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
 
@@ -36,10 +36,18 @@ class UpnSellFlatRead extends React.Component {
                 </div>
             );
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
+            // Без этого могут попасть значения undefined и компонент не отрендерится
+            let centerLatitude = flatData.houseLatitude === undefined ? 56.8519 : flatData.houseLatitude;
+            let centerLongitude = flatData.houseLongitude === undefined ? 60.6122 : flatData.houseLongitude;
             return (
                 <div>
+                    <Breadcrumb style={{ margin: '16px 0' }}>
+                        <Breadcrumb.Item>Upn</Breadcrumb.Item>
+                        <Breadcrumb.Item>Квартира на продажу</Breadcrumb.Item>
+                    </Breadcrumb>
                     <Divider orientation={"center"}>Информация о квартире на продажу, ID {flatData.id}</Divider>
                     <SingleFlatInfo flatData={flatData} />
+                    {/* TODO: Отдельный компонент для отображения фотографий */}
                     <div style={{marginTop: "10px", textAlign: "center"}}>
                         {
                             flatData.photoCount > 0 && !isShowPhotos &&
@@ -54,7 +62,7 @@ class UpnSellFlatRead extends React.Component {
                             })
                         }
                     </div>
-                    <MapContainer center={[56.8519, 60.6122]} zoom={13} scrollWheelZoom={false} style={{ height: "360px", marginTop: "10px" }}>
+                    <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false} style={{ height: "360px", marginTop: "10px" }}>
                         <TileLayer
                           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

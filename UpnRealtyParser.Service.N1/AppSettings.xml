@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AppSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <RequestDelayInMs>15000</RequestDelayInMs>
+  <MaxRequestTimeoutInMs>22000</MaxRequestTimeoutInMs>
+  <UpnTablePagesToSkip>0</UpnTablePagesToSkip>
+  <MaxRetryAmountForSingleRequest>800</MaxRetryAmountForSingleRequest>
+  <IsUseProxies>true</IsUseProxies>
+  <IsGetProxiesListFromGithub>true</IsGetProxiesListFromGithub>
+  <ProxyList>
+	<string>192.41.71.199:3128</string>
+	<string>162.248.247.153:3128</string>
+  </ProxyList>
+</AppSettings>

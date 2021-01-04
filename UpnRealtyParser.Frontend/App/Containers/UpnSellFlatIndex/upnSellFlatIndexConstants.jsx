@@ -5,11 +5,27 @@ export const GET_ALL_FLATS_SUCCESS = 'GET_ALL_FLATS_SUCCESS';
 export const GET_ALL_FLATS_ERROR = 'GET_ALL_FLATS_ERROR';
 export const GET_ALL_FLATS_LOADING_IN_PROGRESS = 'GET_ALL_FLATS_LOADING_IN_PROGRESS';
 
+export const SET_SHOW_ARCHIVED = 'SET_SHOW_ARCHIVED';
+export const SET_EXCLUDE_FIRST_FLOOR = 'SET_EXCLUDE_FIRST_FLOOR';
+export const SET_EXCLUDE_LAST_FLOOR = 'SET_EXCLUDE_LAST_FLOOR';
+export const SET_MIN_PRICE = 'SET_MIN_PRICE';
+export const SET_MAX_PRICE = 'SET_MAX_PRICE';
+export const SET_MIN_BUILD_YEAR = 'SET_MIN_BUILD_YEAR';
+
 export const SELL_FLATS_TABLE_COLUMNS = [
     {
         title: '№',
         dataIndex: 'id',
         key: 'id'
+    },
+    {
+        title: 'Фото',
+        dataIndex: 'firstPhotoFile',
+        key: 'firstPhotoFile',
+        render: (text, row) => (
+            (text === null || text === 'ERR') ? <p>--</p> :
+                <img src={"/images/upnphotos/" + text} width="64" height="64"></img>
+        )
     },
     {
         title: 'Создан/проверен',

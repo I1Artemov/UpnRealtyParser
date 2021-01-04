@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Repositories;
 
@@ -39,6 +40,11 @@ namespace UpnRealtyParser.Frontend
             }
 
             app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider("C:\\Docs\\UpnPhotos"),
+                RequestPath = "/images/upnphotos"
+            });
             app.UseMvc(routes =>
             {
                 routes.MapRoute(name: "DefaultApi", template: "api/{controller}/{action}");

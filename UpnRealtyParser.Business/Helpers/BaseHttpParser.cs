@@ -47,5 +47,23 @@ namespace UpnRealtyParser.Business.Helpers
 
             return result;
         }
+
+        /// <summary>
+        /// Достает значение параметра квартиры из блока под фотографиями формата "Имя параметра ... значение".
+        /// Ищет тот параметр, название которого содержит подстроку titleContains
+        /// </summary>
+        protected string getValueFromLivingContentParamsList(string titleContains, IDocument pageHtmlDoc)
+        {
+            var livingContentBlock = pageHtmlDoc.All.FirstOrDefault(
+                m => m.LocalName == "dl" &&
+                     m.InnerHtml != null && m.InnerHtml.Contains(titleContains));
+
+            string livingContentBlockStr = livingContentBlock?.LastElementChild?.TextContent;
+            if (string.IsNullOrEmpty(livingContentBlockStr))
+                return null;
+
+            livingContentBlockStr = livingContentBlockStr.Replace("   ", "").Replace("\n", "").Trim();
+            return livingContentBlockStr;
+        }
     }
 }
