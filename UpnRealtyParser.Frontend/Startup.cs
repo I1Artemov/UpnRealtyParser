@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using UpnRealtyParser.Business.Contexts;
+using UpnRealtyParser.Business.Options;
 using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Frontend
@@ -27,6 +28,7 @@ namespace UpnRealtyParser.Frontend
 
             services.AddDbContext<RealtyParserContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped(typeof(EFGenericRepo<,>));
+            services.Configure<FileLocationOptions>(Configuration.GetSection("FileLocationOptions"));
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
@@ -39,10 +41,12 @@ namespace UpnRealtyParser.Frontend
                 app.UseWebpackDevMiddleware();
             }
 
+            var fileLocationOptions = Configuration.GetSection("FileLocationOptions").Get<FileLocationOptions>();
+
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {
-                FileProvider = new PhysicalFileProvider("C:\\Docs\\UpnPhotos"),
+                FileProvider = new PhysicalFileProvider(fileLocationOptions.UpnPhotoFolder),
                 RequestPath = "/images/upnphotos"
             });
             app.UseMvc(routes =>
