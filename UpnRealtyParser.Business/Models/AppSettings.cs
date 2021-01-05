@@ -35,6 +35,11 @@ namespace UpnRealtyParser.Business.Models
         public bool IsGetProxiesListFromGithub { get; set; }
 
         /// <summary>
+        /// Если установлено, при каждом запуске будут загружаться новые прокси с GitHub
+        /// </summary>
+        public bool IsUpdateProxiesBeforeRun { get; set; }
+
+        /// <summary>
         /// Список прокси в формате "IP:Port"
         /// </summary>
         public List<string> ProxyList { get; set; }

@@ -42,7 +42,7 @@ namespace UpnRealtyParser.Business.Helpers
                     proxyProvider.GetProxiesFromIps(settings.ProxyList);
                 }
             }
-            if (settings.IsUseProxies && settings.IsGetProxiesListFromGithub)
+            if (settings.IsUseProxies && settings.IsGetProxiesListFromGithub && settings.IsUpdateProxiesBeforeRun)
             {
                 using (var realtyContext = new RealtyParserContext())
                 {

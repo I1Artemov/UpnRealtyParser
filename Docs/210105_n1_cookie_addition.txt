@@ -1,0 +1,34 @@
+private void addN1CookiesToRequest(HttpWebRequest request)
+        {
+            request.CookieContainer = new CookieContainer();
+            request.CookieContainer.Add(new Cookie("__ddg2", "bMuImmyq2fqpIyL0", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("__upin", "i4mgrJ9Mdbj1Y/G2c8l/SA", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ga", "GA1.2.1199447834.1504943093", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ga_cid", "1199447834.1504943093", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ga_crossdomain", "GA1.2.1305860101.1562557526", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ga_crossdomain_gid", "GA1.2.1978224014.1609787909", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_gid", "GA1.2.1207172353.1609787909", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ym_d", "1601431021", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ym_isad", "1", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ym_uid", "1504943093629061252", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("_ym_visorc", "w", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("CLASSIFIED-4989-attract-popup-close-times", "1", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("CLASSIFIED-4989-attract-popup-closed", "true", "/", ".e1.ru"));
+            // Classified - skip
+            request.CookieContainer.Add(new Cookie("cto_bundle", "9q_3j19IJTJGdEVaSWc4ZzRUMTlreXhRZWNlcnUyNVNiZ2I1R1AyRXVpSGV6e" +
+                "TBxbXFUJTJGblJWU1ZoSlpRdmNDcGYzWWpkMlljJTJGZ3FOVTRrJTJCck5nVTRxdEF5UGFMM2xWOVFsdWdGWUJsNVZwcE5LZmR0M2ElMkZyVTlDSll" +
+                "CZW9JQmZNSlMxaHBNeXJ5UDg0SHpTOHBLJTJCeU5uMSUyQkt5dWN4cjhMOU12aExPUjRsTFZwbkhUVSUzRA", "/", ".e1.ru"));
+            //request.CookieContainer.Add(new Cookie("current_user_roles_0", "{\"user_type\":\"consumer\",\"user_role\":{\"landlord\":\"365+ days\"}}", "/", "localhost"));
+            request.CookieContainer.Add(new Cookie("is_mobile", "0", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("lastVisited", "1609823298", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("ngs_realty", "MTg5ODk1NTY4NjE2MDk3ODc5MDY=", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("ngs_ttq", "u:5e895f7ebeb940d8f04c37b024ce60c9", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("ngs_uid", "w127Clmzm/V2bwqDDLzgAg==", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("REALTY_FEATURE_photocatalog_redirect", "0", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("RealtyStoredSearch", "0", "/", ".e1.ru"));
+            //request.CookieContainer.Add(new Cookie("m_from_page", "search"));
+            // m_page
+            request.CookieContainer.Add(new Cookie("tmr_lvid", "058c67eaac412546f8956a780e57e92b", "/", ".e1.ru"));
+            request.CookieContainer.Add(new Cookie("tmr_lvidTS", "1559316478685", "/", ".e1.ru"));
+            // request.CookieContainer.Add(new Cookie("tmr_reqNum", "146"));
+        }

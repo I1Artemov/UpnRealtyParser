@@ -6,6 +6,7 @@
   <MaxRetryAmountForSingleRequest>800</MaxRetryAmountForSingleRequest>
   <IsUseProxies>true</IsUseProxies>
   <IsGetProxiesListFromGithub>true</IsGetProxiesListFromGithub>
+  <IsUpdateProxiesBeforeRun>false</IsUpdateProxiesBeforeRun>
   <ProxyList>
 	<string>192.41.71.199:3128</string>
 	<string>162.248.247.153:3128</string>
