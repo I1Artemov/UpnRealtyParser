@@ -8,7 +8,7 @@ namespace UpnRealtyParser.Business.Helpers
 {
     public class N1ApartmentParser : BaseHttpParser
     {
-		/// <summary> Предварительное получение квартир прямо со страницы с их перечнем </summary>
+        /// <summary> Предварительное получение квартир прямо со страницы с их перечнем </summary>
         public List<N1Flat> GetN1SellFlatsFromTablePage(string webPageText, N1HouseParser houseParser)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
@@ -84,7 +84,7 @@ namespace UpnRealtyParser.Business.Helpers
             priceStr = priceStr.Substring(0, priceStr.Length - 5);
 
             bool isParsed = int.TryParse(priceStr, out int price);
-            if(isParsed)
+            if (isParsed)
                 flat.Price = price;
         }
 
@@ -113,7 +113,7 @@ namespace UpnRealtyParser.Business.Helpers
             if (string.IsNullOrEmpty(roomStr))
                 return;
 
-            if(roomStr == "ком")
+            if (roomStr == "ком")
             {
                 flat.RoomAmount = 0;
                 return;
@@ -149,7 +149,7 @@ namespace UpnRealtyParser.Business.Helpers
             flat.Href = hrefStr;
         }
 
-	    public N1Flat GetN1FlatFromPageText(string webPageText)
+        public N1Flat GetN1FlatFromPageText(string webPageText)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
             return GetN1FlatFromPageText(pageHtmlDoc, webPageText);
@@ -159,6 +159,10 @@ namespace UpnRealtyParser.Business.Helpers
         {
             N1Flat flat = new N1Flat();
 
+            fillPriceAndRoomAmount(flat, webPageText);
+            fillSpace(flat, pageHtmlDoc);
+            fillSpaceLiving(flat, pageHtmlDoc);
+            fillSpaceKitchen(flat, pageHtmlDoc);
             fillPlanningType(flat, pageHtmlDoc);
             fillBathroomType(flat, pageHtmlDoc);
             fillFlatCondition(flat, pageHtmlDoc);
@@ -174,14 +178,80 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public List<string> GetPhotoHrefsFromPage(string pageText)
         {
+            // a data-v-1aa2889c="" href="https://n1st.ru/cache/realty/photo/e1ae19f41edfd70cc5f0092af780e733_1200_900_p.jpg"
             var htmlDocument = getPreparedHtmlDocument(pageText).Result;
-            List<IElement> anchorElements = htmlDocument.QuerySelectorAll(".card__personal-photos img.card__photo-image")
+            List<IElement> anchorElements = htmlDocument.QuerySelectorAll("div.offer-card-gallery a.link")
                 .ToList();
 
             return anchorElements
-                .Select(x => x.GetAttribute("src"))
-                .Distinct()
+                .Select(x => x.GetAttribute("href"))
                 .ToList();
+        }
+
+        private void fillPriceAndRoomAmount(N1FlatBase flat, string webPageText)
+        {
+            // Продам - руб. - N1
+            int startIndex = webPageText.IndexOf("Продам");
+            int endIndex = webPageText.IndexOf("руб. — N1");
+
+            if (startIndex <= 0 || endIndex <= 0 || startIndex >= endIndex)
+                return;
+
+            string priceAndRoomContainingStr = webPageText.Substring(startIndex, endIndex - startIndex);
+
+            string roomAmountStr = priceAndRoomContainingStr.Substring(7, 1);
+            bool isParsedRoomAmount = int.TryParse(roomAmountStr, out int roomAmount);
+            if (isParsedRoomAmount)
+                flat.RoomAmount = roomAmount;
+            // TODO: студии!
+
+            int priceStartIndex = priceAndRoomContainingStr.LastIndexOf(", ");
+            if (priceStartIndex <= 0)
+                return;
+
+            string priceStr = priceAndRoomContainingStr.Substring(priceStartIndex + 1,
+                priceAndRoomContainingStr.Length - priceStartIndex - 1);
+
+            bool isParsedPrice = int.TryParse(priceStr.Replace(" ", ""), out int price);
+            if (isParsedPrice)
+                flat.Price = price;
+        }
+
+        private void fillSpace(N1FlatBase flat, IDocument pageHtmlDoc)
+        {
+            string spaceSumStr = getValueFromLivingContentParamsList("Общая площадь", pageHtmlDoc);
+            if (string.IsNullOrEmpty(spaceSumStr))
+                return;
+
+            spaceSumStr = spaceSumStr.Substring(0, spaceSumStr.Length - 3);
+
+            bool isSpaceSumParsed = double.TryParse(spaceSumStr.Replace('.', '.'), out double spaceSum);
+            if (isSpaceSumParsed)
+                flat.SpaceSum = spaceSum;
+        }
+
+        private void fillSpaceLiving(N1FlatBase flat, IDocument pageHtmlDoc)
+        {
+            string spaceLivingStr = getValueFromLivingContentParamsList("Жилая площадь", pageHtmlDoc);
+            if (string.IsNullOrEmpty(spaceLivingStr))
+                return;
+            spaceLivingStr = spaceLivingStr.Substring(0, spaceLivingStr.Length - 3);
+
+            bool isSpaceLivingParsed = double.TryParse(spaceLivingStr.Replace('.', '.'), out double spaceLiving);
+            if (isSpaceLivingParsed)
+                flat.SpaceLiving = spaceLiving;
+        }
+
+        private void fillSpaceKitchen(N1FlatBase flat, IDocument pageHtmlDoc)
+        {
+            string spaceKitchenStr = getValueFromLivingContentParamsList("Кухня", pageHtmlDoc);
+            if (string.IsNullOrEmpty(spaceKitchenStr))
+                return;
+            spaceKitchenStr = spaceKitchenStr.Substring(0, spaceKitchenStr.Length - 3);
+
+            bool isSpaceLivingParsed = double.TryParse(spaceKitchenStr.Replace('.', '.'), out double spaceKitchen);
+            if (isSpaceLivingParsed)
+                flat.SpaceKitchen = spaceKitchen;
         }
 
         private void fillPlanningType(N1FlatBase flat, IDocument pageHtmlDoc)
@@ -207,15 +277,10 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillBalconyAmount(N1FlatBase flat, IDocument pageHtmlDoc)
         {
-            string balconyAmountStr = getValueFromLivingContentParamsList("Лоджия", pageHtmlDoc);
+            string balconyAmountStr = getValueFromLivingContentParamsList("Количество лоджий", pageHtmlDoc);
             if (string.IsNullOrEmpty(balconyAmountStr))
                 return;
 
-            int spaceIndex = balconyAmountStr.IndexOf(" ");
-            if (spaceIndex < 0)
-                return;
-
-            balconyAmountStr = balconyAmountStr.Substring(0, spaceIndex);
             bool isParsed = int.TryParse(balconyAmountStr, out int balconyAmount);
             if (isParsed)
                 flat.BalconyAmount = balconyAmount;
@@ -223,19 +288,40 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillPropertyType(N1FlatBase flat, IDocument pageHtmlDoc)
         {
-            string propertyTypeStr = getValueFromLivingContentParamsList("Форма собственности", pageHtmlDoc);
+            string propertyTypeStr = getValueFromLivingContentParamsList("Тип собственности", pageHtmlDoc);
             if (!string.IsNullOrEmpty(propertyTypeStr))
                 flat.PropertyType = propertyTypeStr;
         }
 
         private void fillDescription(N1FlatBase flat, IDocument pageHtmlDoc)
         {
-            string descriptionText = pageHtmlDoc.QuerySelector(".card__comments-section p")?.TextContent;
+            string descriptionText = pageHtmlDoc.All.FirstOrDefault(
+                m => m.LocalName == "div" &&
+                     m.ClassName == "text" &&
+                     m.Attributes.GetNamedItem("_v-36737051")?.Value != null)?.InnerHtml;
+
             if (string.IsNullOrEmpty(descriptionText))
                 return;
 
-            descriptionText = descriptionText.Replace("<br>", "").Replace("\n", "").Replace("\t", "");
+            descriptionText = descriptionText.Replace("<br>", "");
+            descriptionText = descriptionText.Replace("\n", "");
+
             flat.Description = descriptionText;
+        }
+
+        /// <summary>
+        /// Достает значение параметра квартиры из блока под фотографиями формата "Имя параметра ... значение".
+        /// Ищет тот параметр, название которого содержит подстроку titleContains
+        /// </summary>
+        private string getValueFromLivingContentParamsList(string titleContains, IDocument pageHtmlDoc)
+        {
+            var livingContentBlock = pageHtmlDoc.All.FirstOrDefault(
+                m => m.LocalName == "li" &&
+                     m.ClassName == "card-living-content-params-list__item" &&
+                     m.InnerHtml != null && m.InnerHtml.Contains(titleContains));
+
+            string livingContentBlockStr = livingContentBlock?.LastChild?.TextContent;
+            return livingContentBlockStr;
         }
     }
 }

@@ -66,8 +66,8 @@ namespace UpnRealtyParser.Business.Helpers
         /// <param name="isRentFlats">Обработка квартир под аренду</param>
         public void GatherLinksAndInsertInDb(bool isRentFlats = false)
         {
-            string mainTableUrl = isRentFlats ? "https://arenda.e1.ru/snyat/srok-dlitelniy?search_no_index=1&on_page=100&page=1" :
-                "https://homes.e1.ru/kupit/?search_no_index=1&on_page=100";
+            string mainTableUrl = isRentFlats ? "https://ekaterinburg.n1.ru/snyat/dolgosrochno/kvartiry?page=1&limit=100" :
+                "https://ekaterinburg.n1.ru/kupit/kvartiry?page=1&limit=100";
             string rentLogMessageAddition = isRentFlats ? " (аренда)" : "";
 
             string firstTablePageHtml = downloadStringWithHttpRequest(mainTableUrl, "utf-8").Result;

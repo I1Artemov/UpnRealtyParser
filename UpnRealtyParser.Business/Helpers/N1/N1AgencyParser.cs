@@ -17,15 +17,15 @@ namespace UpnRealtyParser.Business.Helpers
 
             fillAgencyName(agency, pageHtmlDoc);
             fillAgentName(agency, pageHtmlDoc);
-            fillAgentPhone(agency, webPageText);
-            fillAgencyUrl(agency, webPageText);
+            fillAgentPhone(agency, pageHtmlDoc);
+            fillAgencyUrl(agency, pageHtmlDoc);
 
             return agency;
         }
 
         private void fillAgencyName(N1Agency agency, IDocument pageHtmlDoc)
         {
-            string agencyName = pageHtmlDoc.QuerySelector(".organization-informer__title-link")?.TextContent;
+            string agencyName = pageHtmlDoc.QuerySelector("a._agency-name span")?.InnerHtml;
             if (string.IsNullOrEmpty(agencyName))
                 return;
 
@@ -34,40 +34,37 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillAgentName(N1Agency agency, IDocument pageHtmlDoc)
         {
-            string agentName = pageHtmlDoc.QuerySelector(".card__author-name")?.TextContent;
+            string agentName = pageHtmlDoc.QuerySelector(".offer-card-contacts__agency-owner-name")?.InnerHtml;
+            if (string.IsNullOrEmpty(agentName))
+                agentName = pageHtmlDoc.QuerySelector(".offer-card-contacts__owner-name")?.InnerHtml;
 
             if (string.IsNullOrEmpty(agentName))
                 return;
 
-            agency.AgentName = agentName.Replace("\n", "").Trim();
+            agency.AgentName = agentName;
+
+            string sellerTypeStr = pageHtmlDoc.QuerySelector(".offer-card-contacts__person._type")?.InnerHtml;
+            if (sellerTypeStr != "Частный риелтор")
+                agency.IsCompany = true;
         }
 
-        private void fillAgentPhone(N1Agency agency, string webPageText)
+        private void fillAgentPhone(N1Agency agency, IDocument pageHtmlDoc)
         {
-            // ","contact_phone":"+7 902 870-05-43","
-            int startIndex = webPageText.IndexOf("\"contact_phone\":\"");
-            if (startIndex <= 0)
+            string agentPhone = pageHtmlDoc.QuerySelector("a.offer-card-contacts-phones__phone")?.GetAttribute("href");
+            if (string.IsNullOrEmpty(agentPhone))
                 return;
 
-            string fullPhoneStr = webPageText.Substring(startIndex + "\"contact_phone\":\"".Length, 16);
-
-            fullPhoneStr = fullPhoneStr.Replace("+7", "7").Replace(" ", "").Replace("-", "");
-            agency.AgentPhone = fullPhoneStr;
+            agentPhone = agentPhone.Replace("tel:+", "");
+            agency.AgentPhone = agentPhone;
         }
 
-        private void fillAgencyUrl(N1Agency agency, string webPageText)
+        private void fillAgencyUrl(N1Agency agency, IDocument pageHtmlDoc)
         {
-            // ","contact_email":"mmir.ekb@yandex.ru","
-            int startIndex = webPageText.IndexOf("\"contact_email\":\"");
-            if (startIndex <= 0)
+            string agencyUrl = pageHtmlDoc.QuerySelector("a._agency-name")?.GetAttribute("href");
+            if (string.IsNullOrEmpty(agencyUrl))
                 return;
 
-            string emailString = webPageText.Substring(startIndex + "\"contact_email\":\"".Length, 128);
-            int endIndex = emailString.IndexOf("\",\"");
-            if (endIndex <= 0)
-                return;
-
-            agency.SiteUrl = emailString.Substring(0, endIndex);
+            agency.SiteUrl = agencyUrl;
         }
     }
 }
