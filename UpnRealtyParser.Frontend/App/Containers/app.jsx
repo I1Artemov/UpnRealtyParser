@@ -6,6 +6,7 @@ import UpnSellFlatIndex from './UpnSellFlatIndex/upnSellFlatIndex.jsx';
 import UpnRentFlatIndex from './UpnRentFlatIndex/upnRentFlatIndex.jsx';
 import N1SellFlatIndex from './N1SellFlatIndex/n1SellFlatIndex.jsx';
 import UpnSellFlatRead from './UpnSellFlatRead/upnSellFlatRead.jsx';
+import UpnRentFlatRead from './UpnRentFlatRead/upnRentFlatRead.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
 import WebProxyIndex from './WebProxyIndex/webProxyIndex.jsx';
@@ -38,11 +39,12 @@ export default class App extends React.Component {
                                         <Route path="/n1sellflats" component={N1SellFlatIndex} />
                                         {/*<Route path="/n1rentflats" component={N1RentFlatIndex} />*/}
                                         <Route exact path="/sellflat/:id" component={UpnSellFlatRead} />
+                                        <Route exact path="/rentflat/:id" component={UpnRentFlatRead} />
                                         <Route path="/" component={SiteIndex} />
                                     </Switch>
                                 </main>
                             </Content>
-                            <Footer style={{ textAlign: 'center' }}>UpnRealtyParser ©2020 Created by AIV</Footer>
+                            <Footer style={{ textAlign: 'center' }}>UpnRealtyParser ©2021 Created by AIV</Footer>
                         </Layout>
                     </Layout>
                 </div>

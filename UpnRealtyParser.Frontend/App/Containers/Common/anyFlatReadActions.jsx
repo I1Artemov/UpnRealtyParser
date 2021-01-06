@@ -4,14 +4,25 @@
     GET_FLAT_IN_PROGRESS,
     SHOW_PHOTOS,
     HIDE_PHOTOS
-} from './upnSellFlatReadConstants.jsx';
+} from '../Common/anyFlatReadConstants.jsx';
 
-import { Href_UpnSellFlatController_GetSingleFlat } from "../../const.jsx";
 import "isomorphic-fetch";
 
 export function startReceivingFlat() {
     return {
         type: GET_FLAT_IN_PROGRESS
+    };
+}
+
+export function showFlatPhotos() {
+    return {
+        type: SHOW_PHOTOS
+    };
+}
+
+export function hideFlatPhotos() {
+    return {
+        type: HIDE_PHOTOS
     };
 }
 
@@ -29,24 +40,12 @@ export function errorReceiveFlat(err) {
     };
 }
 
-export function showFlatPhotos() {
-    return {
-        type: SHOW_PHOTOS
-    };
-}
-
-export function hideFlatPhotos() {
-    return {
-        type: HIDE_PHOTOS
-    };
-}
-
-export function getFlat(id) {
+export function getFlat(id, getFlatHref) {
 
     return (dispatch) => {
         let queryTrailer = '?id=' + id;
 
-        fetch(Href_UpnSellFlatController_GetSingleFlat + queryTrailer)
+        fetch(getFlatHref + queryTrailer)
             .then((response) => {
                 var parsedJson = response.json();
                 return parsedJson;

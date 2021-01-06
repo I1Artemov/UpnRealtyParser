@@ -25,7 +25,7 @@ export default function flat(state = initialState, action) {
             return { ...state, error: action.error, isLoading: false };
 
         case SHOW_PHOTOS:
-            return { ...state, isShowApartmentPhotos: true};
+            return { ...state, isShowApartmentPhotos: true };
 
         case HIDE_PHOTOS:
             return { ...state, isShowApartmentPhotos: false };

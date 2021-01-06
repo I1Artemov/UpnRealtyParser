@@ -23,7 +23,7 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         dataIndex: 'firstPhotoFile',
         key: 'firstPhotoFile',
         render: (text, row) => (
-            (text === null || text === 'ERR') ? <p>--</p> :
+            (text === null || text === undefined || text === 'ERR') ? <p>--</p> :
                 <img src={"/images/upnphotos/" + text} width="64" height="64"></img>
         )
     },
@@ -87,7 +87,9 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         dataIndex: 'shortenedDescription',
         key: 'shortenedDescription',
         render: (text, row) => (
-            <Link to={"/sellflat/" + row.id}>{text}</Link>
+            (row.minimalRentPeriod === undefined) ?
+                <Link to={"/sellflat/" + row.id}>{text}</Link>
+                : <Link to={"/rentflat/" + row.id}>{text}</Link>
         )
     }
 ];

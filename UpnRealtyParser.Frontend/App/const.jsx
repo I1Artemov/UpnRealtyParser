@@ -2,6 +2,7 @@
 export const Href_UpnSellFlatController_GetSingleFlat = "/api/UpnSellFlat/getsingle";
 
 export const Href_UpnRentFlatController_GetAllFlats = "api/UpnRentFlat/getall";
+export const Href_UpnRentFlatController_GetSingleFlat = "/api/UpnRentFlat/getsingle";
 
 export const Href_UpnHouseController_GetAllFlats = "api/UpnHouse/getall";
 export const Href_UpnAgencyController_GetAllAgencies = "api/UpnAgency/getall";
