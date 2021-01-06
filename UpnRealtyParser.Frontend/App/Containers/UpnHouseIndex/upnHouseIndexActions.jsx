@@ -1,6 +1,16 @@
-﻿import { GET_ALL_HOUSES_SUCCESS, GET_ALL_HOUSES_ERROR } from './upnHouseIndexConstants.jsx';
+﻿import {
+    GET_ALL_HOUSES_SUCCESS,
+    GET_ALL_HOUSES_ERROR,
+    GET_ALL_HOUSES_LOADING_IN_PROGRESS
+} from './upnHouseIndexConstants.jsx';
 import { Href_UpnHouseController_GetAllFlats } from "../../const.jsx";
 import "isomorphic-fetch";
+
+export function startReceivingHouses() {
+    return {
+        type: GET_ALL_HOUSES_LOADING_IN_PROGRESS
+    };
+}
 
 export function receiveAllHouses(data) {
     return {

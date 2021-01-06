@@ -15,5 +15,15 @@ namespace UpnRealtyParser.Tests
                 calculator.CalculateDistanceFromUpnHousesToClosestSubway();
             }
         }
+
+        //[Fact] Ручной, вставка в БД
+        public void SimilarHousesForUpnFindTest()
+        {
+            using (var realtyContext = new RealtyParserContext())
+            {
+                DistanceCalculator calculator = new DistanceCalculator(realtyContext);
+                calculator.FindSimilarN1ForAllUpnHouses();
+            }
+        }
     }
 }

@@ -312,3 +312,58 @@ from [UpnFlat] uf
 inner join [UpnHouseInfo] hou on uf.UpnHouseInfoId = hou.Id
 inner join [SubwayStation] station on station.Id = hou.ClosestSubwayStationId
 inner join [UpnAgency] ag on uf.UpnAgencyId = ag.Id));
+
+-- 06.01.2021 Комбинирование домов УПН и Н1
+-- Таблица связей похожих домов
+create table [SimilarHouse] (
+	[Id] int IDENTITY(1,1),
+    [CreationDateTime] datetime,
+	[UpnHouseId] int,
+	[N1HouseId] int,
+	[Distance] float
+	PRIMARY KEY ([Id])
+);
+
+ALTER TABLE [SimilarHouse] ADD CONSTRAINT
+	FK_SimilarHouse_UpnHouse_UpnHouseId FOREIGN KEY ([UpnHouseId]) REFERENCES [UpnHouseInfo]([Id]);
+ALTER TABLE [SimilarHouse] ADD CONSTRAINT
+	FK_SimilarHouse_N1House_N1HouseId FOREIGN KEY ([N1HouseId]) REFERENCES [N1HouseInfo]([Id]);
+
+CREATE INDEX idx_SimilarHouse_UpnHouseId ON [SimilarHouse] ([UpnHouseId]);
+CREATE INDEX idx_SimilarHouse_N1HouseId ON [SimilarHouse] ([N1HouseId]);
+
+-- Вьюшка с обобщением домов УПН и N1
+create view vHousesUnitedInfo as
+select up.[Id],
+	  'UPN' as [SourceSite]
+      ,up.[CreationDateTime]
+      ,up.[Address]
+      ,up.[HouseType]
+      ,up.[BuildYear]
+      ,up.[WallMaterial]
+      ,up.[MaxFloor]
+      ,up.[Latitude]
+      ,up.[Longitude]
+	  ,up.[ClosestSubwayStationId]
+      ,sbw.[Name] as [ClosestSubwayName]
+      ,up.[ClosestSubwayStationRange]
+	  , (select top 1 [Id] from [SimilarHouse] sh where sh.[UpnHouseId] = up.Id) as [SimilarIdentity]
+from [UpnHouseInfo] up
+left join [SubwayStation] sbw on up.[ClosestSubwayStationId] = sbw.[Id]
+union all
+select n1.[Id],
+	'N1' as [SourceSite]
+      ,n1.[CreationDateTime]
+      ,n1.[Address]
+      ,n1.[HouseType]
+      ,n1.[BuildYear]
+      ,n1.[WallMaterial]
+      ,n1.[MaxFloor]
+      ,n1.[Latitude]
+      ,n1.[Longitude]
+	  ,n1.[ClosestSubwayStationId]
+      ,sbw.[Name] as [ClosestSubwayName]
+      ,n1.[ClosestSubwayStationRange]
+	  , (select top 1 [Id] from [SimilarHouse] sh where sh.[N1HouseId] = n1.Id) as [SimilarIdentity]
+from [N1HouseInfo] n1
+left join [SubwayStation] sbw on n1.[ClosestSubwayStationId] = sbw.[Id]

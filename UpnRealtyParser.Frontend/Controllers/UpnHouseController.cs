@@ -11,16 +11,11 @@ namespace UpnRealtyParser.Frontend.Controllers
     [ApiController]
     public class UpnHouseController : Controller
     {
-        private readonly EFGenericRepo<UpnHouseInfo, RealtyParserContext> _upnHouseRepo;
+        private readonly EFGenericRepo<HouseSitelessVM, RealtyParserContext> _unitedHouseRepo;
 
-        public UpnHouseController(EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo)
+        public UpnHouseController(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo)
         {
-            _upnHouseRepo = upnHouseRepo;
-        }
-
-        public IActionResult Index()
-        {
-            return View();
+            _unitedHouseRepo = unitedHouseRepo;
         }
 
         [Route("getall")]
@@ -30,10 +25,11 @@ namespace UpnRealtyParser.Frontend.Controllers
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
-            IQueryable<UpnHouseInfo> allHouses = _upnHouseRepo.GetAllWithoutTracking();
+            IQueryable<HouseSitelessVM> allHouses = _unitedHouseRepo.GetAllWithoutTracking();
             int totalCount = allHouses.Count();
 
-            List<UpnHouseInfo> filteredHouses = allHouses
+            List<HouseSitelessVM> filteredHouses = allHouses
+                .OrderByDescending(x => x.SimilarIdentity)
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 

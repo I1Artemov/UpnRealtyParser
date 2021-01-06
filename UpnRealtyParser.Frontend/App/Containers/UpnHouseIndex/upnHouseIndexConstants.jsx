@@ -1,11 +1,23 @@
-﻿export const GET_ALL_HOUSES_SUCCESS = 'GET_ALL_HOUSES_SUCCESS';
+﻿import React from 'react';
+
+export const GET_ALL_HOUSES_SUCCESS = 'GET_ALL_HOUSES_SUCCESS';
 export const GET_ALL_HOUSES_ERROR = 'GET_ALL_HOUSES_SUCCESS';
+export const GET_ALL_HOUSES_LOADING_IN_PROGRESS = 'GET_ALL_AGENCIES_LOADING_IN_PROGRESS';
 
 export const HOUSES_TABLE_COLUMNS = [
     {
         title: '№',
         dataIndex: 'id',
         key: 'id'
+    },
+    {
+        title: 'Сайт',
+        dataIndex: 'sourceSite',
+        key: 'sourceSite',
+        render: (text, row) => (
+            (text === 'UPN') ? <span className="siteSourceUpn">{text}</span> :
+                <span className="siteSourceN1">{text}</span>
+        )
     },
     {
         title: 'Создан',
@@ -46,6 +58,11 @@ export const HOUSES_TABLE_COLUMNS = [
         title: 'Долгота',
         dataIndex: 'longitude',
         key: 'longitude'
+    },
+    {
+        title: 'Станция',
+        dataIndex: 'closestSubwayName',
+        key: 'closestSubwayName'
     },
     {
         title: 'До метро',
