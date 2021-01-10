@@ -367,3 +367,32 @@ select n1.[Id],
 	  , (select top 1 [Id] from [SimilarHouse] sh where sh.[N1HouseId] = n1.Id) as [SimilarIdentity]
 from [N1HouseInfo] n1
 left join [SubwayStation] sbw on n1.[ClosestSubwayStationId] = sbw.[Id]
+
+create view [vAgenciesUnitedInfo] as
+select
+	upa.[Id],
+	'UPN' as [SourceSite],
+	upa.[CreationDateTime],
+	upa.[Name],
+	upa.[AgentPhone],
+	upa.[SiteUrl],
+	upa.[CompanyPhone],
+	upa.[Email],
+	upa.[WorkTime],
+	NULL as [AgentName],
+	NULL as [IsCompany]
+from [UpnAgency] upa
+union all
+select
+	n1a.[Id],
+	'N1' as [SourceSite],
+	n1a.[CreationDateTime],
+	n1a.[Name],
+	n1a.[AgentPhone],
+	n1a.[SiteUrl],
+	NULL as [CompanyPhone],
+	NULL as [Email],
+	NULL as [WorkTime],
+	n1a.[AgentName],
+	n1a.[IsCompany]
+from [N1Agency] n1a;
