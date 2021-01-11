@@ -11,11 +11,11 @@ namespace UpnRealtyParser.Frontend.Controllers
     [ApiController]
     public class UpnAgencyController : Controller
     {
-        private readonly EFGenericRepo<UpnAgency, RealtyParserContext> _upnAgencyRepo;
+        private readonly EFGenericRepo<AgencySitelessVM, RealtyParserContext> _unitedAgencyRepo;
 
-        public UpnAgencyController(EFGenericRepo<UpnAgency, RealtyParserContext> upnAgencyRepo)
+        public UpnAgencyController(EFGenericRepo<AgencySitelessVM, RealtyParserContext> upnAgencyRepo)
         {
-            _upnAgencyRepo = upnAgencyRepo;
+            _unitedAgencyRepo = upnAgencyRepo;
         }
 
         [Route("getall")]
@@ -25,10 +25,10 @@ namespace UpnRealtyParser.Frontend.Controllers
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
-            IQueryable<UpnAgency> allAgencies = _upnAgencyRepo.GetAllWithoutTracking();
+            IQueryable<AgencySitelessVM> allAgencies = _unitedAgencyRepo.GetAllWithoutTracking();
             int totalCount = allAgencies.Count();
 
-            List<UpnAgency> filteredAgencies = allAgencies
+            List<AgencySitelessVM> filteredAgencies = allAgencies
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 

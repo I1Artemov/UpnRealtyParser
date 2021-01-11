@@ -9,6 +9,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<UpnFlat> UpnFlats { get; set; }
         public DbSet<UpnFlatVmForTable> UpnFlatVmForTables { get; set; }
         public DbSet<HouseSitelessVM> HouseSitelessVms { get; set; }
+        public DbSet<AgencySitelessVM> AgencySitelessVms { get; set; }
         public DbSet<UpnRentFlat> UpnRentFlats { get; set; }
         public DbSet<UpnHouseInfo> UpnHouseInfos { get; set; }
         public DbSet<UpnAgency> UpnAgencies { get; set; }
@@ -39,6 +40,7 @@ namespace UpnRealtyParser.Business.Contexts
             modelBuilder.RemovePluralizingTableNameConvention();
             modelBuilder.Entity<UpnFlatVmForTable>(entity => {entity.ToTable("vUpnFlatAdditional");});
             modelBuilder.Entity<HouseSitelessVM>(entity => { entity.ToTable("vHousesUnitedInfo"); });
+            modelBuilder.Entity<AgencySitelessVM>(entity => { entity.ToTable("vAgenciesUnitedInfo"); });
         }
     }
 }
