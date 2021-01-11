@@ -366,8 +366,9 @@ select n1.[Id],
       ,n1.[ClosestSubwayStationRange]
 	  , (select top 1 [Id] from [SimilarHouse] sh where sh.[N1HouseId] = n1.Id) as [SimilarIdentity]
 from [N1HouseInfo] n1
-left join [SubwayStation] sbw on n1.[ClosestSubwayStationId] = sbw.[Id]
+left join [SubwayStation] sbw on n1.[ClosestSubwayStationId] = sbw.[Id];
 
+-- 10.01.2021 Вьюшка для объединения агентств с N1 и УПН
 create view [vAgenciesUnitedInfo] as
 select
 	upa.[Id],

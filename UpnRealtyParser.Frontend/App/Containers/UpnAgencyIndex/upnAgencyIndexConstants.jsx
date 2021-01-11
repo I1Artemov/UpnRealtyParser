@@ -1,4 +1,6 @@
-﻿export const GET_ALL_AGENCIES_SUCCESS = 'GET_ALL_AGENCIES_SUCCESS';
+﻿import React from 'react';
+
+export const GET_ALL_AGENCIES_SUCCESS = 'GET_ALL_AGENCIES_SUCCESS';
 export const GET_ALL_AGENCIES_ERROR = 'GET_ALL_AGENCIES_ERROR';
 export const GET_ALL_AGENCIES_LOADING_IN_PROGRESS = 'GET_ALL_AGENCIES_LOADING_IN_PROGRESS';
 
@@ -7,6 +9,15 @@ export const AGENCIES_TABLE_COLUMNS = [
         title: '№',
         dataIndex: 'id',
         key: 'id'
+    },
+    {
+        title: 'Сайт',
+        dataIndex: 'sourceSite',
+        key: 'sourceSite',
+        render: (text, row) => (
+            (text === 'UPN') ? <span className="siteSourceUpn">{text}</span> :
+                <span className="siteSourceN1">{text}</span>
+        )
     },
     {
         title: 'Создан',
@@ -42,5 +53,15 @@ export const AGENCIES_TABLE_COLUMNS = [
         title: 'Email',
         dataIndex: 'email',
         key: 'email'
+    },
+    {
+        title: 'Агент',
+        dataIndex: 'agentName',
+        key: 'agentName'
+    },
+    {
+        title: 'Агентство',
+        dataIndex: 'isAgency',
+        key: 'isAgency'
     }
 ];
