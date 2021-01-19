@@ -7,7 +7,10 @@
     SET_EXCLUDE_LAST_FLOOR,
     SET_MIN_PRICE,
     SET_MAX_PRICE,
-    SET_MIN_BUILD_YEAR
+    SET_MIN_BUILD_YEAR,
+    SET_MAX_SUBWAY_DISTANCE,
+    SET_CLOSEST_SUBWAY_STATION_ID,
+    CLEAR_SEARCH_PARAMETERS
 } from './upnSellFlatIndexConstants.jsx';
 
 const initialState = {
@@ -17,9 +20,11 @@ const initialState = {
     isShowArchived: true,
     isExcludeFirstFloor: false,
     isExcludeLastFloor: false,
-    minPrice: 0,
-    maxPrice: 40000,
+    minPrice: null,
+    maxPrice: null,
     minBuildYear: null,
+    maxSubwayDistance: null,
+    closestSubwayStationId: null,
     error: ""
 };
 
@@ -51,6 +56,16 @@ export default function flats(state = initialState, action) {
 
         case SET_MIN_BUILD_YEAR:
             return { ...state, minBuildYear: action.payload };
+
+        case SET_MAX_SUBWAY_DISTANCE:
+            return { ...state, maxSubwayDistance: action.payload };
+
+        case SET_CLOSEST_SUBWAY_STATION_ID:
+            return { ...state, closestSubwayStationId: action.payload };
+
+        case CLEAR_SEARCH_PARAMETERS:
+            return { ...state, isShowArchived: true, isExcludeFirstFloor: false, isExcludeLastFloor: false,
+                minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null,}
 
         default:
             return state;

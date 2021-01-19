@@ -7,7 +7,10 @@
     SET_EXCLUDE_LAST_FLOOR,
     SET_MIN_PRICE,
     SET_MAX_PRICE,
-    SET_MIN_BUILD_YEAR
+    SET_MIN_BUILD_YEAR,
+    SET_MAX_SUBWAY_DISTANCE,
+    SET_CLOSEST_SUBWAY_STATION_ID,
+    CLEAR_SEARCH_PARAMETERS
 } from './upnSellFlatIndexConstants.jsx';
 
 import { Href_UpnSellFlatController_GetAllFlats } from "../../const.jsx";
@@ -59,7 +62,7 @@ export function setExcludeLastFloor(ev) {
 }
 
 export function setMinPrice(ev) {
-    let minPrice = ev.target.value;
+    let minPrice = ev;
     return {
         type: SET_MIN_PRICE,
         payload: minPrice
@@ -67,7 +70,7 @@ export function setMinPrice(ev) {
 }
 
 export function setMaxPrice(ev) {
-    let maxPrice = ev.target.value;
+    let maxPrice = ev;
     return {
         type: SET_MAX_PRICE,
         payload: maxPrice
@@ -82,8 +85,30 @@ export function setMinBuildYear(ev) {
     };
 }
 
+export function setMaxSubwayDistance(ev) {
+    let maxDistance = ev;
+    return {
+        type: SET_MAX_SUBWAY_DISTANCE,
+        payload: maxDistance
+    };
+}
+
+export function setClosestSubwayStationId(ev) {
+    let stationId = ev;
+    return {
+        type: SET_CLOSEST_SUBWAY_STATION_ID,
+        payload: stationId
+    };
+}
+
+export function clearSearchParameters() {
+    return {
+        type: CLEAR_SEARCH_PARAMETERS
+    };
+}
+
 export function getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor,
-    minBuildYear) {
+    minBuildYear, maxSubwayDistance, closestSubwayStationId) {
 
     let targetPage = !pagination.current ? 1 : pagination.current;
     let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
@@ -97,6 +122,8 @@ export function getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isEx
         if (isExcludeFirstFloor !== null && isExcludeFirstFloor !== undefined) queryTrailer += '&isExcludeFirstFloor=' + isExcludeFirstFloor;
         if (isExcludeLastFloor !== null && isExcludeLastFloor !== undefined) queryTrailer += '&isExcludeLastFloor=' + isExcludeLastFloor;
         if (minBuildYear !== null && minBuildYear !== undefined) queryTrailer += '&minBuildYear=' + minBuildYear;
+        if (maxSubwayDistance !== null && maxSubwayDistance !== undefined) queryTrailer += '&maxSubwayDistance=' + maxSubwayDistance;
+        if (closestSubwayStationId !== null && closestSubwayStationId !== undefined) queryTrailer += '&closestSubwayStationId=' + closestSubwayStationId;
 
         fetch(Href_UpnSellFlatController_GetAllFlats + queryTrailer)
             .then((response) => {

@@ -41,7 +41,8 @@ namespace UpnRealtyParser.Frontend.Controllers
         [Route("getall")]
         [HttpGet]
         public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived, bool? isExcludeFirstFloor,
-            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear)
+            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
+            int? closestSubwayStationId)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
@@ -54,12 +55,20 @@ namespace UpnRealtyParser.Frontend.Controllers
                 allSellFlats = allSellFlats.Where(x => x.FlatFloor > 1);
             if (isExcludeLastFloor.GetValueOrDefault(false))
                 allSellFlats = allSellFlats.Where(x => x.FlatFloor < x.HouseMaxFloor);
-            /*if (minPrice.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.Price >= minPrice.Value * 1000);
+            if (minPrice.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.Price >= minPrice.Value);
             if (maxPrice.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.Price <= maxPrice.Value * 1000);*/
+                allSellFlats = allSellFlats.Where(x => x.Price <= maxPrice.Value);
             if (minBuildYear.HasValue)
                 allSellFlats = allSellFlats.Where(x => x.HouseBuildYear >= minBuildYear.Value);
+            if (maxSubwayDistance.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayStationRange <= maxSubwayDistance.Value);
+            if (closestSubwayStationId.HasValue)
+            {
+                SubwayStation foundStation = _subwayStationRepo.GetAllWithoutTracking().FirstOrDefault(x => x.Id == closestSubwayStationId.Value);
+                string stationName = foundStation?.Name;
+                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayName == stationName);
+            }
 
             List<UpnFlatVmForTable> filteredFlats = allSellFlats
                 .Skip((targetPage - 1) * targetPageSize)
