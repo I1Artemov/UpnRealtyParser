@@ -67,6 +67,12 @@ namespace UpnRealtyParser.Business.Models
         [NotMapped]
         public List<string> PhotoHrefs { get; set; }
 
+        /// <summary>
+        /// Ссылка на первое попавшееся фото, которое было скачано с сайта на сервер (если есть)
+        /// </summary>
+        [NotMapped]
+        public string DownloadedPhotoHref { get; set; }
+
         [NotMapped]
         public bool? IsArchived { get; set; }
 

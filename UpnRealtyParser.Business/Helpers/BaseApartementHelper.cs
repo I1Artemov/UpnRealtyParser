@@ -91,6 +91,13 @@ namespace UpnRealtyParser.Business.Helpers
                 .ToList();
 
             upnFlat.PhotoHrefs = photoHrefs;
+
+            TFlatPhoto downloadedPhoto = _photoRepo.GetAllWithoutTracking()
+                .FirstOrDefault(x => x.FileName != null && x.FileName != "ERR" && x.FlatId == upnFlat.Id
+                    && x.RelationType == relationType);
+
+            if (downloadedPhoto != null)
+                upnFlat.DownloadedPhotoHref = "/images/upnphotos/" + downloadedPhoto.FileName;
         }
 
         private void fillHouseRelatedFields(FlatCore singleFlat)

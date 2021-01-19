@@ -304,7 +304,7 @@ create view [vUpnFlatAdditional] as
 	hou.[Longitude] as [HouseLongitude],
 	COALESCE(ag.[AgentPhone], ag.[CompanyPhone]) as [SellerPhone],
 	ag.[Name] as [AgencyName],
-	(select top 1 pht.[FileName] from [UpnFlatPhoto] pht where pht.[FlatId] = uf.[Id]) as [FirstPhotoFile],
+	(select top 1 pht.[FileName] from [UpnFlatPhoto] pht where pht.[FlatId] = uf.[Id] and pht.[RelationType] = 'SellFlat') as [FirstPhotoFile],
 	(
 	IIF(DATEADD(DAY, 7, uf.[LastCheckDate]) < (select max(uftmp.[LastCheckDate]) from [UpnFlat] uftmp ), 1, 0)
 	) as [IsArchived]

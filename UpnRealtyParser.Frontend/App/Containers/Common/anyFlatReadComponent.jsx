@@ -37,6 +37,7 @@ export default class AnyFlatRead extends React.Component {
             // Без этого могут попасть значения undefined и компонент не отрендерится
             let centerLatitude = flatData.houseLatitude === undefined ? 56.8519 : flatData.houseLatitude;
             let centerLongitude = flatData.houseLongitude === undefined ? 60.6122 : flatData.houseLongitude;
+            let mapContainerWidth = flatData.downloadedPhotoHref ? "69%" : "100%";
             return (
                 <div>
                     <Breadcrumb style={{ margin: '16px 0' }}>
@@ -46,7 +47,7 @@ export default class AnyFlatRead extends React.Component {
                     <Divider orientation={"center"}>{breadcrumbHeader}, ID {flatData.id}</Divider>
                     <SingleFlatInfo flatData={flatData} />
                     {/* TODO: Отдельный компонент для отображения фотографий */}
-                    <div style={{marginTop: "10px", textAlign: "center"}}>
+                    <div style={{ marginTop: "10px", marginBottom: "10px", textAlign: "center"}}>
                         {
                             flatData.photoCount > 0 && !isShowPhotos &&
                             <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
@@ -60,13 +61,21 @@ export default class AnyFlatRead extends React.Component {
                             })
                         }
                     </div>
-                    <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false} style={{ height: "360px", marginTop: "10px" }}>
+
+                    {
+                        flatData.downloadedPhotoHref &&
+                        <img style={{ display: "inline-block", maxWidth: "29%", height: "360px", position: "relative", float: "left" }}
+                            key={flatData.downloadedPhotoHref} src={flatData.downloadedPhotoHref} />
+                    }
+                    <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false}
+                        style={{ height: "360px", width: mapContainerWidth, display: "inline-block", float: "right" }}>
                         <TileLayer
-                          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                         <Marker position={[flatData.houseLatitude, flatData.houseLongitude]} icon={customMarker}></Marker>
                     </MapContainer>
+                    <div style={{ clear: "both" }}></div>
                 </div>
             );
         } else {
