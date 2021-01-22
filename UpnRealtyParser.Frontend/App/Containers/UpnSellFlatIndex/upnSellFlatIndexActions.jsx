@@ -10,7 +10,8 @@
     SET_MIN_BUILD_YEAR,
     SET_MAX_SUBWAY_DISTANCE,
     SET_CLOSEST_SUBWAY_STATION_ID,
-    CLEAR_SEARCH_PARAMETERS
+    CLEAR_SEARCH_PARAMETERS,
+    SAVE_PAGING_PARAMETERS
 } from './upnSellFlatIndexConstants.jsx';
 
 import { Href_UpnSellFlatController_GetAllFlats } from "../../const.jsx";
@@ -99,6 +100,16 @@ export function setClosestSubwayStationId(ev) {
         type: SET_CLOSEST_SUBWAY_STATION_ID,
         payload: stationId
     };
+}
+
+export function savePagingParameters(pagination) {
+    return {
+        type: SAVE_PAGING_PARAMETERS,
+        payload: {
+            current: pagination.current,
+            pageSize: pagination.pageSize
+        }
+    }
 }
 
 export function clearSearchParameters() {

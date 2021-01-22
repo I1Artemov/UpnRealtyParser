@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {
     getAllFlats, startReceivingFlats, setShowArchived, setExcludeFirstFloor, setExcludeLastFloor,
     setMinPrice, setMaxPrice, setMinBuildYear, setMaxSubwayDistance, setClosestSubwayStationId,
-    clearSearchParameters
+    clearSearchParameters, savePagingParameters
 } from './upnSellFlatIndexActions.jsx';
 
 import { SELL_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
@@ -23,11 +23,16 @@ class UpnSellFlatIndex extends React.Component {
     }
 
     componentDidMount() {
-        this.getAllFlatsWithParametersFromProps(new Object());
+        let pagingInfo = {
+            current: this.props.savedGridPage,
+            pageSIze: this.props.savedGridPageSize
+        };
+        this.getAllFlatsWithParametersFromProps(pagingInfo);
         // todo: bind
     }
 
     handleTableChange(pagination, filters, sorter) {
+        this.props.savePagingParameters(pagination);
         this.getAllFlatsWithParametersFromProps(pagination);
     }
 
@@ -88,7 +93,7 @@ class UpnSellFlatIndex extends React.Component {
                     dataSource={flatsData}
                     columns={SELL_FLATS_TABLE_COLUMNS}
                     onChange={this.handleTableChange.bind(this)}
-                    pagination={{total: totalFlatsCount}}
+                    pagination={{ current: this.props.savedGridPage, pageSIze: this.props.savedGridPageSize, total: totalFlatsCount}}
                     loading={isFlatsLoading}
                     rowClassName={(record, index) => (record.isArchived === 1 ? "archived-flat" : "active-flat")}
                     />
@@ -110,7 +115,9 @@ let mapStateToProps = (state) => {
         maxPrice: state.upnSellFlatIndexReducer.maxPrice,
         minBuildYear: state.upnSellFlatIndexReducer.minBuildYear,
         maxSubwayDistance: state.upnSellFlatIndexReducer.maxSubwayDistance,
-        closestSubwayStationId: state.upnSellFlatIndexReducer.closestSubwayStationId
+        closestSubwayStationId: state.upnSellFlatIndexReducer.closestSubwayStationId,
+        savedGridPage: state.upnSellFlatIndexReducer.savedGridPage,
+        savedGridPageSize: state.upnSellFlatIndexReducer.savedGridPageSize
     };
 };
 
@@ -129,7 +136,8 @@ let mapActionsToProps = (dispatch) => {
         setMinBuildYear: (ev) => dispatch(setMinBuildYear(ev)),
         setMaxSubwayDistance: (ev) => dispatch(setMaxSubwayDistance(ev)),
         setClosestSubwayStationId: (ev) => dispatch(setClosestSubwayStationId(ev)),
-        clearSearchParameters: () => dispatch(clearSearchParameters())
+        clearSearchParameters: () => dispatch(clearSearchParameters()),
+        savePagingParameters: (pagination) => dispatch(savePagingParameters(pagination))
     };
 };
 
