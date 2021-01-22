@@ -13,8 +13,14 @@
     </script>
     <title>Парсер УПН</title>
 </head>
-<body style="background-color: #f0f2f5;">
-<div id="sidebarSkelet" style="position: absolute; top: 0; bottom: 0; width: 200px; height: 100vh; background-color: #001529;"></div>
+<body style="background-color: #f0f2f5; margin: 0;">
+<div id="sidebarSkelet" style="position: absolute; top: 0; bottom: 0; width: 200px; height: 100vh; background-color: #001529;">
+    <div style="width: 100%; height: 40px; margin-top: 4px; background-color: #1890ff;"></div>
+    @for(int i = 0; i < 5; i++)
+    {
+        <div style="width: 150px; height: 4px; margin-top: 35px; border-radius: 1px; margin-left: 25px; background-color: rgb(135, 135, 135)"></div>
+    }
+</div>
 <div id="content">
     <div style="width: auto; text-align: center; margin-top: 200px; margin-left: 100px; font-family: 'Roboto';">
         <img src="~/images/initial_loading_animation.gif"/>
