@@ -45,6 +45,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             int totalCount = allSellFlats.Count();
 
             List<UpnRentFlat> filteredFlats = allSellFlats
+                .OrderBy(x => x.Id)
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 

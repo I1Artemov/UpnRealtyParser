@@ -1,5 +1,6 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
+import { withRouter } from "react-router-dom";
 import { Divider, Spin, Button, Breadcrumb } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import { Href_UpnSellFlatController_GetSingleFlat } from "../../const.jsx";
@@ -11,13 +12,20 @@ const customMarker = new L.icon({
     iconUrl: '/images/leaf-marker.png',
     iconSize: [25, 41],
     iconAnchor: [12, 20]
-}); 
+});
 
-export default class AnyFlatRead extends React.Component {
+/** Возврат на страницу с перечнем квартир без перезагрузки страницы */
+function returnToFlatsPage() {
+    let actionName = this.props.isRent ? "rentflats" : "sellflats";
+    this.props.history.push("/" + actionName);
+}
+
+class AnyFlatRead extends React.Component {
     componentDidMount() {
         const id = this.props.match.params.id;
         this.props.startReceivingFlat();
         this.props.getFlat(id, Href_UpnSellFlatController_GetSingleFlat);
+        returnToFlatsPage = returnToFlatsPage.bind(this);
     }
 
     render() {
@@ -76,6 +84,9 @@ export default class AnyFlatRead extends React.Component {
                         <Marker position={[flatData.houseLatitude, flatData.houseLongitude]} icon={customMarker}></Marker>
                     </MapContainer>
                     <div style={{ clear: "both" }}></div>
+                    <div style={{ marginTop: "15px", marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
+                        <Button onClick={returnToFlatsPage}>К списку квартир</Button>
+                    </div>
                 </div>
             );
         } else {
@@ -87,3 +98,5 @@ export default class AnyFlatRead extends React.Component {
         }
     }
 }
+
+export default withRouter(AnyFlatRead);

@@ -71,6 +71,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             }
 
             List<UpnFlatVmForTable> filteredFlats = allSellFlats
+                .OrderBy(x => x.Id)
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
             int totalCount = allSellFlats.Count();

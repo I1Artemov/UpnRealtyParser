@@ -14,17 +14,21 @@ import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
 class UpnSellFlatIndex extends React.Component {
-    componentDidMount() {
+    getAllFlatsWithParametersFromProps(pagination) {
         this.props.startReceivingFlats();
-        this.props.getAllFlats(new Object());
+
+        this.props.getAllFlats(pagination, this.props.isShowArchived, this.props.minPrice, this.props.maxPrice,
+            this.props.isExcludeFirstFloor, this.props.isExcludeLastFloor, this.props.minBuildYear,
+            this.props.maxSubwayDistance, this.props.closestSubwayStationId);
+    }
+
+    componentDidMount() {
+        this.getAllFlatsWithParametersFromProps(new Object());
         // todo: bind
     }
 
     handleTableChange(pagination, filters, sorter) {
-        this.props.startReceivingFlats();
-        this.props.getAllFlats(pagination, this.props.isShowArchived, this.props.minPrice, this.props.maxPrice,
-            this.props.isExcludeFirstFloor, this.props.isExcludeLastFloor, this.props.minBuildYear,
-            this.props.maxSubwayDistance, this.props.closestSubwayStationId);
+        this.getAllFlatsWithParametersFromProps(pagination);
     }
 
     render() {
