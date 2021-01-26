@@ -32,14 +32,14 @@ export default class Header extends React.Component {
                         </Menu.Item>
                     </SubMenu>
                     <Menu.Item icon={<HomeOutlined/>} key="6">
-                        <Link to="/house">Дома УПН/N1</Link>
+                        <Link to="/houses">Дома УПН/N1</Link>
                     </Menu.Item>
                     <Menu.Item icon={<TeamOutlined />} key="7">
-                        <Link to="/agency">Агентства УПН/N1</Link>
+                        <Link to="/agencies">Агентства УПН/N1</Link>
                     </Menu.Item>
                     <SubMenu icon={<ToolOutlined />} key="sub3" title="Администрирование">
                         <Menu.Item key="8">
-                            <Link to="/webproxy">Прокси</Link>
+                            <Link to="/webproxies">Прокси</Link>
                         </Menu.Item>
                         <Menu.Item key="9">
                             <Link to="/log">Лог</Link>

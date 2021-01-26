@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { Link } from 'react-router-dom';
 
 export const GET_ALL_HOUSES_SUCCESS = 'GET_ALL_HOUSES_SUCCESS';
 export const GET_ALL_HOUSES_ERROR = 'GET_ALL_HOUSES_SUCCESS';
@@ -27,7 +28,12 @@ export const HOUSES_TABLE_COLUMNS = [
     {
         title: 'Адрес',
         dataIndex: 'address',
-        key: 'address'
+        key: 'address',
+        render: (text, row) => (
+            (row.sourceSite === 'UPN') ?
+                <Link to={"/upnhouse/" + row.id}>{text}</Link>
+                : text
+        )
     },
     {
         title: 'Тип',

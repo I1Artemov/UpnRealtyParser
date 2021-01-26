@@ -13,6 +13,7 @@ import upnHouseIndexReducer from './Containers/UpnHouseIndex/upnHouseIndexReduce
 import upnAgencyIndexReducer from './Containers/UpnAgencyIndex/upnAgencyIndexReducer.jsx';
 import webProxyIndexReducer from './Containers/WebProxyIndex/webProxyIndexReducer.jsx';
 import logEntryIndexReducer from './Containers/LogEntryIndex/logEntryIndexReducer.jsx';
+import anyHouseReadReducer from './Containers/Common/anyHouseReadReducer.jsx';
 
 import './site.css';
 import '../node_modules/leaflet/dist/leaflet.css';
@@ -26,7 +27,9 @@ const rootReducer = combineReducers({
 	upnHouseIndexReducer,
 	upnAgencyIndexReducer,
     webProxyIndexReducer,
-    logEntryIndexReducer});
+    logEntryIndexReducer,
+    anyHouseReadReducer
+});
 
 function configureStore(initialState) {
     return createStore(rootReducer, initialState, applyMiddleware(thunk));

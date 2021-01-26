@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import { withRouter } from "react-router-dom";
 import { Divider, Spin, Button, Breadcrumb } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
-import { Href_UpnSellFlatController_GetSingleFlat } from "../../const.jsx";
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
 
 import L from 'leaflet';
@@ -24,7 +23,7 @@ class AnyFlatRead extends React.Component {
     componentDidMount() {
         const id = this.props.match.params.id;
         this.props.startReceivingFlat();
-        this.props.getFlat(id, Href_UpnSellFlatController_GetSingleFlat);
+        this.props.getFlat(id);
         returnToFlatsPage = returnToFlatsPage.bind(this);
     }
 
