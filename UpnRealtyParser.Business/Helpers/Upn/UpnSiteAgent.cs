@@ -109,7 +109,8 @@ namespace UpnRealtyParser.Business.Helpers
             _stateLogger.LogFirstPageLoading(totalApartmentsAmount.GetValueOrDefault(0), totalTablePages, isRentFlats);
 
             _processedObjectsCount = 0;
-            for (int currentPageNumber = _upnTablePagesToSkip; currentPageNumber <= totalTablePages; currentPageNumber++)
+            int startPageNumber = isRentFlats ? 0 : _upnTablePagesToSkip;
+            for (int currentPageNumber = startPageNumber; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
                 string currentTablePageHtml = downloadStringWithHttpRequest(currentTablePageUrl, "windows-1251").Result;
