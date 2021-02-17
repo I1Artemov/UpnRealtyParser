@@ -1,7 +1,10 @@
 ﻿import {
     GET_HOUSE_SUCCESS,
     GET_HOUSE_ERROR,
-    GET_HOUSE_IN_PROGRESS
+    GET_HOUSE_IN_PROGRESS,
+    GET_STATISTICS_SUCCESS,
+    GET_STATISTICS_ERROR,
+    GET_STATISTICS_IN_PROGRESS
 } from '../Common/anyHouseReadConstants.jsx';
 
 import "isomorphic-fetch";
@@ -26,6 +29,26 @@ export function errorReceiveHouse(err) {
     };
 }
 
+function startReceivingStatistics() {
+    return {
+        type: GET_STATISTICS_IN_PROGRESS
+    };
+}
+
+export function receiveStatistics(data) {
+    return {
+        type: GET_STATISTICS_SUCCESS,
+        houseStatistics: data.houseStatistics
+    };
+}
+
+export function errorReceiveStatistics(err) {
+    return {
+        type: GET_STATISTICS_ERROR,
+        error: err
+    };
+}
+
 export function getHouse(id, getHouseHref) {
 
     return (dispatch) => {
@@ -40,6 +63,24 @@ export function getHouse(id, getHouseHref) {
                 dispatch(receiveHouse(data));
             }).catch((ex) => {
                 dispatch(errorReceiveHouse(ex));
+            });
+    };
+}
+
+export function getStatistics(id, getStatisticsHref) {
+
+    return (dispatch) => {
+        let queryTrailer = '?id=' + id;
+
+        dispatch(startReceivingStatistics());
+        fetch(getStatisticsHref + queryTrailer)
+            .then((response) => {
+                var parsedJson = response.json();
+                return parsedJson;
+            }).then((data) => {
+                dispatch(receiveStatistics(data));
+            }).catch((ex) => {
+                dispatch(errorReceiveStatistics(ex));
             });
     };
 }

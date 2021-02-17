@@ -20,20 +20,32 @@
         public double? AverageFourRoomSpace { get; set; }
 
         // Средние цены продажи за метр
-        public double? AverageSingleRoomMeterPrice =>
-            AverageSingleRoomSpace == null || AverageSingleRoomSpace == 0 ? null :
-            AverageSingleRoomSellPrice / AverageSingleRoomSpace;
+        public double? AverageSingleRoomMeterPrice { get; set; }
+        public double? AverageTwoRoomMeterPrice { get; set; }
+        public double? AverageThreeRoomMeterPrice { get; set; }
+        public double? AverageFourRoomMeterPrice { get; set; }
 
-        public double? AverageTwoRoomMeterPrice =>
+        /// <summary>
+        /// Рассчитывает средние цены за квадратный метр. Вызывать после вычисления
+        /// средних цен и средней площади
+        /// </summary>
+        public void SetAverageMeterPrices()
+        {
+            AverageSingleRoomMeterPrice =
+                AverageSingleRoomSpace == null || AverageSingleRoomSpace == 0 ? null :
+                AverageSingleRoomSellPrice / AverageSingleRoomSpace;
+
+            AverageTwoRoomMeterPrice =
             AverageTwoRoomSpace == null || AverageTwoRoomSpace == 0 ? null :
             AverageTwoRoomSellPrice / AverageTwoRoomSpace;
 
-        public double? AverageThreeRoomMeterPrice =>
+            AverageThreeRoomMeterPrice =
             AverageThreeRoomSpace == null || AverageThreeRoomSpace == 0 ? null :
             AverageThreeRoomSellPrice / AverageThreeRoomSpace;
 
-        public double? AverageFourRoomMeterPrice =>
+            AverageFourRoomMeterPrice =
             AverageFourRoomSpace == null || AverageFourRoomSpace == 0 ? null :
             AverageFourRoomSellPrice / AverageFourRoomSpace;
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace UpnRealtyParser.Business.Helpers
             double? threeRoomSpace = houseFlats.Where(x => x.RoomAmount == 3).Average(x => x.SpaceSum);
             double? fourRoomSpace = houseFlats.Where(x => x.RoomAmount > 3).Average(x => x.SpaceSum);
 
-            return new HouseStatistics
+            HouseStatistics result = new HouseStatistics
             {
                 AverageSingleRoomSellPrice = oneRoomPrice,
                 AverageTwoRoomSellPrice = twoRoomPrice,
@@ -42,6 +42,9 @@ namespace UpnRealtyParser.Business.Helpers
                 AverageThreeRoomSpace = threeRoomSpace,
                 AverageFourRoomSpace = fourRoomSpace
             };
+
+            result.SetAverageMeterPrices();
+            return result;
         }
     }
 }

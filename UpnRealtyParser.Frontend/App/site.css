@@ -49,3 +49,32 @@ span.siteSourceN1 {
     color: darkred;
     font-weight: bold;
 }
+
+div.house-statistics-block {
+    display: inline-block;
+    background-color: #fafafa;
+    padding: 15px;
+    margin: 15px 40px 15px 40px;
+    width: 340px;
+}
+
+div.house-statistics-block h3 {
+    text-align: center;
+}
+
+div.house-statistics-block p {
+    margin-bottom: 3px;
+}
+
+.house-statistics-wrapper {
+    opacity: 0;
+    transition: opacity 0.5s;
+    -webkit-transition: opacity 0.5s;
+    -moz-transition: opacity 0.5s;
+    -o-transition: opacity 0.5s;
+    text-align: justify;
+}
+
+.full-visible {
+    opacity: 1;
+}
