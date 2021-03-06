@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import { Divider, Spin, Button, Breadcrumb } from 'antd';
 import SingleHouseInfo from '../../Stateless/singleHouseInfo.jsx';
 import SingleHouseStatistics from '../../Stateless/singleHouseStatistics.jsx';
+import FlatPriceStatisticsPlot from '../FlatPriceStatisticsPlot/flatPriceStatisticsPlot.jsx';
 
 /** Возврат на страницу с перечнем домов без перезагрузки страницы */
 function returnToHousesPage() {
@@ -19,6 +20,7 @@ class AnyHouseRead extends React.Component {
     }
 
     render() {
+        let houseId = this.props.match.params.id;
         let houseData = this.props.houseInfo;
         let isLoading = this.props.isLoading;
         let errorMessage = this.props.error;
@@ -52,6 +54,7 @@ class AnyHouseRead extends React.Component {
                         !isStatisticsLoading && houseStatistics &&
                         <SingleHouseStatistics houseStatistics={houseStatistics} />
                     }
+                    <FlatPriceStatisticsPlot houseId={houseId}/>
                     <div style={{ marginTop: "15px", marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
                         <Button onClick={returnToHousesPage}>К списку домов</Button>
                     </div>

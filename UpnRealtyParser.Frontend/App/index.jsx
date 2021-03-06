@@ -13,6 +13,7 @@ import upnHouseIndexReducer from './Containers/UpnHouseIndex/upnHouseIndexReduce
 import upnAgencyIndexReducer from './Containers/UpnAgencyIndex/upnAgencyIndexReducer.jsx';
 import webProxyIndexReducer from './Containers/WebProxyIndex/webProxyIndexReducer.jsx';
 import logEntryIndexReducer from './Containers/LogEntryIndex/logEntryIndexReducer.jsx';
+import flatPriceStatisticsPlotReducer from './Containers/FlatPriceStatisticsPlot/flatPriceStatisticsPlotReducer.jsx';
 import anyHouseReadReducer from './Containers/Common/anyHouseReadReducer.jsx';
 
 import './site.css';
@@ -28,7 +29,8 @@ const rootReducer = combineReducers({
 	upnAgencyIndexReducer,
     webProxyIndexReducer,
     logEntryIndexReducer,
-    anyHouseReadReducer
+    anyHouseReadReducer,
+    flatPriceStatisticsPlotReducer
 });
 
 function configureStore(initialState) {

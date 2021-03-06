@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using UpnRealtyParser.Business.Contexts;
@@ -68,6 +69,21 @@ namespace UpnRealtyParser.Frontend.Controllers
             HouseStatistics houseStatistics = calculator.GetStatisticsForHouse(id.Value);
 
             return Json(new { houseStatistics });
+        }
+
+        [Route("getsingle/averageprice/points")]
+        [HttpGet]
+        public IActionResult GetSingleHouseAveragePricePlotPoints(int? id, int? roomAmount)
+        {
+            if (!id.HasValue)
+                return makeErrorResult("Не указан ID дома");
+
+            HouseStatisticsCalculator<UpnFlat> calculator = new HouseStatisticsCalculator<UpnFlat>(_upnSellFlatRepo);
+            List<PointDateTimeWithValue> points = 
+                calculator.GetAveragePriceForMonthsPoints(
+                    id.Value, new DateTime(2020, 01, 01), DateTime.Now, roomAmount.GetValueOrDefault(1));
+
+            return Json(new { points });
         }
     }
 }

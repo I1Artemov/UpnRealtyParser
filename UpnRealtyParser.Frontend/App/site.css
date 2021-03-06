@@ -54,7 +54,7 @@ div.house-statistics-block {
     display: inline-block;
     background-color: #fafafa;
     padding: 15px;
-    margin: 15px 40px 15px 40px;
+    margin: 15px 38px 15px 38px;
     width: 340px;
 }
 
@@ -77,4 +77,9 @@ div.house-statistics-block p {
 
 .full-visible {
     opacity: 1;
+}
+
+.recharts-responsive-container {
+    margin-left: auto;
+    margin-right: auto;
 }
