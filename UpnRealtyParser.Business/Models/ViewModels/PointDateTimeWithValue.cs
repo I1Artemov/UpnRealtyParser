@@ -8,14 +8,15 @@ namespace UpnRealtyParser.Business.Models
     public class PointDateTimeWithValue
     {
         public DateTime XAxis{ get; set; }
-        public double YAxis { get; set; }
+        public double?[] YLayers { get; set; }
 
-        public PointDateTimeWithValue() { }
+        public double? YFirstLayer => YLayers[0];
+        public double? YSecondLayer => YLayers[1];
+        public double? YThirdLayer => YLayers[2];
+        public double? YFourthLayer => YLayers[3];
 
-        public PointDateTimeWithValue(DateTime xValue, double yValue)
-        {
-            XAxis = xValue;
-            YAxis = yValue;
+        public PointDateTimeWithValue() {
+            YLayers = new double?[4];
         }
     }
 }

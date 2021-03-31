@@ -14,10 +14,10 @@ class FlatPriceStatisticsPlot extends React.Component {
     }
 
     render() {
-        let isBaseInfoLoading = this.props.isBaseInfoLoading;
+        let isInfoLoading = this.props.isInfoLoading;
         let errorMessage = this.props.error;
-        let singleRoomPrices = this.props.singleRoomPrices;
-        singleRoomPrices.forEach(d => {
+        let allRoomPrices = this.props.allRoomPrices;
+        allRoomPrices.forEach(d => {
             d.xAxis = moment(d.xAxis).valueOf(); // date -> epoch
         });
 
@@ -34,19 +34,26 @@ class FlatPriceStatisticsPlot extends React.Component {
         const dateFormatter = unixTime => {
             return format(new Date(unixTime), "dd.MM.yyyy");
         };
-        const tooltipRenderer = (data) => {
-            let payloadValue = null;
-            if (data.payload.length > 0)
-                payloadValue = data.payload[0].value + " руб.";
+        const tooltipFormatter = (value, name, props) => {
+            let formattedValue = value;
+            let formattedName = name;
 
-            return (
-                <div>
-                    {payloadValue}
-                </div>
-            );
+            if (formattedValue)
+                formattedValue = value + ' руб.';
+
+            if (name === 'yFirstLayer')
+                formattedName = '1-комнатные';
+            if (name === 'ySecondLayer')
+                formattedName = '2-комнатные';
+            if (name === 'yThirdLayer')
+                formattedName = '3-комнатные';
+            if (name === 'yFourthLayer')
+                formattedName = '4-комнатные';
+
+            return [formattedValue, formattedName, props];
         };
 
-        if (isBaseInfoLoading === true) {
+        if (isInfoLoading === true) {
             return (
                 <div className="centered-content-div-w-margin">
                     <p>Загрузка графика цен...</p>
@@ -58,12 +65,15 @@ class FlatPriceStatisticsPlot extends React.Component {
                 <div>
                     <Divider orientation={"center"}>Изменение средних цен на квартиры в доме</Divider>
                     <ResponsiveContainer width="90%" height={300}>
-                        <LineChart width={900} height={250} data={singleRoomPrices} margin={{ top: 10, bottom: 10 }}>
+                        <LineChart width={900} height={250} data={allRoomPrices} margin={{ top: 10, bottom: 10 }}>
                             <XAxis dataKey="xAxis" hasTicks scale="time" type="number" tickFormatter={dateFormatter} domain={xDomain}/>
                             <YAxis tickCount={7} hasTick tickFormatter={priceFormatter} domain={yDomain}/>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <Tooltip content={tooltipRenderer}/>
-                            <Line type="monotone" dataKey="yAxis" stroke="#00192d" />
+                            <Tooltip formatter={tooltipFormatter} labelFormatter={dateFormatter}/>
+                            <Line type="monotone" dataKey="yFirstLayer" stroke="#4260f5" strokeWidth={2}/>
+                            <Line type="monotone" dataKey="ySecondLayer" stroke="#ab6c07" strokeWidth={2}/>
+                            <Line type="monotone" dataKey="yThirdLayer" stroke="#1ec726" strokeWidth={2}/>
+                            <Line type="monotone" dataKey="yFourthLayer" stroke="#c71e48" strokeWidth={2}/>
                         </LineChart>
                     </ResponsiveContainer>
                 </div>
@@ -80,18 +90,15 @@ class FlatPriceStatisticsPlot extends React.Component {
 
 let mapStateToProps = (state) => {
     return {
-        singleRoomPrices: state.flatPriceStatisticsPlotReducer.singleRoomPrices,
-        twoRoomPrices: state.flatPriceStatisticsPlotReducer.twoRoomPrices,
-        threeRoomPrices: state.flatPriceStatisticsPlotReducer.threeRoomPrices,
-        fourRoomPrices: state.flatPriceStatisticsPlotReducer.fourRoomPrices,
+        allRoomPrices: state.flatPriceStatisticsPlotReducer.allRoomPrices,
         error: state.flatPriceStatisticsPlotReducer.error,
-        isBaseInfoLoading: state.flatPriceStatisticsPlotReducer.isBaseInfoLoading
+        isInfoLoading: state.flatPriceStatisticsPlotReducer.isInfoLoading
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAvgPrices: (houseId, roomAmount) => dispatch(getAvgPrices(houseId, roomAmount))
+        getAvgPrices: (houseId) => dispatch(getAvgPrices(houseId))
     };
 };
 

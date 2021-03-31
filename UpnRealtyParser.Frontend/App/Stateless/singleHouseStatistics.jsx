@@ -21,7 +21,7 @@ class SingleHouseStatistics extends React.Component {
                         <hr></hr>
                         <p><b>Средняя цена: </b>{houseStatistics.averageSingleRoomSellPrice || "н/у"} руб.</p>
                         <p><b>Средний метраж: </b>{houseStatistics.averageSingleRoomSpace || "н/у"} кв. м.</p>
-                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.AverageSingleRoomMeterPrice || "н/у"} руб. за кв. м.</p>
+                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.averageSingleRoomMeterPrice || "н/у"} руб. за кв. м.</p>
                     </div>
                 }
                 {
@@ -31,7 +31,7 @@ class SingleHouseStatistics extends React.Component {
                         <hr></hr>
                         <p><b>Средняя цена: </b>{houseStatistics.averageTwoRoomSellPrice || "н/у"} руб.</p>
                         <p><b>Средний метраж: </b>{houseStatistics.averageTwoRoomSpace || "н/у"} кв. м.</p>
-                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.AverageTwoRoomMeterPrice || "н/у"} руб. за кв. м.</p>
+                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.averageTwoRoomMeterPrice || "н/у"} руб. за кв. м.</p>
                     </div>
                 }
                 {
@@ -41,7 +41,7 @@ class SingleHouseStatistics extends React.Component {
                         <hr></hr>
                         <p><b>Средняя цена: </b>{houseStatistics.averageThreeRoomSellPrice || "н/у"} руб.</p>
                         <p><b>Средний метраж: </b>{houseStatistics.averageThreeRoomSpace || "н/у"} кв. м.</p>
-                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.AverageThreeRoomMeterPrice || "н/у"} руб. за кв. м.</p>
+                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.averageThreeRoomMeterPrice || "н/у"} руб. за кв. м.</p>
                     </div>
                 }
                 {
@@ -51,7 +51,7 @@ class SingleHouseStatistics extends React.Component {
                         <hr></hr>
                         <p><b>Средняя цена: </b>{houseStatistics.averageFourRoomSellPrice || "н/у"} руб.</p>
                         <p><b>Средний метраж: </b>{houseStatistics.averageFourRoomSpace || "н/у"} кв. м.</p>
-                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.AverageFourRoomMeterPrice || "н/у"} руб. за кв. м.</p>
+                        <p><b>Средняя цена за кв. м.: </b>{houseStatistics.averageFourRoomMeterPrice || "н/у"} руб. за кв. м.</p>
                     </div>
                 }
             </div>

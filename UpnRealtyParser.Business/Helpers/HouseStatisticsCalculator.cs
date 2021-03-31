@@ -72,18 +72,39 @@ namespace UpnRealtyParser.Business.Helpers
         /// <param name="endDt">Конечная дата анализа цен</param>
         /// <param name="roomAmount">Для квартир с этим количеством комнат</param>
         public List<PointDateTimeWithValue> GetAveragePriceForMonthsPoints(int houseId, DateTime startDt, DateTime endDt,
-            int roomAmount, string site)
+            string site)
         {
             startDt = new DateTime(startDt.Year, startDt.Month, 1);
+            List<PointDateTimeWithValue> allRoomPoints = new List<PointDateTimeWithValue>();
 
-            List<PointDateTimeWithValue> points = _statsRepo.GetAllWithoutTracking()
-                .Where(x => x.HouseId == houseId && x.Site == site&& x.RoomAmount == roomAmount && x.Price != null &&
+            for (int roomAmount = 1; roomAmount <= 4; roomAmount++)
+            {
+                List<AveragePriceStat> foundStats = _statsRepo.GetAllWithoutTracking()
+                .Where(x => x.HouseId == houseId && x.Site == site && x.RoomAmount == roomAmount && x.Price != null &&
                        new DateTime(x.Year, x.Month, 1) <= endDt && new DateTime(x.Year, x.Month, 1) >= startDt)
                 .OrderBy(x => x.Year).ThenBy(x => x.Month)
-                .Select(x => new PointDateTimeWithValue(new DateTime(x.Year, x.Month, 1), (double)x.Price.Value))
                 .ToList();
 
-            return points;
+                foreach(AveragePriceStat stat in foundStats)
+                {
+                    PointDateTimeWithValue existingPoint = allRoomPoints
+                        .FirstOrDefault(x => x.XAxis.Year == stat.Year && x.XAxis.Month == stat.Month);
+
+                    if (existingPoint == null)
+                    {
+                        PointDateTimeWithValue pointForAddition = 
+                            new PointDateTimeWithValue { XAxis = new DateTime(stat.Year, stat.Month, 1)};
+                        pointForAddition.YLayers[roomAmount - 1] = stat.Price;
+                        allRoomPoints.Add(pointForAddition);
+                    }
+                    else
+                    {
+                        existingPoint.YLayers[roomAmount - 1] = stat.Price;
+                    }
+                }
+            }
+
+            return allRoomPoints.OrderBy(x => x.XAxis).ToList();
         }
 
         private double? calculateAveragePriceForDate(int houseId, DateTime currentStartDt, int roomAmount)

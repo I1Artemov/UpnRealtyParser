@@ -78,7 +78,7 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getsingle/averageprice/points")]
         [HttpGet]
-        public IActionResult GetSingleHouseAveragePricePlotPoints(int? id, int? roomAmount)
+        public IActionResult GetSingleHouseAveragePricePlotPoints(int? id)
         {
             if (!id.HasValue)
                 return makeErrorResult("Не указан ID дома");
@@ -88,7 +88,7 @@ namespace UpnRealtyParser.Frontend.Controllers
 
             List<PointDateTimeWithValue> points = 
                 calculator.GetAveragePriceForMonthsPoints(
-                    id.Value, new DateTime(2020, 01, 01), DateTime.Now, roomAmount.GetValueOrDefault(1), Const.SiteNameUpn);
+                    id.Value, new DateTime(2020, 01, 01), DateTime.Now, Const.SiteNameUpn);
 
             return Json(new { points });
         }
