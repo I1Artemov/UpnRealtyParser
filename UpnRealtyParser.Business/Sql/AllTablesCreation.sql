@@ -1,3 +1,4 @@
+
 CREATE TABLE [UpnHouseInfo] (
     [Id] int IDENTITY(1,1),
     [CreationDateTime] datetime,
@@ -397,3 +398,19 @@ select
 	n1a.[AgentName],
 	n1a.[IsCompany]
 from [N1Agency] n1a;
+
+-- 23.03.2021 Таблица для хранения статистики
+
+create table [AveragePriceStat] (
+	[Id] int IDENTITY(1,1),
+    [HouseId] int,
+	[Site] nvarchar(64),
+	[RoomAmount] int,
+	[Year] int,
+	[Month] int,
+	[Price] float,
+	PRIMARY KEY ([Id])
+);
+
+CREATE INDEX idx_AveragePriceStat_HouseId_Site ON [AveragePriceStat] ([HouseId], [Site]);
+CREATE INDEX idx_AveragePriceStat_Year_Month ON [AveragePriceStat] ([Year], [Month]);

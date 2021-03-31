@@ -1,4 +1,5 @@
 ﻿using System;
+using UpnRealtyParser.Business;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
@@ -17,7 +18,12 @@ namespace UpnRealtyParser.Tests
                 EFGenericRepo<UpnFlat, RealtyParserContext> upnFlatRepo = 
                     new EFGenericRepo<UpnFlat, RealtyParserContext>(realtyContext);
 
-                HouseStatisticsCalculator<UpnFlat> calculator = new HouseStatisticsCalculator<UpnFlat>(upnFlatRepo);
+                EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo =
+                    new EFGenericRepo<AveragePriceStat, RealtyParserContext>(realtyContext);
+
+                HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator =
+                    new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(upnFlatRepo, null, statsRepo);
+
                 var stats = calculator.GetStatisticsForHouse(1695);
                 Assert.NotNull(stats);
             }
@@ -31,9 +37,36 @@ namespace UpnRealtyParser.Tests
                 EFGenericRepo<UpnFlat, RealtyParserContext> upnFlatRepo =
                     new EFGenericRepo<UpnFlat, RealtyParserContext>(realtyContext);
 
-                HouseStatisticsCalculator<UpnFlat> calculator = new HouseStatisticsCalculator<UpnFlat>(upnFlatRepo);
-                var points = calculator.GetAveragePriceForMonthsPoints(1695, new DateTime(2020, 01, 01), new DateTime(2021, 04, 01), 1);
+                EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo =
+                    new EFGenericRepo<AveragePriceStat, RealtyParserContext>(realtyContext);
+
+                HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator =
+                    new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(upnFlatRepo, null, statsRepo);
+
+                var points = calculator.GetAveragePriceForMonthsPoints(1695, new DateTime(2020, 01, 01), new DateTime(2021, 04, 01), 1,
+                    Const.SiteNameUpn);
                 Assert.Equal(12, points.Count);
+            }
+        }
+
+        [Fact]
+        public void CountStatistics_ForAllUpnHouses_Test()
+        {
+            using (var realtyContext = new RealtyParserContext())
+            {
+                EFGenericRepo<UpnFlat, RealtyParserContext> upnFlatRepo =
+                    new EFGenericRepo<UpnFlat, RealtyParserContext>(realtyContext);
+
+                EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo =
+                    new EFGenericRepo<UpnHouseInfo, RealtyParserContext>(realtyContext);
+
+                EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo =
+                    new EFGenericRepo<AveragePriceStat, RealtyParserContext>(realtyContext);
+
+                HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator =
+                    new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(upnFlatRepo, upnHouseRepo, statsRepo);
+
+                calculator.CalculateAllUpnHouseAvgPricesAndSaveToDb(Const.SiteNameUpn);
             }
         }
     }

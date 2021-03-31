@@ -21,11 +21,29 @@ class FlatPriceStatisticsPlot extends React.Component {
             d.xAxis = moment(d.xAxis).valueOf(); // date -> epoch
         });
 
-        const xDomain = [dataMin => dataMin, () => new Date(2021, 3, 28).getTime()];
-        const yDomain = [dataMin => dataMin - 500000, dataMax => dataMax];
+        var today = new Date();
+        const xDomain = [dataMin => dataMin, () => new Date(today.getFullYear(), today.getMonth() + 1, 1).getTime()];
+        const yDomain = [dataMin => dataMin - 50000, dataMax => dataMax];
 
+        const priceFormatter = priceNum => {
+            let priceText = "";
+            priceNum = priceNum / 1000000;
+            priceText = (Math.round(priceNum * 100) / 100) + " м.";
+            return priceText;
+        };
         const dateFormatter = unixTime => {
             return format(new Date(unixTime), "dd.MM.yyyy");
+        };
+        const tooltipRenderer = (data) => {
+            let payloadValue = null;
+            if (data.payload.length > 0)
+                payloadValue = data.payload[0].value + " руб.";
+
+            return (
+                <div>
+                    {payloadValue}
+                </div>
+            );
         };
 
         if (isBaseInfoLoading === true) {
@@ -39,12 +57,12 @@ class FlatPriceStatisticsPlot extends React.Component {
             return (
                 <div>
                     <Divider orientation={"center"}>Изменение средних цен на квартиры в доме</Divider>
-                    <ResponsiveContainer width="90%" height={200}>
+                    <ResponsiveContainer width="90%" height={300}>
                         <LineChart width={900} height={250} data={singleRoomPrices} margin={{ top: 10, bottom: 10 }}>
                             <XAxis dataKey="xAxis" hasTicks scale="time" type="number" tickFormatter={dateFormatter} domain={xDomain}/>
-                            <YAxis tickCount={7} hasTick domain={yDomain}/>
+                            <YAxis tickCount={7} hasTick tickFormatter={priceFormatter} domain={yDomain}/>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <Tooltip />
+                            <Tooltip content={tooltipRenderer}/>
                             <Line type="monotone" dataKey="yAxis" stroke="#00192d" />
                         </LineChart>
                     </ResponsiveContainer>

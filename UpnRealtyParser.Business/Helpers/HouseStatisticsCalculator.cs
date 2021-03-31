@@ -7,13 +7,26 @@ using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
-    public class HouseStatisticsCalculator<T> where T :  FlatCore
+    public class HouseStatisticsCalculator<TFlat, THouse> 
+        where TFlat : FlatCore
+        where THouse : HouseInfoCore
     {
-        protected EFGenericRepo<T, RealtyParserContext> _flatRepo;
+        /// <summary>
+        /// Дата самых ранних данных в приложении (начало существования)
+        /// </summary>
+        protected readonly DateTime AppExistStartDate = new DateTime(2020, 2, 1);
 
-        public HouseStatisticsCalculator(EFGenericRepo<T, RealtyParserContext> flatRepo)
+        protected EFGenericRepo<TFlat, RealtyParserContext> _flatRepo;
+        protected EFGenericRepo<THouse, RealtyParserContext> _houseRepo;
+        protected EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
+
+        public HouseStatisticsCalculator(EFGenericRepo<TFlat, RealtyParserContext> flatRepo,
+            EFGenericRepo<THouse, RealtyParserContext> houseRepo,
+            EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo)
         {
             _flatRepo = flatRepo;
+            _houseRepo = houseRepo;
+            _statsRepo = statsRepo;
         }
 
         /// <summary>
@@ -21,7 +34,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public HouseStatistics GetStatisticsForHouse(int houseId)
         {
-            List<T> houseFlats = _flatRepo.GetAllWithoutTracking()
+            List<TFlat> houseFlats = _flatRepo.GetAllWithoutTracking()
                 .Where(x => x.HouseInfoId == houseId).ToList();
 
             double? oneRoomPrice = houseFlats.Where(x => x.RoomAmount == null || x.RoomAmount == 1).Average(x => x.Price);
@@ -57,32 +70,89 @@ namespace UpnRealtyParser.Business.Helpers
         /// <param name="houseId">ID дома УПН</param>
         /// <param name="startDt">Начальная дата анализа цен</param>
         /// <param name="endDt">Конечная дата анализа цен</param>
-        /// <param name="roomAmount">Считать для квартир с этим количеством комнат</param>
-        public List<PointDateTimeWithValue> GetAveragePriceForMonthsPoints(int houseId,DateTime startDt, DateTime endDt,
-            int roomAmount)
+        /// <param name="roomAmount">Для квартир с этим количеством комнат</param>
+        public List<PointDateTimeWithValue> GetAveragePriceForMonthsPoints(int houseId, DateTime startDt, DateTime endDt,
+            int roomAmount, string site)
         {
             startDt = new DateTime(startDt.Year, startDt.Month, 1);
-            DateTime currentStartDt = startDt;
-            List<PointDateTimeWithValue> points = new List<PointDateTimeWithValue>();
 
-            while (currentStartDt < endDt)
-            {
-                DateTime currentEndDt = currentStartDt.AddMonths(1);
+            List<PointDateTimeWithValue> points = _statsRepo.GetAllWithoutTracking()
+                .Where(x => x.HouseId == houseId && x.Site == site&& x.RoomAmount == roomAmount && x.Price != null &&
+                       new DateTime(x.Year, x.Month, 1) <= endDt && new DateTime(x.Year, x.Month, 1) >= startDt)
+                .OrderBy(x => x.Year).ThenBy(x => x.Month)
+                .Select(x => new PointDateTimeWithValue(new DateTime(x.Year, x.Month, 1), (double)x.Price.Value))
+                .ToList();
 
-                // Ищем не те квартиры, которые были созданы за анализируемый период (CurrentStart <= CreationDate <= CurrentEnd),
-                // а те, которые были еще актуальны в текущем периоде (созданы не позже CurrentEnd и удалены не раньше CurrentStart)
-                double? averagePrice = _flatRepo.GetAllWithoutTracking()
-                    .Where(x => x.HouseInfoId == houseId &&
+            return points;
+        }
+
+        private double? calculateAveragePriceForDate(int houseId, DateTime currentStartDt, int roomAmount)
+        {
+            DateTime currentEndDt = currentStartDt.AddMonths(1);
+
+            // Ищем не те квартиры, которые были созданы за анализируемый период (CurrentStart <= CreationDate <= CurrentEnd),
+            // а те, которые были еще актуальны в текущем периоде (созданы не позже CurrentEnd и удалены не раньше CurrentStart)
+            double? averagePrice = _flatRepo.GetAllWithoutTracking()
+                    .Where(x => x.HouseInfoId == houseId && x.RoomAmount == roomAmount &&
                                 x.CreationDateTime <= currentEndDt && x.LastCheckDate >= currentStartDt)
                     .Average(x => x.Price);
 
-                if (averagePrice.HasValue)
-                    points.Add(new PointDateTimeWithValue(currentStartDt, averagePrice.Value));
+            return averagePrice;
+        }
 
-                currentStartDt = currentStartDt.AddMonths(1);
+        /// <summary>
+        /// Берет все собранные дома УПН и для каждого рассчитывает средние цены квартир
+        /// за месяцы, за которые статистика еще не была посчитана
+        /// </summary>
+        public void CalculateAllUpnHouseAvgPricesAndSaveToDb(string site)
+        {
+            List<int> houseIds = _houseRepo.GetAllWithoutTracking()
+                .Where(x => x.Id != null)
+                .Select(x => x.Id.Value).ToList();
+
+            foreach (int houseId in houseIds)
+            {
+                DateTime currentStartDt = AppExistStartDate;
+                DateTime endDt = DateTime.Now;
+
+                while (currentStartDt < endDt)
+                {
+                    for(int roomAmount = 1; roomAmount <= 4; roomAmount++)
+                        calculateStatsAndAddToDbIfNeeded(site, houseId, roomAmount, currentStartDt);
+
+                    currentStartDt = currentStartDt.AddMonths(1);
+                }
+
+                _statsRepo.Save();
             }
+        }
 
-            return points;
+        private void calculateStatsAndAddToDbIfNeeded(string site, int houseId, int roomAmount,
+            DateTime currentStartDt)
+        {
+            bool isAlreadyHaveStats = _statsRepo.GetAllWithoutTracking().Any(
+                        x => x.Site == site && x.HouseId == houseId && x.RoomAmount == roomAmount &&
+                        x.Year == currentStartDt.Year && x.Month == currentStartDt.Month);
+
+            if (isAlreadyHaveStats)
+                return;
+
+            double? averagePrice = calculateAveragePriceForDate(houseId, currentStartDt, roomAmount);
+
+            if (!averagePrice.HasValue)
+                return;
+
+            AveragePriceStat stats = new AveragePriceStat
+            {
+                Site = site,
+                HouseId = houseId,
+                RoomAmount = roomAmount,
+                Year = currentStartDt.Year,
+                Month = currentStartDt.Month,
+                Price = averagePrice
+            };
+
+            _statsRepo.Add(stats);
         }
     }
 }

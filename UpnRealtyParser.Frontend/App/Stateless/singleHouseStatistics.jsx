@@ -4,7 +4,8 @@ class SingleHouseStatistics extends React.Component {
     componentDidMount() {
         setTimeout(function () {
             let el = document.querySelector('.house-statistics-wrapper');
-            el.classList.add('full-visible');
+            if(el)
+                el.classList.add('full-visible');
         }, 10);
     }
 

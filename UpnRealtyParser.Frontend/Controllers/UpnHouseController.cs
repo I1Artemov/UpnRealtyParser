@@ -6,6 +6,7 @@ using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Repositories;
+using UpnRealtyParser.Business;
 
 namespace UpnRealtyParser.Frontend.Controllers
 {
@@ -16,14 +17,17 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly EFGenericRepo<HouseSitelessVM, RealtyParserContext> _unitedHouseRepo;
         private readonly EFGenericRepo<UpnHouseInfo, RealtyParserContext> _upnHouseRepo;
         private readonly EFGenericRepo<UpnFlat, RealtyParserContext> _upnSellFlatRepo;
+        private readonly EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
 
         public UpnHouseController(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo,
             EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo,
-            EFGenericRepo<UpnFlat, RealtyParserContext> upnSellFlatRepo)
+            EFGenericRepo<UpnFlat, RealtyParserContext> upnSellFlatRepo,
+            EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo)
         {
             _unitedHouseRepo = unitedHouseRepo;
             _upnHouseRepo = upnHouseRepo;
             _upnSellFlatRepo = upnSellFlatRepo;
+            _statsRepo = statsRepo;
         }
 
         [Route("getall")]
@@ -65,7 +69,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             if (!id.HasValue)
                 return makeErrorResult("Не указан ID дома");
 
-            HouseStatisticsCalculator<UpnFlat> calculator = new HouseStatisticsCalculator<UpnFlat>(_upnSellFlatRepo);
+            HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator = 
+                new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(_upnSellFlatRepo, _upnHouseRepo, _statsRepo);
             HouseStatistics houseStatistics = calculator.GetStatisticsForHouse(id.Value);
 
             return Json(new { houseStatistics });
@@ -78,10 +83,12 @@ namespace UpnRealtyParser.Frontend.Controllers
             if (!id.HasValue)
                 return makeErrorResult("Не указан ID дома");
 
-            HouseStatisticsCalculator<UpnFlat> calculator = new HouseStatisticsCalculator<UpnFlat>(_upnSellFlatRepo);
+            HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator =
+                new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(_upnSellFlatRepo, _upnHouseRepo, _statsRepo);
+
             List<PointDateTimeWithValue> points = 
                 calculator.GetAveragePriceForMonthsPoints(
-                    id.Value, new DateTime(2020, 01, 01), DateTime.Now, roomAmount.GetValueOrDefault(1));
+                    id.Value, new DateTime(2020, 01, 01), DateTime.Now, roomAmount.GetValueOrDefault(1), Const.SiteNameUpn);
 
             return Json(new { points });
         }
