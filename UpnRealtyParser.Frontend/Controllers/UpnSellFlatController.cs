@@ -69,12 +69,12 @@ namespace UpnRealtyParser.Frontend.Controllers
                 string stationName = foundStation?.Name;
                 allSellFlats = allSellFlats.Where(x => x.ClosestSubwayName == stationName);
             }
+            int totalCount = allSellFlats.Count();
 
             List<UpnFlatVmForTable> filteredFlats = allSellFlats
                 .OrderBy(x => x.Id)
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
-            int totalCount = allSellFlats.Count();
 
             return Json(new {flatsList = filteredFlats, totalCount = totalCount});
         }

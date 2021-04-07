@@ -32,12 +32,22 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getall")]
         [HttpGet]
-        public IActionResult GetAllHouses(int? page, int? pageSize)
+        public IActionResult GetAllHouses(int? page, int? pageSize, int? minBuildYear, bool? isShowUpn,
+            bool? isShowN1, string addressPart)
         {
             int targetPage = page.GetValueOrDefault(1);
-            int targetPageSize = pageSize.GetValueOrDefault(10);
+            int targetPageSize = pageSize.GetValueOrDefault(20);
 
             IQueryable<HouseSitelessVM> allHouses = _unitedHouseRepo.GetAllWithoutTracking();
+            if (minBuildYear.HasValue)
+                allHouses = allHouses.Where(x => x.BuildYear >= minBuildYear.Value);
+            if (!isShowUpn.GetValueOrDefault(true))
+                allHouses = allHouses.Where(x => x.SourceSite != Const.SiteNameUpn);
+            if (!isShowN1.GetValueOrDefault(true))
+                allHouses = allHouses.Where(x => x.SourceSite != Const.SiteNameN1);
+            if (!string.IsNullOrEmpty(addressPart))
+                allHouses = allHouses.Where(x => x.Address.Contains(addressPart));
+
             int totalCount = allHouses.Count();
 
             List<HouseSitelessVM> filteredHouses = allHouses

@@ -83,3 +83,11 @@ div.house-statistics-block p {
     margin-left: auto;
     margin-right: auto;
 }
+
+.search-bar-above-table {
+    margin-bottom: 8px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+    padding-left: 8px;
+    background-color: rgb(255, 255, 255);
+}

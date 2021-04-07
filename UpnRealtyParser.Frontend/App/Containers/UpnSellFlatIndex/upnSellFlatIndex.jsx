@@ -48,7 +48,7 @@ class UpnSellFlatIndex extends React.Component {
                     <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                     <Breadcrumb.Item>На продажу</Breadcrumb.Item>
                 </Breadcrumb>
-                <div style={{ marginBottom: 8, paddingBottom: 10, paddingTop: 10, paddingLeft: 8, backgroundColor: "rgb(255, 255, 255)" }}>
+                <div className="search-bar-above-table">
                     <div>
                         <span>Отображать архивные</span>
                         <Checkbox onChange={this.props.setShowArchived.bind(this)} checked={this.props.isShowArchived} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>

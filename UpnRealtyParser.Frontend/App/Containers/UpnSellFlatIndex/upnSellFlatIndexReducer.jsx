@@ -68,10 +68,10 @@ export default function flats(state = initialState, action) {
 
         case CLEAR_SEARCH_PARAMETERS:
             return { ...state, isShowArchived: true, isExcludeFirstFloor: false, isExcludeLastFloor: false,
-                minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null}
+                minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null};
 
         case SAVE_PAGING_PARAMETERS:
-            return { ...state, savedGridPage: action.payload.current, savedGridPageSize: action.payload.pageSize }
+            return { ...state, savedGridPage: action.payload.current, savedGridPageSize: action.payload.pageSize };
 
         default:
             return state;
