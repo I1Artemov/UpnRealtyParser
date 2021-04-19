@@ -254,14 +254,13 @@ namespace UpnRealtyParser.Business.Helpers
                 .Where(x => x.LinkType == targetLinkType && x.SiteName == Const.SiteNameN1
                         && (x.IsDead == null || x.IsDead.Value == false));
 
-            int totalLinksCount = linksFilterQuery.Count();
-
             List<PageLink> apartmentHrefs = linksFilterQuery
                 .ToList();
             _stateLogger.LogApartmentsParsingStart(apartmentHrefs.Count, isRentFlats);
 
             ProcessAllApartmentsFromLinks(apartmentHrefs, true, isRentFlats);
 
+            _stateLogger.LogApartmentsParsingComplete(isRentFlats);
             _isProcessingCompleted = true;
         }
 

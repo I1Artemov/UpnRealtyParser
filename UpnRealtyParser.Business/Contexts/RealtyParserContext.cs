@@ -23,6 +23,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<N1FlatPhoto> N1FlatPhotos { get; set; }
         public DbSet<SimilarHouse> SimilarHouses { get; set; }
         public DbSet<AveragePriceStat> AveragePriceStats { get; set; }
+        public DbSet<ServiceStage> ServiceStages { get; set; }
 
         public RealtyParserContext(DbContextOptions<RealtyParserContext> options) : base(options) { }
 
@@ -31,7 +32,7 @@ namespace UpnRealtyParser.Business.Contexts
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // todo: Вынести в конфиг
-            optionsBuilder.UseSqlServer(@"Data Source=.\MSSQL14LOCAL;Database=RealtyParser;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Data Source=SHODAN;Database=RealtyParser;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

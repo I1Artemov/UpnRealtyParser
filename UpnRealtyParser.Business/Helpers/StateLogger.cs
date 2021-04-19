@@ -1,4 +1,6 @@
-﻿using UpnRealtyParser.Business.Contexts;
+﻿using System;
+using System.Linq;
+using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Repositories;
 
@@ -7,11 +9,13 @@ namespace UpnRealtyParser.Business.Helpers
     public class StateLogger
     {
         protected EFGenericRepo<ParsingState, RealtyParserContext> _parsingStateRepo;
+        protected EFGenericRepo<ServiceStage, RealtyParserContext> _serviceStageRepo;
         protected string _siteName;
 
         public StateLogger(RealtyParserContext context, string siteName)
         {
             _parsingStateRepo = new EFGenericRepo<ParsingState, RealtyParserContext>(context);
+            _serviceStageRepo = new EFGenericRepo<ServiceStage, RealtyParserContext>(context);
             _siteName = siteName;
         }
 
@@ -62,6 +66,11 @@ namespace UpnRealtyParser.Business.Helpers
                 Const.ParsingStatusDescriptionGatheringLinks,
                 string.Format("Completed Rent={0}", isRentFlats),
                 Const.StatusTypeSuccess);
+
+            string currentStageName = isRentFlats ? Const.ParsingStatusDescriptionGatheringLinksRent
+                                      : Const.ParsingStatusDescriptionGatheringLinks;
+
+            updateServiceStage(currentStageName, true);
         }
 
         /// <summary>
@@ -98,6 +107,27 @@ namespace UpnRealtyParser.Business.Helpers
                 Const.ParsingStatusDescriptionObservingFlats,
                 string.Format("Started LinksToProcess={0} Rent={1}", apartmentsAmount, isRentFlats),
                 Const.StatusTypeSuccess);
+
+            string currentStageName = isRentFlats ? Const.ParsingStatusDescriptionObservingFlatsRent
+                : Const.ParsingStatusDescriptionObservingFlats;
+
+            updateServiceStage(currentStageName, false);
+        }
+
+        /// <summary>
+        ///  "Обработка квартир по ссылкам завершена"
+        /// </summary>
+        public void LogApartmentsParsingComplete(bool isRentFlats)
+        {
+            LogAnyMessage(_siteName,
+                Const.ParsingStatusDescriptionObservingFlats,
+                string.Format("Completed Rent={0}", isRentFlats),
+                Const.StatusTypeSuccess);
+
+            string currentStageName = isRentFlats ? Const.ParsingStatusDescriptionObservingFlatsRent
+                : Const.ParsingStatusDescriptionObservingFlats;
+
+            updateServiceStage(currentStageName, true);
         }
 
         /// <summary>
@@ -198,6 +228,22 @@ namespace UpnRealtyParser.Business.Helpers
                 Const.ParsingStatusGettingProxies,
                 string.Format("No proxies get, ", errorMessage),
                 Const.StatusTypeFailure);
+        }
+
+        private void updateServiceStage(string stageName, bool isComplete, int? pageNumber = null)
+        {
+            ServiceStage serviceStage = _serviceStageRepo.GetAll()
+                .FirstOrDefault(x => x.Name == _siteName);
+            if (serviceStage == null)
+                return;
+
+            serviceStage.CurrentStage = stageName;
+            serviceStage.IsComplete = isComplete;
+            serviceStage.UpdateDate = DateTime.Now;
+            if (pageNumber.HasValue)
+                serviceStage.PageNumber = pageNumber.Value;
+            _serviceStageRepo.Update(serviceStage);
+            _serviceStageRepo.Save();
         }
     }
 }

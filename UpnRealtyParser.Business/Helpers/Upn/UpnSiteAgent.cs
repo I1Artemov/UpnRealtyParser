@@ -129,10 +129,7 @@ namespace UpnRealtyParser.Business.Helpers
                 _processedObjectsCount++;
             }
 
-            _stateLogger.LogLinksGatheringCompletion(isRentFlats);
-            CloseConnection();
-            _writeToLogDelegate?.Invoke("Сбор ссылок завершен" + rentLogMessageAddition);
-            _isProcessingCompleted = true;
+            handleLinksGatheringCompletion(isRentFlats, rentLogMessageAddition);
         }
 
         /// <summary>
@@ -224,14 +221,13 @@ namespace UpnRealtyParser.Business.Helpers
                 .Where(x => x.LinkType == targetLinkType && x.SiteName == Const.SiteNameUpn
                         && (x.IsDead == null || x.IsDead.Value == false));
 
-            int totalLinksCount = linksFilterQuery.Count();
-
             List<PageLink> apartmentHrefs = linksFilterQuery
                 .ToList();
             _stateLogger.LogApartmentsParsingStart(apartmentHrefs.Count, isRentFlats);
 
             ProcessAllApartmentsFromLinks(apartmentHrefs, true, isRentFlats);
 
+            _stateLogger.LogApartmentsParsingComplete(isRentFlats);
             _isProcessingCompleted = true;
         }
 
@@ -468,6 +464,14 @@ namespace UpnRealtyParser.Business.Helpers
                 _stateLogger.LogApartmentMarkedAsDead(pageLink.Href);
                 _writeToLogDelegate(string.Format("Квартира (Id {0}) отмечена как удаленная", linkedFlat.Id));
             }
+        }
+
+        private void handleLinksGatheringCompletion(bool isRentFlats, string rentLogMessageAddition)
+        {
+            _stateLogger.LogLinksGatheringCompletion(isRentFlats);
+            CloseConnection();
+            _writeToLogDelegate?.Invoke("Сбор ссылок завершен" + rentLogMessageAddition);
+            _isProcessingCompleted = true;
         }
     }
 }

@@ -414,3 +414,16 @@ create table [AveragePriceStat] (
 
 CREATE INDEX idx_AveragePriceStat_HouseId_Site ON [AveragePriceStat] ([HouseId], [Site]);
 CREATE INDEX idx_AveragePriceStat_Year_Month ON [AveragePriceStat] ([Year], [Month]);
+
+-- 15.04.2021 Таблица для хранения текущего состояния парсинга
+
+create table [ServiceStage] (
+	[Id] int IDENTITY(1,1),
+	[UpdateDate] datetime,
+	[Name] nvarchar(64), -- Название сервиса
+	[CurrentStage] nvarchar(64),
+	[IsComplete] bit,
+	PRIMARY KEY ([Id])
+);
+
+alter table [ServiceStage] add [PageNumber] int;
