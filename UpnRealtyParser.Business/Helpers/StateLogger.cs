@@ -76,7 +76,8 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// При сборе ссылок после обработки каждой страницы. "Обработана страница {0}: вставлено {1} записей, обновлено {2}."
         /// </summary>
-        public void LogLinksPageProcessingResult(int pageNumber, int addedRecordsNumber, int updatedRecordsNumber)
+        public void LogLinksPageProcessingResult(int pageNumber, int addedRecordsNumber, int updatedRecordsNumber,
+            bool isRentFlats)
         {
             string detailsMessage = string.Format("PageNumber={0} AddedRows={1} UpdatedRows={2}",
                 pageNumber, addedRecordsNumber, updatedRecordsNumber);
@@ -85,6 +86,10 @@ namespace UpnRealtyParser.Business.Helpers
                 Const.ParsingStatusMainTableSinglePageProcessing,
                 detailsMessage,
                 Const.StatusTypeSuccess);
+
+            string currentStageName = isRentFlats ? Const.ParsingStatusDescriptionGatheringLinksRent
+                                      : Const.ParsingStatusDescriptionGatheringLinks;
+            updateServiceStage(currentStageName, false, pageNumber);
         }
 
         /// <summary>

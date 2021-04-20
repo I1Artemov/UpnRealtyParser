@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
@@ -21,7 +19,9 @@ namespace UpnRealtyParser.Business.Helpers
 
         public N1SiteAgent(Action<string> writeToLogDelegate, AppSettings settings) :
             base(writeToLogDelegate, settings)
-        { }
+        {
+            _siteName = Const.SiteNameN1;
+        }
 
         protected override void initializeRepositories(RealtyParserContext context)
         {
@@ -36,6 +36,8 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
         {
+            setSkipPages();
+
             _isProcessingCompleted = false;
             _currentActionName = isRentFlats ? Const.ParsingStatusDescriptionGatheringLinksRent :
                 Const.ParsingStatusDescriptionGatheringLinks;
@@ -167,7 +169,7 @@ namespace UpnRealtyParser.Business.Helpers
             _pageLinkRepo.Save();
             _writeToLogDelegate(string.Format("Обработана страница {0}: вставлено {1} записей, обновлено {2}.",
                 pageNumber, insertedAmount, updatedAmount));
-            _stateLogger.LogLinksPageProcessingResult(pageNumber, insertedAmount, updatedAmount);
+            _stateLogger.LogLinksPageProcessingResult(pageNumber, insertedAmount, updatedAmount, isRentFlats);
         }
 
         /// <summary>

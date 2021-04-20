@@ -1,6 +1,4 @@
-﻿using AngleSharp.Dom;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -20,11 +18,14 @@ namespace UpnRealtyParser.Business.Helpers
         protected Thread _apartmentProcessingThread;
 
         protected EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
-        
+        protected EFGenericRepo<ServiceStage, RealtyParserContext> _serviceStageRepo;
+
         protected StateLogger _stateLogger;
 
         protected int _maxRetryAmountForSingleRequest;
         protected int _maxRequestTimeoutInMs;
+        protected int _tablePagesToSkip;
+        protected string _siteName;
 
         public AnyRealtySiteParser(Action<string> writeToLogDelegate, AppSettings settings)
             : base(settings.IsUseProxies, settings.RequestDelayInMs, writeToLogDelegate)
@@ -55,6 +56,7 @@ namespace UpnRealtyParser.Business.Helpers
         protected override void initializeRepositories(RealtyParserContext context)
         {
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
+            _serviceStageRepo = new EFGenericRepo<ServiceStage, RealtyParserContext>(context);
         }
 
         public ThreadState GetApartmentThreadState()
@@ -225,6 +227,25 @@ namespace UpnRealtyParser.Business.Helpers
             WebProxyInfo foundProxy = _currentProxy;
             OnlineProxyProvider proxyProvider = new OnlineProxyProvider(_dbContext, _writeToLogDelegate);
             proxyProvider.AddFailureAmountToProxyInDb(foundProxy);
+        }
+
+        /// <summary>
+        /// Вспоминает по ServiceStage, на какой странице в прошлый раз остановился сервис при сборе ссылок
+        /// </summary>
+        protected void setSkipPages()
+        {
+            if (_tablePagesToSkip != 0)
+                return;
+
+            ServiceStage foundStage = _serviceStageRepo.GetAllWithoutTracking()
+                .FirstOrDefault(x => x.Name == _siteName &&
+                (x.CurrentStage == Const.ParsingStatusDescriptionGatheringLinks ||
+                x.CurrentStage == Const.ParsingStatusDescriptionGatheringLinksRent));
+
+            if (foundStage?.PageNumber == null)
+                return;
+
+            _tablePagesToSkip = foundStage.PageNumber.Value;
         }
     }
 }

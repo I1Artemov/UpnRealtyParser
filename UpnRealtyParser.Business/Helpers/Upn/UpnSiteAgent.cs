@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
@@ -19,12 +17,11 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
         protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
 
-        protected int _upnTablePagesToSkip;
-
         public UpnSiteAgent(Action<string> writeToLogDelegate, AppSettings settings) : 
             base(writeToLogDelegate, settings)
         {
-            _upnTablePagesToSkip = settings.UpnTablePagesToSkip;
+            _tablePagesToSkip = settings.UpnTablePagesToSkip;
+            _siteName = Const.SiteNameUpn;
         }
 
         protected override void initializeRepositories(RealtyParserContext context)
@@ -40,6 +37,8 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
         {
+            setSkipPages();
+
             _isProcessingCompleted = false;
             _currentActionName = isRentFlats ? Const.ParsingStatusDescriptionGatheringLinksRent :
                 Const.ParsingStatusDescriptionGatheringLinks;
@@ -109,7 +108,7 @@ namespace UpnRealtyParser.Business.Helpers
             _stateLogger.LogFirstPageLoading(totalApartmentsAmount.GetValueOrDefault(0), totalTablePages, isRentFlats);
 
             _processedObjectsCount = 0;
-            int startPageNumber = isRentFlats ? 0 : _upnTablePagesToSkip;
+            int startPageNumber = isRentFlats ? 0 : _tablePagesToSkip;
             for (int currentPageNumber = startPageNumber; currentPageNumber <= totalTablePages; currentPageNumber++)
             {
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
@@ -172,7 +171,7 @@ namespace UpnRealtyParser.Business.Helpers
             _pageLinkRepo.Save();
             _writeToLogDelegate(string.Format("Обработана страница {0}: вставлено {1} записей, обновлено {2}.",
                 pageNumber, insertedAmount, updatedAmount));
-            _stateLogger.LogLinksPageProcessingResult(pageNumber, insertedAmount, updatedAmount);
+            _stateLogger.LogLinksPageProcessingResult(pageNumber, insertedAmount, updatedAmount, isRentFlats);
         }
 
         /// <summary>
