@@ -53,6 +53,38 @@ namespace UpnRealtyParser.Business.Helpers
             }
         }
 
+        public virtual void StartLinksGatheringInSeparateThread(bool isRentFlats = false) { }
+        public virtual void StartApartmentGatheringInSeparateThread(bool isRentFlats = false) { }
+
+        /// <summary>
+        /// Вызывать при первом запуске процессинга агентом. По запомненному ServiceStage выбирает,
+        /// с какого метода начать работу
+        /// </summary>
+        public virtual void StartWorkingFromMemorizedStage()
+        {
+            setInitialCurrentActionFromDb();
+
+            if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinks && !_isProcessingCompleted)
+                StartLinksGatheringInSeparateThread(false); // Продолжаем сбор ссылок
+            else if (_isProcessingCompleted)
+                StartApartmentGatheringInSeparateThread(false); // Начинаем сбор квартир
+
+            if (_currentActionName == Const.ParsingStatusDescriptionObservingFlats && !_isProcessingCompleted)
+                StartApartmentGatheringInSeparateThread(false); // Продолжаем сбор квартир
+            else if (_isProcessingCompleted)
+                StartLinksGatheringInSeparateThread(true); // Начинаем сбор ссылок (аренда)
+
+            if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinksRent && !_isProcessingCompleted)
+                StartLinksGatheringInSeparateThread(true); // Продолжаем сбор ссылок (аренда)
+            else if (_isProcessingCompleted)
+                StartApartmentGatheringInSeparateThread(true); // Начинаем сбор квартир (аренда)
+
+            if (_currentActionName == Const.ParsingStatusDescriptionObservingFlatsRent && !_isProcessingCompleted)
+                StartApartmentGatheringInSeparateThread(true); // Продолжаем сбор квартир (аренда)
+            else if (_isProcessingCompleted)
+                StartLinksGatheringInSeparateThread(false); // К началу жизненного цикла - снова начинаем сбор ссылок
+        }
+
         protected override void initializeRepositories(RealtyParserContext context)
         {
             _pageLinkRepo = new EFGenericRepo<PageLink, RealtyParserContext>(context);
@@ -246,6 +278,25 @@ namespace UpnRealtyParser.Business.Helpers
                 return;
 
             _tablePagesToSkip = foundStage.PageNumber.Value;
+        }
+
+        /// <summary>
+        /// Вспоминает по ServiceStage, на каком этапе остановилась обработка
+        /// </summary>
+        protected void setInitialCurrentActionFromDb()
+        {
+            ServiceStage foundStage = _serviceStageRepo.GetAllWithoutTracking()
+                .FirstOrDefault(x => x.Name == _siteName);
+
+            if(string.IsNullOrEmpty(foundStage?.CurrentStage))
+            {
+                _currentActionName = Const.ParsingStatusDescriptionGatheringLinks;
+                _isProcessingCompleted = false;
+                return;
+            }
+
+            _currentActionName = foundStage.CurrentStage;
+            _isProcessingCompleted = foundStage.IsComplete.GetValueOrDefault(false);
         }
     }
 }

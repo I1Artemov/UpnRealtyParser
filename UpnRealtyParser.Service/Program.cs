@@ -36,10 +36,9 @@ namespace UpnRealtyParser.Service
         {
             UpnSiteAgent upnAgent = new UpnSiteAgent(WriteDebugLog, loadedSettings);
 
-            // Начинаем со сбора ссылок, на сбор квартир переключит watchdog
-            Console.WriteLine("Начат сбор ссылок на квартиры на продажу");
             upnAgent.OpenConnection();
-            upnAgent.StartLinksGatheringInSeparateThread();
+            upnAgent.StartWorkingFromMemorizedStage();
+            Console.WriteLine("Начало работы с предыдущей стадии: " + upnAgent.GetCurrentActionName());
 
             Thread.Sleep(700000);
             int previouslyProcessedAmount = 0;

@@ -36,17 +36,15 @@ namespace UpnRealtyParser.Service.N1
         {
             N1SiteAgent n1Agent = new N1SiteAgent(WriteDebugLog, loadedSettings);
 
-            // Начинаем со сбора ссылок, на сбор квартир переключит watchdog
-            Console.WriteLine("Начат сбор ссылок на квартиры на продажу");
             n1Agent.OpenConnection();
-            n1Agent.StartLinksGatheringInSeparateThread();
+            n1Agent.StartWorkingFromMemorizedStage();
+            Console.WriteLine("Начало работы с предыдущей стадии: " + n1Agent.GetCurrentActionName());
 
             Thread.Sleep(700000);
             int previouslyProcessedAmount = 0;
 
             while (true)
             {
-                //int currentlyProcessedAmount = upnAgent.GetProcessedRecordsAmount();
                 int currentlyProcessedAmount = n1Agent.GetProcessedRecordsAmount();
                 WriteDebugLog(string.Format("Проверка состояния. Обработано {0} записей.", currentlyProcessedAmount));
 

@@ -34,7 +34,25 @@ namespace UpnRealtyParser.Business.Helpers
             // TODO: RentFlat
         }
 
-        public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
+        /// <summary>
+        /// Блок с арендой на N1 еще не реализован => сокращенный жизненный цикл
+        /// </summary>
+        public override void StartWorkingFromMemorizedStage()
+        {
+            setInitialCurrentActionFromDb();
+
+            if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinks && !_isProcessingCompleted)
+                StartLinksGatheringInSeparateThread(false); // Продолжаем сбор ссылок
+            else if (_isProcessingCompleted)
+                StartApartmentGatheringInSeparateThread(false); // Начинаем сбор квартир
+
+            if (_currentActionName == Const.ParsingStatusDescriptionObservingFlats && !_isProcessingCompleted)
+                StartApartmentGatheringInSeparateThread(false); // Продолжаем сбор квартир
+            else if (_isProcessingCompleted)
+                StartLinksGatheringInSeparateThread(true); // Снова начинаем сбор ссылок
+        }
+
+        public override void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
         {
             setSkipPages();
 
@@ -48,7 +66,7 @@ namespace UpnRealtyParser.Business.Helpers
             _linksProcessingThread.Start();
         }
 
-        public void StartApartmentGatheringInSeparateThread(bool isRentFlats = false)
+        public override void StartApartmentGatheringInSeparateThread(bool isRentFlats = false)
         {
             _isProcessingCompleted = false;
             _currentActionName = isRentFlats ? Const.ParsingStatusDescriptionObservingFlatsRent :

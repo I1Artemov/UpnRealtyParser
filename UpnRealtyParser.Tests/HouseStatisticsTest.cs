@@ -43,7 +43,7 @@ namespace UpnRealtyParser.Tests
                 HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator =
                     new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(upnFlatRepo, null, statsRepo);
 
-                var points = calculator.GetAveragePriceForMonthsPoints(1695, new DateTime(2020, 01, 01), new DateTime(2021, 04, 01), 1,
+                var points = calculator.GetAveragePriceForMonthsPoints(1695, new DateTime(2020, 01, 01), new DateTime(2021, 04, 01),
                     Const.SiteNameUpn);
                 Assert.Equal(12, points.Count);
             }

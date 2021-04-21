@@ -35,7 +35,7 @@ namespace UpnRealtyParser.Business.Helpers
             _stateLogger = new StateLogger(context, Const.SiteNameUpn);
         }
 
-        public void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
+        public override void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
         {
             setSkipPages();
 
@@ -49,7 +49,7 @@ namespace UpnRealtyParser.Business.Helpers
             _linksProcessingThread.Start();
         }
 
-        public void StartApartmentGatheringInSeparateThread(bool isRentFlats = false)
+        public override void StartApartmentGatheringInSeparateThread(bool isRentFlats = false)
         {
             _isProcessingCompleted = false;
             _currentActionName = isRentFlats ? Const.ParsingStatusDescriptionObservingFlatsRent :
@@ -59,17 +59,6 @@ namespace UpnRealtyParser.Business.Helpers
             _apartmentProcessingThread = new Thread(threadMethod);
             _apartmentProcessingThread.IsBackground = true;
             _apartmentProcessingThread.Start();
-        }
-
-        public void StopProcessingInThreads()
-        {
-            if (_linksProcessingThread != null)
-                _linksProcessingThread.Abort();
-
-            if(_apartmentProcessingThread != null)
-                _apartmentProcessingThread.Abort();
-
-            _writeToLogDelegate("Обработка остановлена");
         }
 
         /// <summary>
