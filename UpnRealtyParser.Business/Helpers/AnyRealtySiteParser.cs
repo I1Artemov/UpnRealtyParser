@@ -66,22 +66,22 @@ namespace UpnRealtyParser.Business.Helpers
 
             if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinks && !_isProcessingCompleted)
                 StartLinksGatheringInSeparateThread(false); // Продолжаем сбор ссылок
-            else if (_isProcessingCompleted)
+            else if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinks)
                 StartApartmentGatheringInSeparateThread(false); // Начинаем сбор квартир
 
             if (_currentActionName == Const.ParsingStatusDescriptionObservingFlats && !_isProcessingCompleted)
                 StartApartmentGatheringInSeparateThread(false); // Продолжаем сбор квартир
-            else if (_isProcessingCompleted)
+            else if (_currentActionName == Const.ParsingStatusDescriptionObservingFlats)
                 StartLinksGatheringInSeparateThread(true); // Начинаем сбор ссылок (аренда)
 
             if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinksRent && !_isProcessingCompleted)
                 StartLinksGatheringInSeparateThread(true); // Продолжаем сбор ссылок (аренда)
-            else if (_isProcessingCompleted)
+            else if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinksRent)
                 StartApartmentGatheringInSeparateThread(true); // Начинаем сбор квартир (аренда)
 
             if (_currentActionName == Const.ParsingStatusDescriptionObservingFlatsRent && !_isProcessingCompleted)
                 StartApartmentGatheringInSeparateThread(true); // Продолжаем сбор квартир (аренда)
-            else if (_isProcessingCompleted)
+            else if (_currentActionName == Const.ParsingStatusDescriptionObservingFlatsRent)
                 StartLinksGatheringInSeparateThread(false); // К началу жизненного цикла - снова начинаем сбор ссылок
         }
 
