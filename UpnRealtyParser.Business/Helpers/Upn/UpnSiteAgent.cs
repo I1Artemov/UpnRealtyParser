@@ -16,6 +16,7 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<UpnRentFlat, RealtyParserContext> _rentFlatRepo;
         protected EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
         protected EFGenericRepo<UpnFlatPhoto, RealtyParserContext> _photoRepo;
+        EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
 
         public UpnSiteAgent(Action<string> writeToLogDelegate, AppSettings settings) : 
             base(writeToLogDelegate, settings)
@@ -32,6 +33,7 @@ namespace UpnRealtyParser.Business.Helpers
             _rentFlatRepo = new EFGenericRepo<UpnRentFlat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<UpnAgency, RealtyParserContext>(context);
             _photoRepo = new EFGenericRepo<UpnFlatPhoto, RealtyParserContext>(context);
+            _statsRepo = new EFGenericRepo<AveragePriceStat, RealtyParserContext>(context);
             _stateLogger = new StateLogger(context, Const.SiteNameUpn);
         }
 
@@ -460,6 +462,14 @@ namespace UpnRealtyParser.Business.Helpers
             CloseConnection();
             _writeToLogDelegate?.Invoke("Сбор ссылок завершен" + rentLogMessageAddition);
             _isProcessingCompleted = true;
+        }
+
+        public void CalculateHousesStatistics()
+        {
+            HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator =
+                    new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(_sellFlatRepo, _houseRepo, _statsRepo);
+
+            calculator.CalculateAllUpnHouseAvgPricesAndSaveToDb(Const.SiteNameUpn);
         }
     }
 }

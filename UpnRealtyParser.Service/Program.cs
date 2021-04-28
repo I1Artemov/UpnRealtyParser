@@ -82,6 +82,8 @@ namespace UpnRealtyParser.Service
                     }
                     else if (upnAgent.CheckIfProcessingCompleted() && upnAgent.GetCurrentActionName() == Const.ParsingStatusDescriptionObservingFlatsRent)
                     {
+                        WriteDebugLog("Подсчет новой статистики по домам.");
+                        upnAgent.CalculateHousesStatistics();
                         // Если завершился сбор арендных квартир, то выходим из цикла
                         WriteDebugLog("Обработка полностью завершена. Остановка цикла.");
                         break;
