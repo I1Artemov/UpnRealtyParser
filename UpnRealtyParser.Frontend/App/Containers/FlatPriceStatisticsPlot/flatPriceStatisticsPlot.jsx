@@ -62,9 +62,9 @@ class FlatPriceStatisticsPlot extends React.Component {
             );
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
             return (
-                <div>
+                <div style={{ display: "inline-block", width: "48%" }}>
                     <Divider orientation={"center"}>Изменение средних цен на квартиры в доме</Divider>
-                    <ResponsiveContainer width="90%" height={300}>
+                    <ResponsiveContainer width="100%" height={300}>
                         <LineChart width={900} height={250} data={allRoomPrices} margin={{ top: 10, bottom: 10 }}>
                             <XAxis dataKey="xAxis" hasTicks scale="time" type="number" tickFormatter={dateFormatter} domain={xDomain}/>
                             <YAxis tickCount={7} hasTick tickFormatter={priceFormatter} domain={yDomain}/>
