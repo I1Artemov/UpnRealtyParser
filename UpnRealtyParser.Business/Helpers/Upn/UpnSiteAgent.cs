@@ -466,8 +466,9 @@ namespace UpnRealtyParser.Business.Helpers
 
         public void CalculateHousesStatistics()
         {
-            HouseStatisticsCalculator<UpnFlat, UpnHouseInfo> calculator =
-                    new HouseStatisticsCalculator<UpnFlat, UpnHouseInfo>(_sellFlatRepo, _houseRepo, _statsRepo);
+            HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator =
+                    new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(
+                        _sellFlatRepo, _rentFlatRepo, _houseRepo, _statsRepo);
 
             calculator.CalculateAllUpnHouseAvgPricesAndSaveToDb(Const.SiteNameUpn);
         }

@@ -7,8 +7,9 @@ using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
-    public class HouseStatisticsCalculator<TFlat, THouse> 
+    public class HouseStatisticsCalculator<TFlat, TRentFlat, THouse> 
         where TFlat : FlatCore
+        where TRentFlat : FlatCore
         where THouse : HouseInfoCore
     {
         /// <summary>
@@ -17,14 +18,17 @@ namespace UpnRealtyParser.Business.Helpers
         protected readonly DateTime AppExistStartDate = new DateTime(2020, 2, 1);
 
         protected EFGenericRepo<TFlat, RealtyParserContext> _flatRepo;
+        protected EFGenericRepo<TRentFlat, RealtyParserContext> _rentFlatRepo;
         protected EFGenericRepo<THouse, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
 
         public HouseStatisticsCalculator(EFGenericRepo<TFlat, RealtyParserContext> flatRepo,
+            EFGenericRepo<TRentFlat, RealtyParserContext> rentFlatRepo,
             EFGenericRepo<THouse, RealtyParserContext> houseRepo,
             EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo)
         {
             _flatRepo = flatRepo;
+            _rentFlatRepo = rentFlatRepo;
             _houseRepo = houseRepo;
             _statsRepo = statsRepo;
         }
@@ -59,9 +63,24 @@ namespace UpnRealtyParser.Business.Helpers
                 AverageThreeRoomSpace = threeRoomSpace,
                 AverageFourRoomSpace = fourRoomSpace
             };
+            calculateAverageRentPrices(houseId, result);
 
             result.SetAverageMeterPrices();
             return result;
+        }
+
+        private void calculateAverageRentPrices(int houseId, HouseStatistics statistics)
+        {
+            List<TRentFlat> rentFlats = _rentFlatRepo.GetAllWithoutTracking()
+                .Where(x => x.HouseInfoId == houseId).ToList();
+
+            double? oneRoomRentPrice = rentFlats.Where(x => x.RoomAmount == null || x.RoomAmount == 1).Average(x => x.Price);
+            double? twoRoomRentPrice = rentFlats.Where(x => x.RoomAmount == 2).Average(x => x.Price);
+            double? threeRoomRentPrice = rentFlats.Where(x => x.RoomAmount == 3).Average(x => x.Price);
+
+            statistics.AverageSingleRoomRentPrice = oneRoomRentPrice;
+            statistics.AverageTwoRoomRentPrice = twoRoomRentPrice;
+            statistics.AverageThreeRoomRentPrice = threeRoomRentPrice;
         }
 
         /// <summary>
