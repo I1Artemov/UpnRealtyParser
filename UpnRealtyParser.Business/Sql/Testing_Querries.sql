@@ -47,3 +47,32 @@ WITH cte AS (
 )
 DELETE FROM cte
 WHERE row_num > 1;
+
+-- Тестовый запрос подсчета периода окупаемости
+with houseIds as (
+	select distinct hou.[Id] from [UpnRentFlat] urf
+	left join [UpnHouseInfo] hou on urf.[UpnHouseInfoId] = hou.[Id]
+)
+select 
+	urf.[UpnHouseInfoId],
+	( 
+		select top 1 [Address] from [UpnHouseInfo] hou where hou.Id = urf.[UpnHouseInfoId]
+	) as [HouseAddress],
+	AVG(urf.[Price]) as AverageRent,
+	count(urf.[UpnHouseInfoId]) as RentFlatsAmount,
+	( select top 1 AVG(usf.[Price]) 
+	  from [UpnFlat] usf
+	  where usf.UpnHouseInfoId = urf.[UpnHouseInfoId] and usf.RoomAmount = 1
+	) as AverageSell,
+	(  
+		( select top 1 AVG(usf2.[Price]) from [UpnFlat] usf2
+		  where usf2.UpnHouseInfoId = urf.[UpnHouseInfoId] and usf2.RoomAmount = 1
+		) * 1.0 / (AVG(urf.[Price]) * 12.0 )
+	) as Ratio
+from [UpnRentFlat] urf
+where urf.[UpnHouseInfoId] in (select * from houseIds)
+	and [FlatType] = 'Квартира'
+	and [RoomAmount] = 1
+group by urf.[UpnHouseInfoId]
+having AVG(urf.[Price]) < 100000
+order by Ratio;
