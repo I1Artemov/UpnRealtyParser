@@ -15,3 +15,4 @@ export const Href_UpnHouseController_GetSingleHouse = "/api/UpnHouse/getsingle";
 export const Href_UpnHouseController_GetSingleHouseStatistics = "/api/UpnHouse/getsinglestatistics";
 
 export const Href_UpnHouseController_GetSingleHousePricePlotPoints = "/api/UpnHouse/getsingle/averageprice/points";
+export const Href_UpnHouseController_GetPaybackMapPoints = "/api/UpnHouse/payback/points";

@@ -194,5 +194,60 @@ namespace UpnRealtyParser.Business.Helpers
 
             _statsRepo.Add(stats);
         }
+
+        /// <summary>
+        /// Вычисляет и возвращает точки для карты окупаемости по всем домам, собранным с УПН
+        /// </summary>
+        public List<PaybackPeriodPoint> GetPaybackPeriodPoints()
+        {
+            List<PaybackPeriodPoint> paybackPoints = new List<PaybackPeriodPoint>();
+
+            List<int?> upnHouseIds = _houseRepo.GetAllWithoutTracking().Select(x => x.Id).ToList();
+            int processedCount = 0;
+
+            foreach (int? upnHouseId in upnHouseIds)
+            {
+                var avgSingleSellPrice = _flatRepo.GetAllWithoutTracking()
+                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 1).Average(x => x.Price);
+                var avgTwoSellPrice = _flatRepo.GetAllWithoutTracking()
+                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 2).Average(x => x.Price);
+                var avgSingleRentPrice = _rentFlatRepo.GetAllWithoutTracking()
+                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 1).Average(x => x.Price);
+                var avgTwoRentPrice = _rentFlatRepo.GetAllWithoutTracking()
+                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 2).Average(x => x.Price);
+
+                bool hasSingleInfo = avgSingleSellPrice != null && avgSingleRentPrice != null;
+                bool hasTwoInfo = avgTwoSellPrice != null && avgTwoRentPrice != null;
+                if (!hasSingleInfo && !hasTwoInfo)
+                    continue;
+
+                var singlePaybackYears = avgSingleRentPrice.GetValueOrDefault(0) == 0 ? 
+                    0 : avgSingleSellPrice / (avgSingleRentPrice * 12);
+                var twoPaybackYears = avgTwoRentPrice.GetValueOrDefault(0) == 0 ?
+                    0 : avgTwoSellPrice / (avgTwoRentPrice * 12);
+
+                double? totalPayback = null;
+                if (hasSingleInfo && hasTwoInfo) totalPayback = Math.Min(singlePaybackYears.Value, twoPaybackYears.Value);
+                if (hasSingleInfo && !hasTwoInfo) totalPayback = singlePaybackYears;
+                if (!hasSingleInfo && hasTwoInfo) totalPayback = twoPaybackYears;
+
+                THouse houseInfo = _houseRepo.GetAllWithoutTracking().FirstOrDefault(x => x.Id == upnHouseId);
+                PaybackPeriodPoint paybackPoint = new PaybackPeriodPoint
+                {
+                    UpnHouseId = upnHouseId.GetValueOrDefault(0),
+                    Latitude = houseInfo?.Latitude,
+                    Longitude = houseInfo?.Longitude,
+                    PaybackYears = totalPayback
+                };
+                paybackPoints.Add(paybackPoint);
+
+                // TODO: Убрать ограничение!
+                processedCount++;
+                if (processedCount > 9)
+                    break;
+            }
+
+            return paybackPoints;
+        }
     }
 }

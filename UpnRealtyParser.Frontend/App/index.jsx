@@ -15,6 +15,7 @@ import webProxyIndexReducer from './Containers/WebProxyIndex/webProxyIndexReduce
 import logEntryIndexReducer from './Containers/LogEntryIndex/logEntryIndexReducer.jsx';
 import flatPriceStatisticsPlotReducer from './Containers/FlatPriceStatisticsPlot/flatPriceStatisticsPlotReducer.jsx';
 import anyHouseReadReducer from './Containers/Common/anyHouseReadReducer.jsx';
+import paybackMapReducer from './Containers/PaybackMap/paybackMapReducer.jsx';
 
 import './site.css';
 import '../node_modules/leaflet/dist/leaflet.css';
@@ -30,7 +31,8 @@ const rootReducer = combineReducers({
     webProxyIndexReducer,
     logEntryIndexReducer,
     anyHouseReadReducer,
-    flatPriceStatisticsPlotReducer
+    flatPriceStatisticsPlotReducer,
+    paybackMapReducer
 });
 
 function configureStore(initialState) {

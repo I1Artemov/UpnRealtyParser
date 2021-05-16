@@ -107,5 +107,18 @@ namespace UpnRealtyParser.Frontend.Controllers
 
             return Json(new { points });
         }
+
+        [Route("payback/points")]
+        [HttpGet]
+        public IActionResult GetAllPaybackMapPoints()
+        {
+            HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator =
+                new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(
+                    _upnSellFlatRepo, _upnRentFlatRepo, _upnHouseRepo, _statsRepo);
+
+            List<PaybackPeriodPoint> points = calculator.GetPaybackPeriodPoints();
+
+            return Json(new { points });
+        }
     }
 }

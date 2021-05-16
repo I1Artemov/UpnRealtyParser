@@ -12,6 +12,7 @@ import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
 import WebProxyIndex from './WebProxyIndex/webProxyIndex.jsx';
 import LogEntryIndex from './LogEntryIndex/logEntryIndex.jsx';
 import UpnHouseRead from './UpnHouseRead/upnHouseRead.jsx';
+import PaybackMap from './PaybackMap/paybackMap.jsx';
 import SiteIndex from '../Stateless/siteIndex.jsx';
 
 import { Layout } from 'antd';
@@ -42,6 +43,7 @@ export default class App extends React.Component {
                                         <Route exact path="/sellflat/:id" component={UpnSellFlatRead} />
                                         <Route exact path="/rentflat/:id" component={UpnRentFlatRead} />
                                         <Route exact path="/upnhouse/:id" component={UpnHouseRead} />
+                                        <Route exact path="/paybackmap" component={PaybackMap} />
                                         <Route path="/" component={SiteIndex} />
                                     </Switch>
                                 </main>
