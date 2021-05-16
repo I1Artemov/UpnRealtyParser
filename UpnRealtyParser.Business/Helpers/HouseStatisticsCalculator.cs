@@ -153,7 +153,7 @@ namespace UpnRealtyParser.Business.Helpers
             foreach (int houseId in houseIds)
             {
                 DateTime currentStartDt = AppExistStartDate;
-                DateTime endDt = DateTime.Now;
+                DateTime endDt = DateTime.Now.AddMonths(-1); // чтобы не считалась статистика за еще не завершенный текущий месяц
 
                 while (currentStartDt < endDt)
                 {
