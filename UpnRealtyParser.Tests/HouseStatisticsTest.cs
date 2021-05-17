@@ -77,7 +77,7 @@ namespace UpnRealtyParser.Tests
         }
 
         [Fact]
-        public void paybackPeriodMap_StatisticsCount_Test()
+        public void PaybackPeriodMap_AllStatisticsCount_Test()
         {
             using (var realtyContext = new RealtyParserContext())
             {
@@ -91,11 +91,14 @@ namespace UpnRealtyParser.Tests
 
                 EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo =
                     new EFGenericRepo<AveragePriceStat, RealtyParserContext>(realtyContext);
+                EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> paybackPointsRepo =
+                    new EFGenericRepo<PaybackPeriodPoint, RealtyParserContext>(realtyContext);
 
                 HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator =
-                    new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(upnFlatRepo, upnRentFlatRepo, upnHouseRepo, statsRepo);
+                    new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(upnFlatRepo, upnRentFlatRepo,
+                        upnHouseRepo, statsRepo, paybackPointsRepo);
 
-                var paybackPoints = calculator.GetPaybackPeriodPoints();
+                calculator.CalculateAllPaybackPeriodPoints();
             }
         }
     }

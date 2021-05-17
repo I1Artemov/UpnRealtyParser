@@ -21,16 +21,19 @@ namespace UpnRealtyParser.Business.Helpers
         protected EFGenericRepo<TRentFlat, RealtyParserContext> _rentFlatRepo;
         protected EFGenericRepo<THouse, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
+        protected EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> _paybackPointsRepo;
 
         public HouseStatisticsCalculator(EFGenericRepo<TFlat, RealtyParserContext> flatRepo,
             EFGenericRepo<TRentFlat, RealtyParserContext> rentFlatRepo,
             EFGenericRepo<THouse, RealtyParserContext> houseRepo,
-            EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo)
+            EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo,
+            EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> paybackPointsRepo = null)
         {
             _flatRepo = flatRepo;
             _rentFlatRepo = rentFlatRepo;
             _houseRepo = houseRepo;
             _statsRepo = statsRepo;
+            _paybackPointsRepo = paybackPointsRepo;
         }
 
         /// <summary>
@@ -198,12 +201,10 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Вычисляет и возвращает точки для карты окупаемости по всем домам, собранным с УПН
         /// </summary>
-        public List<PaybackPeriodPoint> GetPaybackPeriodPoints()
+        public void CalculateAllPaybackPeriodPoints()
         {
             List<PaybackPeriodPoint> paybackPoints = new List<PaybackPeriodPoint>();
-
             List<int?> upnHouseIds = _houseRepo.GetAllWithoutTracking().Select(x => x.Id).ToList();
-            int processedCount = 0;
 
             foreach (int? upnHouseId in upnHouseIds)
             {
@@ -218,8 +219,7 @@ namespace UpnRealtyParser.Business.Helpers
 
                 bool hasSingleInfo = avgSingleSellPrice != null && avgSingleRentPrice != null;
                 bool hasTwoInfo = avgTwoSellPrice != null && avgTwoRentPrice != null;
-                if (!hasSingleInfo && !hasTwoInfo)
-                    continue;
+                if (!hasSingleInfo && !hasTwoInfo) continue;
 
                 var singlePaybackYears = avgSingleRentPrice.GetValueOrDefault(0) == 0 ? 
                     0 : avgSingleSellPrice / (avgSingleRentPrice * 12);
@@ -240,14 +240,29 @@ namespace UpnRealtyParser.Business.Helpers
                     PaybackYears = totalPayback
                 };
                 paybackPoints.Add(paybackPoint);
-
-                // TODO: Убрать ограничение!
-                processedCount++;
-                if (processedCount > 9)
-                    break;
             }
 
-            return paybackPoints;
+            saveAllPaybackMapPointsToDb(paybackPoints);
+        }
+
+        private void saveAllPaybackMapPointsToDb(List<PaybackPeriodPoint> points)
+        {
+            foreach(var point in points)
+            {
+                PaybackPeriodPoint foundPoint = _paybackPointsRepo.GetAll()
+                    .FirstOrDefault(x => x.UpnHouseId == point.UpnHouseId);
+
+                if(foundPoint != null)
+                {
+                    foundPoint.PaybackYears = point.PaybackYears;
+                    foundPoint.CreationDateTime = DateTime.Now;
+                    _paybackPointsRepo.Update(foundPoint);
+                } else
+                {
+                    _paybackPointsRepo.Add(point);
+                }
+            }
+            _paybackPointsRepo.Save();
         }
     }
 }

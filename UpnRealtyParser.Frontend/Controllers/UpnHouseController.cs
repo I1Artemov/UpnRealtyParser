@@ -19,18 +19,21 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly EFGenericRepo<UpnFlat, RealtyParserContext> _upnSellFlatRepo;
         private readonly EFGenericRepo<UpnRentFlat, RealtyParserContext> _upnRentFlatRepo;
         private readonly EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
+        private readonly EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> _paybackPointsRepo;
 
         public UpnHouseController(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo,
             EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo,
             EFGenericRepo<UpnFlat, RealtyParserContext> upnSellFlatRepo,
             EFGenericRepo<UpnRentFlat, RealtyParserContext> upnRentFlatRepo,
-            EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo)
+            EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo,
+            EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> paybackPointsRepo)
         {
             _unitedHouseRepo = unitedHouseRepo;
             _upnHouseRepo = upnHouseRepo;
             _upnSellFlatRepo = upnSellFlatRepo;
             _upnRentFlatRepo = upnRentFlatRepo;
             _statsRepo = statsRepo;
+            _paybackPointsRepo = paybackPointsRepo;
         }
 
         [Route("getall")]
@@ -116,7 +119,8 @@ namespace UpnRealtyParser.Frontend.Controllers
                 new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(
                     _upnSellFlatRepo, _upnRentFlatRepo, _upnHouseRepo, _statsRepo);
 
-            List<PaybackPeriodPoint> points = calculator.GetPaybackPeriodPoints();
+            List<PaybackPeriodPoint> points = _paybackPointsRepo
+                .GetAllWithoutTracking().ToList();
 
             return Json(new { points });
         }

@@ -427,3 +427,14 @@ create table [ServiceStage] (
 );
 
 alter table [ServiceStage] add [PageNumber] int;
+
+-- 17.05.2021 Таблица для хранения точек карты окупаемости
+create table [PaybackPeriodPoint] (
+	[Id] int IDENTITY(1,1),
+	[CreationDateTime] datetime,
+	[UpnHouseId] int,
+	[Latitude] float,
+    [Longitude] float,
+	[PaybackYears] float,
+	PRIMARY KEY ([Id])
+);

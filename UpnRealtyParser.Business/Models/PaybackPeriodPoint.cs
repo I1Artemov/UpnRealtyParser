@@ -3,7 +3,7 @@
     /// <summary>
     /// Точка с информацией об окупаемости и местоположении дома
     /// </summary>
-    public class PaybackPeriodPoint
+    public class PaybackPeriodPoint : IdInfo
     {
         public int UpnHouseId { get; set; }
         public double? Latitude { get; set; }
