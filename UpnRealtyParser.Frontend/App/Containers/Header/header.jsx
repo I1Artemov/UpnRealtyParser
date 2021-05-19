@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
-import { HomeOutlined, TeamOutlined, ToolOutlined, BankOutlined } from '@ant-design/icons';
+import { HomeOutlined, TeamOutlined, ToolOutlined, BankOutlined, EnvironmentOutlined } from '@ant-design/icons';
 
 const { Sider } = Layout;
 const { SubMenu } = Menu;
@@ -45,6 +45,9 @@ export default class Header extends React.Component {
                             <Link to="/log">Лог</Link>
                         </Menu.Item>
                     </SubMenu>
+                    <Menu.Item icon={<EnvironmentOutlined />} key="7">
+                        <Link to="/paybackmap">Карта окупаемости</Link>
+                    </Menu.Item>
                 </Menu>
             </Sider>
         );

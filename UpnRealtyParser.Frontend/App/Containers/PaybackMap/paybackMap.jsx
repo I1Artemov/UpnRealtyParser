@@ -3,14 +3,8 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllPoints } from "./paybackMapActions.jsx";
 import { Divider, Spin } from 'antd';
-import { MapContainer, TileLayer, Marker } from 'react-leaflet';
-import L from 'leaflet';
 
-const customMarker = new L.icon({
-    iconUrl: '/images/leaf-marker.png',
-    iconSize: [25, 41],
-    iconAnchor: [12, 20]
-});
+import HeatMapFunctional from './heatMapPayback.jsx';
 
 import 'antd/dist/antd.css';
 
@@ -23,11 +17,20 @@ class PaybackMap extends React.Component {
         let points = this.props.points;
         let isLoading = this.props.isLoading;
         let errorMessage = this.props.error;
-        let centerLatitude = 56.8519;
-        let centerLongitude = 60.6122;
 
-        let markers = points.map((point, i) =>
-            <Marker key={i} position={[point.latitude, point.longitude]} icon={customMarker}></Marker>);
+        let maximalPaybackYears = 1;
+        if (points.length > 1) {
+            maximalPaybackYears = points.reduce(function (prev, current) {
+                return (prev.paybackYears > current.paybackYears) ? prev.paybackYears : current.paybackYears;
+            });
+        }
+        
+        let normalizedPoints = points.map((point, i) => {
+            return {
+                ...point,
+                normalizedPaybackYears: 5 * point.paybackYears / maximalPaybackYears
+            };
+        });
 
         if (isLoading === true) {
             return (
@@ -39,16 +42,7 @@ class PaybackMap extends React.Component {
             return (
                 <div>
                     <Divider orientation={"center"}>Карта окупаемости</Divider>
-                    
-                        <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false}
-                            style={{ height: "270px", width: "100%" }}>
-                            <TileLayer
-                                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            
-                            {markers}
-                        </MapContainer>
+                    <HeatMapFunctional points={normalizedPoints}/>
                 </div>
             );
         } else {
