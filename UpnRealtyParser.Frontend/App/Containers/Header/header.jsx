@@ -45,7 +45,7 @@ export default class Header extends React.Component {
                             <Link to="/log">Лог</Link>
                         </Menu.Item>
                     </SubMenu>
-                    <Menu.Item icon={<EnvironmentOutlined />} key="7">
+                    <Menu.Item icon={<EnvironmentOutlined />} key="10">
                         <Link to="/paybackmap">Карта окупаемости</Link>
                     </Menu.Item>
                 </Menu>

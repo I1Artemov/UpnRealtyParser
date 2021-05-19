@@ -19,13 +19,16 @@ export default function HeatmapFunction(props) {
                 '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
 
+        // Точки для тепловой карты
         const heatPoints = props.points
             ? props.points.map((p) => {
                 return [p.latitude, p.longitude, p.normalizedPaybackYears]; // lat lng intensity
             }) : [];
 
+        // Маркеры домов со всплывающими уведомлениями
         props.points.forEach((p) => {
-            var popupText = "HouseId = " + p.upnHouseId + ", окупаемость - " + Math.floor(p.paybackYears * 10) / 10 + " лет";
+            var popupText = "<a href='/upnhouse/" + p.upnHouseId + "'>HouseId = " + p.upnHouseId + "</a>, окупаемость - " +
+                Math.floor(p.paybackYears * 10) / 10 + " лет";
             var marker = L.marker([p.latitude, p.longitude], { icon: customMarker })
                 .bindPopup(popupText);
             markersLayer.addLayer(marker);

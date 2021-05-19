@@ -4,11 +4,14 @@ import { Row, Col, Descriptions } from 'antd';
 class SingleFlatInfo extends React.Component {
     render() {
         let flatData = this.props.flatData;
-        let upnSiteHref = "https://upn.ru" + this.props.flatData.siteUrl;
+        let upnSiteHref = "https://upn.ru" + flatData.siteUrl;
+        let housePageUrl = '/upnhouse/' + flatData.upnHouseInfoId;
 
         return (
             <Descriptions bordered column={3}>
-                <Descriptions.Item label="Адрес" span={2}>{flatData.houseAddress}</Descriptions.Item>
+                <Descriptions.Item label="Адрес" span={2}>
+                    <a href={housePageUrl}>{flatData.houseAddress}</a>
+                </Descriptions.Item>
                 <Descriptions.Item label="Цена">{flatData.price} руб.</Descriptions.Item>
                 <Descriptions.Item label="Этаж">{flatData.floorSummary}</Descriptions.Item>
                 <Descriptions.Item label="Общая площадь">{flatData.spaceSum}</Descriptions.Item>
