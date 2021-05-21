@@ -97,7 +97,7 @@ namespace UpnRealtyParser.Business.Helpers
                     && x.RelationType == relationType);
 
             if (downloadedPhoto != null)
-                upnFlat.DownloadedPhotoHref = "/images/upnphotos/" + downloadedPhoto.FileName;
+                upnFlat.DownloadedPhotoHref = "/images/n1photos/" + downloadedPhoto.FileName;
         }
 
         private void fillHouseRelatedFields(FlatCore singleFlat)

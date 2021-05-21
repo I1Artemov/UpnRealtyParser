@@ -19,15 +19,15 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         private readonly EFGenericRepo<N1FlatPhoto, RealtyParserContext> _n1PhotoRepo;
 
-        public N1SellFlatController(EFGenericRepo<N1Flat, RealtyParserContext> upnFlatRepo,
-            EFGenericRepo<N1HouseInfo, RealtyParserContext> upnHouseRepo,
+        public N1SellFlatController(EFGenericRepo<N1Flat, RealtyParserContext> n1FlatRepo,
+            EFGenericRepo<N1HouseInfo, RealtyParserContext> n1HouseRepo,
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<N1Agency, RealtyParserContext> agencyRepo,
             EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo,
             EFGenericRepo<N1FlatPhoto, RealtyParserContext> upnPhotoRepo)
         {
-            _n1FlatRepo = upnFlatRepo;
-            _n1HouseRepo = upnHouseRepo;
+            _n1FlatRepo = n1FlatRepo;
+            _n1HouseRepo = n1HouseRepo;
             _agencyRepo = agencyRepo;
             _subwayStationRepo = subwayStationRepo;
             _pageLinkRepo = pageLinkRepo;
@@ -53,6 +53,25 @@ namespace UpnRealtyParser.Frontend.Controllers
             apartmentHelper.FillSellApartmentsWithAdditionalInfo(filteredFlats);
 
             return Json(new { flatsList = filteredFlats, totalCount = totalCount });
+        }
+
+        [Route("getsingle")]
+        [HttpGet]
+        public IActionResult GetSingle(int? id)
+        {
+            if (!id.HasValue)
+                return makeErrorResult("Не указан ID квартиры");
+
+            N1Flat foundFlat = _n1FlatRepo.GetWithoutTracking(x => x.Id == id.Value);
+            if (foundFlat == null)
+                return makeErrorResult(string.Format("не найдена квартира с ID = {0}", id.Value));
+
+            N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
+                _pageLinkRepo, _n1PhotoRepo);
+            apartmentHelper.FillSingleApartmentWithAdditionalInfo(foundFlat);
+            apartmentHelper.FillSingleApartmentWithPhotoHrefs(foundFlat);
+
+            return Json(new { flatInfo = foundFlat });
         }
     }
 }

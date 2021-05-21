@@ -16,6 +16,8 @@ const customMarker = new L.icon({
 /** Возврат на страницу с перечнем квартир без перезагрузки страницы */
 function returnToFlatsPage() {
     let actionName = this.props.isRent ? "rentflats" : "sellflats";
+    if (this.props.siteName === "n1")
+        actionName = this.props.isRent ? "n1rentflats" : "n1sellflats";
     this.props.history.push("/" + actionName);
 }
 
@@ -33,6 +35,7 @@ class AnyFlatRead extends React.Component {
         let errorMessage = this.props.error;
         let isShowPhotos = this.props.isShowApartmentPhotos;
         let breadcrumbHeader = this.props.isRent ? "Квартира в аренду" : "Квартира на продажу";
+        let siteName = this.props.siteName;
 
         if (isLoading === true) {
             return (
@@ -48,11 +51,11 @@ class AnyFlatRead extends React.Component {
             return (
                 <div>
                     <Breadcrumb style={{ margin: '16px 0' }}>
-                        <Breadcrumb.Item>Upn</Breadcrumb.Item>
+                        <Breadcrumb.Item>{siteName}</Breadcrumb.Item>
                         <Breadcrumb.Item>{breadcrumbHeader}</Breadcrumb.Item>
                     </Breadcrumb>
                     <Divider orientation={"center"}>{breadcrumbHeader}, ID {flatData.id}</Divider>
-                    <SingleFlatInfo flatData={flatData} />
+                    <SingleFlatInfo flatData={flatData} siteName={siteName}/>
                     {/* TODO: Отдельный компонент для отображения фотографий */}
                     <div style={{ marginTop: "10px", marginBottom: "10px", textAlign: "center"}}>
                         {

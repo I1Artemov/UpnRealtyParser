@@ -108,7 +108,7 @@ namespace UpnRealtyParser.Business.Models
         {
             get
             {
-                if (string.IsNullOrEmpty(ClosestSubwayName) || !string.IsNullOrEmpty(ClosestSubwayRangeStr))
+                if (string.IsNullOrEmpty(ClosestSubwayName) || string.IsNullOrEmpty(ClosestSubwayRangeStr))
                     return "н/у";
 
                 return string.Format("{0} ({1} м.)", ClosestSubwayName, ClosestSubwayRangeStr);

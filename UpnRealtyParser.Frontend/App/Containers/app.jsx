@@ -5,7 +5,7 @@ import Header from './Header/header.jsx';
 import UpnSellFlatIndex from './UpnSellFlatIndex/upnSellFlatIndex.jsx';
 import UpnRentFlatIndex from './UpnRentFlatIndex/upnRentFlatIndex.jsx';
 import N1SellFlatIndex from './N1SellFlatIndex/n1SellFlatIndex.jsx';
-import UpnSellFlatRead from './UpnSellFlatRead/upnSellFlatRead.jsx';
+import AnySellFlatReadConnected from './AnySellFlatReadConnected/anySellFlatReadConnected.jsx';
 import UpnRentFlatRead from './UpnRentFlatRead/upnRentFlatRead.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
@@ -40,7 +40,8 @@ export default class App extends React.Component {
                                         <Route path="/rentflats" component={UpnRentFlatIndex} />
                                         <Route path="/n1sellflats" component={N1SellFlatIndex} />
                                         {/*<Route path="/n1rentflats" component={N1RentFlatIndex} />*/}
-                                        <Route exact path="/sellflat/:id" component={UpnSellFlatRead} />
+                                        <Route exact path="/sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="upn" {...props} />} />
+                                        <Route exact path="/n1sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="n1" {...props} />} />
                                         <Route exact path="/rentflat/:id" component={UpnRentFlatRead} />
                                         <Route exact path="/upnhouse/:id" component={UpnHouseRead} />
                                         <Route exact path="/paybackmap" component={PaybackMap} />
