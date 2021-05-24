@@ -125,6 +125,7 @@ namespace UpnRealtyParser.Business.Helpers
 
                 // Со страницы с перечнем квартир предварительно заполняем и сами квартиры
                 N1ApartmentParser flatParser = new N1ApartmentParser();
+                // TODO: SELL -> RENT
                 N1HouseParser houseParser = new N1HouseParser();
                 List<N1Flat> prefilledFlats = flatParser.GetN1SellFlatsFromTablePage(currentTablePageHtml, houseParser);
                 insertPrefilledFlatsIntoDb(prefilledFlats);

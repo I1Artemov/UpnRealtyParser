@@ -44,12 +44,19 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillAddressFromSingleApartmentCard(N1HouseInfo house, IElement flatCard)
         {
-            string streetHouseStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_address")?.TextContent;
+            string streetHouseStr = flatCard.QuerySelector(".living-list-card__location .link-text")?.InnerHtml;
 
             if (string.IsNullOrEmpty(streetHouseStr))
                 return;
 
-            string cityStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_city")?.TextContent;
+            streetHouseStr = streetHouseStr.Replace("1-к, ", "");
+            streetHouseStr = streetHouseStr.Replace("2-к, ", "");
+            streetHouseStr = streetHouseStr.Replace("3-к, ", "");
+            streetHouseStr = streetHouseStr.Replace("4-к, ", "");
+            streetHouseStr = streetHouseStr.Replace("5-к, ", "");
+
+            string cityStr = flatCard.QuerySelector(".living-list-card-city-with-estate__item")?.TextContent;
+            cityStr = cityStr.Replace(",", "");
 
             if (!string.IsNullOrEmpty(cityStr))
                 streetHouseStr = cityStr + ", " + streetHouseStr;
@@ -59,33 +66,15 @@ namespace UpnRealtyParser.Business.Helpers
 
         private void fillWallMaterialFromSingleApartmentCard(N1HouseInfo house, IElement flatCard)
         {
-            string wallMaterialStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_floor")?.TextContent;
-            if (string.IsNullOrEmpty(wallMaterialStr))
-                return;
+            string wallMaterialStr = flatCard.QuerySelector(".living-list-card__material")?.InnerHtml;
 
-            int spaceIndex = wallMaterialStr.LastIndexOf((char)160);
-
-            if (spaceIndex <= 0)
-                return;
-            wallMaterialStr = wallMaterialStr.Substring(spaceIndex + 1, wallMaterialStr.Length - spaceIndex - 1);
-
-            switch (wallMaterialStr)
-            {
-                case "п": house.WallMaterial = "Панельный"; break;
-                case "км": house.WallMaterial = "Кирпич-монолит"; break;
-                case "бтб": house.WallMaterial = "Бетонные блоки"; break;
-                case "м": house.WallMaterial = "Монолитный"; break;
-                case "к": house.WallMaterial = "Кирпичный"; break;
-                case "д": house.WallMaterial = "Деревянный"; break;
-                case "ш": house.WallMaterial = "Шлакоблочный"; break;
-                case "др": house.WallMaterial = "Другой"; break;
-                default: house.WallMaterial = wallMaterialStr; break;
-            }
+            if (!string.IsNullOrEmpty(wallMaterialStr))
+                house.WallMaterial = wallMaterialStr;
         }
 
         private void fillMaxFloorFromSingleApartmentCard(N1HouseInfo house, IElement flatCard)
         {
-            string allFloorStr = flatCard.QuerySelector("td.re-search-result-table__body-cell_floor span")?.TextContent;
+            string allFloorStr = flatCard.QuerySelector(".living-list-card-floor__item")?.TextContent;
 
             if (string.IsNullOrEmpty(allFloorStr))
                 return;
@@ -94,8 +83,8 @@ namespace UpnRealtyParser.Business.Helpers
             if (slashIndex <= 0)
                 return;
 
-            int spaceIndex = allFloorStr.LastIndexOf((char)160);
-            string lastFloorStr = allFloorStr.Substring(slashIndex + 2, spaceIndex - slashIndex - 2);
+            int wordFloorIndex = allFloorStr.IndexOf("этаж");
+            string lastFloorStr = allFloorStr.Substring(slashIndex + 2, wordFloorIndex - slashIndex - 2);
 
             bool isParsed = int.TryParse(lastFloorStr, out int maxFloor);
             if (isParsed)
