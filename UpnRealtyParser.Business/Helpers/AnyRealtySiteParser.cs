@@ -60,7 +60,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// Вызывать при первом запуске процессинга агентом. По запомненному ServiceStage выбирает,
         /// с какого метода начать работу
         /// </summary>
-        public virtual void StartWorkingFromMemorizedStage()
+        public void StartWorkingFromMemorizedStage()
         {
             setInitialCurrentActionFromDb();
 
@@ -91,22 +91,11 @@ namespace UpnRealtyParser.Business.Helpers
             _serviceStageRepo = new EFGenericRepo<ServiceStage, RealtyParserContext>(context);
         }
 
-        public ThreadState GetApartmentThreadState()
-        {
-            return _apartmentProcessingThread.ThreadState;
-        }
-
-        public ThreadState GetLinksThreadState()
-        {
-            return _linksProcessingThread.ThreadState;
-        }
-
         public void Dispose()
         {
             _writeToLogDelegate("(ВНИМАНИЕ) Агент удален!");
             throw new NotImplementedException();
         }
-
 
         /// <summary>
         /// Отмечает ссылку на квартиру как "Мертвую" (после того, как выдало 404).

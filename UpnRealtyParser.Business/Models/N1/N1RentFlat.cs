@@ -1,4 +1,4 @@
-﻿namespace UpnRealtyParser.Business.Models.N1
+﻿namespace UpnRealtyParser.Business.Models
 {
     public class N1RentFlat : N1FlatBase
     {

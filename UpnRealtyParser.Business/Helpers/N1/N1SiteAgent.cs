@@ -1,4 +1,5 @@
 ﻿using AngleSharp.Dom;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +14,9 @@ namespace UpnRealtyParser.Business.Helpers
     {
         protected EFGenericRepo<N1HouseInfo, RealtyParserContext> _houseRepo;
         protected EFGenericRepo<N1Flat, RealtyParserContext> _sellFlatRepo;
+        protected EFGenericRepo<N1RentFlat, RealtyParserContext> _rentFlatRepo;
         protected EFGenericRepo<N1Agency, RealtyParserContext> _agencyRepo;
         protected EFGenericRepo<N1FlatPhoto, RealtyParserContext> _photoRepo;
-        // TODO: RentFlat
 
         public N1SiteAgent(Action<string> writeToLogDelegate, AppSettings settings) :
             base(writeToLogDelegate, settings)
@@ -28,28 +29,10 @@ namespace UpnRealtyParser.Business.Helpers
             base.initializeRepositories(context);
             _houseRepo = new EFGenericRepo<N1HouseInfo, RealtyParserContext>(context);
             _sellFlatRepo = new EFGenericRepo<N1Flat, RealtyParserContext>(context);
+            _rentFlatRepo = new EFGenericRepo<N1RentFlat, RealtyParserContext>(context);
             _agencyRepo = new EFGenericRepo<N1Agency, RealtyParserContext>(context);
             _photoRepo = new EFGenericRepo<N1FlatPhoto, RealtyParserContext>(context);
             _stateLogger = new StateLogger(context, Const.SiteNameN1);
-            // TODO: RentFlat
-        }
-
-        /// <summary>
-        /// Блок с арендой на N1 еще не реализован => сокращенный жизненный цикл
-        /// </summary>
-        public override void StartWorkingFromMemorizedStage()
-        {
-            setInitialCurrentActionFromDb();
-
-            if (_currentActionName == Const.ParsingStatusDescriptionGatheringLinks && !_isProcessingCompleted)
-                StartLinksGatheringInSeparateThread(false); // Продолжаем сбор ссылок
-            else if (_isProcessingCompleted)
-                StartApartmentGatheringInSeparateThread(false); // Начинаем сбор квартир
-
-            if (_currentActionName == Const.ParsingStatusDescriptionObservingFlats && !_isProcessingCompleted)
-                StartApartmentGatheringInSeparateThread(false); // Продолжаем сбор квартир
-            else if (_isProcessingCompleted)
-                StartLinksGatheringInSeparateThread(true); // Снова начинаем сбор ссылок
         }
 
         public override void StartLinksGatheringInSeparateThread(bool isRentFlats = false)
@@ -125,10 +108,9 @@ namespace UpnRealtyParser.Business.Helpers
 
                 // Со страницы с перечнем квартир предварительно заполняем и сами квартиры
                 N1ApartmentParser flatParser = new N1ApartmentParser();
-                // TODO: SELL -> RENT
                 N1HouseParser houseParser = new N1HouseParser();
-                List<N1Flat> prefilledFlats = flatParser.GetN1SellFlatsFromTablePage(currentTablePageHtml, houseParser);
-                insertPrefilledFlatsIntoDb(prefilledFlats);
+                List<N1FlatBase> prefilledFlats = flatParser.GetN1SellFlatsFromTablePage(currentTablePageHtml, houseParser);
+                insertPrefilledFlatsIntoDb(prefilledFlats, isRentFlats);
 
                 if (string.IsNullOrEmpty(currentTablePageHtml))
                 {
@@ -196,8 +178,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         private void updateExistingFlatByExistingPageLinkOrGetError(PageLink foundLink)
         {
-            // TODO: rent flats
-            /*N1RentFlat foundRentFlat = _rentFlatRepo.GetAll().FirstOrDefault(x => x.PageLinkId == foundLink.Id);
+            N1RentFlat foundRentFlat = _rentFlatRepo.GetAll().FirstOrDefault(x => x.PageLinkId == foundLink.Id);
             if (foundRentFlat != null)
             {
                 try
@@ -210,7 +191,7 @@ namespace UpnRealtyParser.Business.Helpers
                 {
                     _writeToLogDelegate("Ошибка обновления арендной квартиры " + foundRentFlat.Id + " по ссылке на страницу: " + ex.Message);
                 }
-            }*/
+            }
             
             N1Flat foundSellFlat = _sellFlatRepo.GetAll().FirstOrDefault(x => x.PageLinkId == foundLink.Id);
             if (foundSellFlat != null)
@@ -229,9 +210,9 @@ namespace UpnRealtyParser.Business.Helpers
 
         }
 
-        private void insertPrefilledFlatsIntoDb(List<N1Flat> flats)
+        private void insertPrefilledFlatsIntoDb(List<N1FlatBase> flats, bool isRentFlats)
         {
-            foreach(N1Flat flat in flats)
+            foreach(N1FlatBase flat in flats)
             {
                 // Обработка дома
                 if(flat.ConnectedHouseForAddition != null)
@@ -261,7 +242,7 @@ namespace UpnRealtyParser.Business.Helpers
                     continue;
                 }
 
-                updateOrAddSellFlat(flat, flat.ConnectedHouseForAddition.Id.GetValueOrDefault(-1), foundLink.Id, null);
+                updateOrAddAnyFlat(flat, flat.ConnectedHouseForAddition.Id.GetValueOrDefault(-1), foundLink.Id, null, isRentFlats);
             }
         }
 
@@ -338,11 +319,9 @@ namespace UpnRealtyParser.Business.Helpers
 
         private bool isFlatAlreadyInDbAndFilled(int pageLinkId, bool isRentFlats)
         {
-            // TODO: Rent flats
-            /*var isExisting = isRentFlats ?
-                _rentFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId) :
-                _sellFlatRepo.GetAllWithoutTracking().Any(x => x.PageLinkId == pageLinkId);*/
-            var foundFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
+            N1FlatBase foundFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
+            if(foundFlat == null)
+                foundFlat = _rentFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
             if (foundFlat == null)
                 return true;
 
@@ -436,39 +415,50 @@ namespace UpnRealtyParser.Business.Helpers
             _writeToLogDelegate(string.Format("Дом с адресом {1} был дозаполнен (Id {0})", existingHouse.Id, existingHouse.Address));
         }
 
-        private void updateOrAddSellFlat(N1Flat sellFlat, int houseId, int pageLinkId, int? agencyId)
+        private void updateOrAddAnyFlat(N1FlatBase anyFlat, int houseId, int pageLinkId, int? agencyId, bool isRentFlat)
         {
-            sellFlat.N1HouseInfoId = houseId;
-            sellFlat.PageLinkId = pageLinkId;
-            sellFlat.LastCheckDate = DateTime.Now;
+            anyFlat.N1HouseInfoId = houseId;
+            anyFlat.PageLinkId = pageLinkId;
+            anyFlat.LastCheckDate = DateTime.Now;
+            if (agencyId.HasValue) anyFlat.N1AgencyId = agencyId;
 
-            if (agencyId.HasValue)
-                sellFlat.N1AgencyId = agencyId;
-
-            N1Flat existingFlat = _sellFlatRepo.GetAll()
-                    .Where(x => x.PageLinkId == pageLinkId)
-                    .FirstOrDefault();
+            N1FlatBase existingFlat = isRentFlat ? (N1FlatBase)_rentFlatRepo.GetAll().Where(x => x.PageLinkId == pageLinkId).FirstOrDefault()
+                : (N1FlatBase)_sellFlatRepo.GetAll().Where(x => x.PageLinkId == pageLinkId).FirstOrDefault();
 
             if (existingFlat != null)
             {
-                updateSellFlatPreviouslyFilled(existingFlat, sellFlat, houseId, pageLinkId, agencyId);
-                sellFlat.Id = existingFlat.Id;
+                updateSellFlatPreviouslyFilled(existingFlat, anyFlat, houseId, pageLinkId, agencyId, isRentFlat);
+                anyFlat.Id = existingFlat.Id;
                 return;
             }
 
-            _sellFlatRepo.Add(sellFlat);
-            _sellFlatRepo.Save();
+            int? flatIdFromDb = null;
+            if (isRentFlat)
+            {
+                N1RentFlat rentFlat = getRentFlatFromBase(anyFlat);
+                _rentFlatRepo.Add(rentFlat);
+                _rentFlatRepo.Save();
+                flatIdFromDb = rentFlat.Id;
+            }
+            else
+            {
+                N1Flat sellFlat = getSellFlatFromBase(anyFlat);
+                _sellFlatRepo.Add(getSellFlatFromBase(anyFlat));
+                _sellFlatRepo.Save();
+                flatIdFromDb = sellFlat.Id;
+            }
 
-            _stateLogger.LogApartmentAddition(sellFlat.Id.Value, sellFlat.N1HouseInfoId.Value, false);
-            _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}, Аренда=false",
-                sellFlat.Id, houseId, pageLinkId));
+            _stateLogger.LogApartmentAddition(flatIdFromDb.Value, anyFlat.N1HouseInfoId.Value, false);
+            _writeToLogDelegate(string.Format("Добавлена квартира: Id {0}, Id дома {1}, Id ссылки {2}, Аренда={3}",
+                flatIdFromDb, houseId, pageLinkId, isRentFlat));
         }
 
         /// <summary>
         /// Для случая, когда квартира N1 была предварительно заполнена из таблицы,
         /// а теперь дозаполняется с основной страницы с квартирой
         /// </summary>
-        protected void updateSellFlatPreviouslyFilled(N1Flat existingFlat, N1Flat fullFlat, int houseId, int pageLinkId, int? agencyId)
+        protected void updateSellFlatPreviouslyFilled(N1FlatBase existingFlat, N1FlatBase fullFlat, int houseId, int pageLinkId,
+            int? agencyId, bool isRentFlat)
         {
             if (agencyId.HasValue)
                 existingFlat.N1AgencyId = agencyId.Value;
@@ -489,8 +479,16 @@ namespace UpnRealtyParser.Business.Helpers
             existingFlat.SpaceLiving = fullFlat.SpaceLiving;
             existingFlat.SpaceSum = fullFlat.SpaceSum;
 
-            _sellFlatRepo.Update(existingFlat);
-            _sellFlatRepo.Save();
+            if(isRentFlat)
+            {
+                _rentFlatRepo.Update(existingFlat as N1RentFlat);
+                _rentFlatRepo.Save();
+            }
+            else
+            {
+                _sellFlatRepo.Update(existingFlat as N1Flat);
+                _sellFlatRepo.Save();
+            }
 
             _stateLogger.LogApartmentRefilling(existingFlat.Id.Value, existingFlat.N1HouseInfoId.Value, false);
             _writeToLogDelegate(string.Format("Дозаполнена квартира: Id {0}, Id дома {1}, Id ссылки {2}, Аренда=false",
@@ -533,8 +531,8 @@ namespace UpnRealtyParser.Business.Helpers
             }
             else
             {*/
-                N1Flat n1SellFlat = apartmentParser.GetN1FlatFromPageText(apartmentPageHtml);
-                updateOrAddSellFlat(n1SellFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
+                N1FlatBase n1SellFlat = apartmentParser.GetN1FlatFromPageText(apartmentPageHtml);
+                updateOrAddAnyFlat(n1SellFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1), isRentFlats);
                 flatId = n1SellFlat.Id.GetValueOrDefault(0);
             //}
 
@@ -586,6 +584,24 @@ namespace UpnRealtyParser.Business.Helpers
             _stateLogger.LogApartmentPhotoHrefsAddition(apartmentId, hrefs.Count);
             _writeToLogDelegate(string.Format("Обнаружено {0} ссылок на фото для квартиры (Id = {1} Rent = {2})",
                 hrefs.Count, apartmentId, isRentFlats));
+        }
+
+        private N1RentFlat getRentFlatFromBase(N1FlatBase flatBase)
+        {
+            var config = new MapperConfiguration(cfg => {
+                cfg.CreateMap<N1FlatBase, N1RentFlat>();
+            });
+            IMapper iMapper = config.CreateMapper();
+            return iMapper.Map<N1FlatBase, N1RentFlat>(flatBase);
+        }
+
+        private N1Flat getSellFlatFromBase(N1FlatBase flatBase)
+        {
+            var config = new MapperConfiguration(cfg => {
+                cfg.CreateMap<N1FlatBase, N1Flat>();
+            });
+            IMapper iMapper = config.CreateMapper();
+            return iMapper.Map<N1FlatBase, N1Flat>(flatBase);
         }
     }
 }

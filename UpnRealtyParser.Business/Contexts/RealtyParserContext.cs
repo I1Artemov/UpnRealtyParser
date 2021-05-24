@@ -18,6 +18,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<WebProxyInfo> WebProxyInfos { get; set; }
         public DbSet<SubwayStation> SubwayStations { get; set; }
         public DbSet<N1Flat> N1Flats { get; set; }
+        public DbSet<N1RentFlat> N1RentFlats { get; set; }
         public DbSet<N1HouseInfo> N1HouseInfos { get; set; }
         public DbSet<N1Agency> N1Agencies { get; set; }
         public DbSet<N1FlatPhoto> N1FlatPhotos { get; set; }

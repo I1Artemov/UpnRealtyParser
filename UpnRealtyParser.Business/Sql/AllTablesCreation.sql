@@ -438,3 +438,39 @@ create table [PaybackPeriodPoint] (
 	[PaybackYears] float,
 	PRIMARY KEY ([Id])
 );
+
+-- 24.05.2021 Арендные квартиры N1
+CREATE TABLE [N1RentFlat] (
+    [Id] int IDENTITY(1,1),
+    [RemovalDate] datetime,
+    [CreationDateTime] datetime,
+    [LastCheckDate] datetime,
+    [N1HouseInfoId] int,
+    [N1AgencyId] int,
+    [RoomAmount] int,
+    [SpaceSum] float,
+    [SpaceLiving] float,
+    [SpaceKitchen] float,
+    [FlatFloor] int,
+    [Price] int,
+    [Description] nvarchar(max),
+	[PlanningType] nvarchar(max),
+	[BathroomType] nvarchar(max),
+	[BalconyAmount] int,
+	[Condition] nvarchar(max),
+	[PropertyType] nvarchar(max),
+	[IsFilledCompletely] bit,
+	[PageLinkId] int,
+	PRIMARY KEY ([Id])
+);
+ALTER TABLE [N1RentFlat] ADD [PublishingDateTime] datetime;
+
+ALTER TABLE [N1RentFlat] ADD CONSTRAINT
+	FK_N1RentFlat_N1House_HouseInfoId FOREIGN KEY ([N1HouseInfoId]) REFERENCES [N1HouseInfo]([Id]);
+ALTER TABLE [N1RentFlat] ADD CONSTRAINT
+	FK_N1RentFlat_N1Agency_N1AgencyId FOREIGN KEY ([N1AgencyId]) REFERENCES [N1Agency]([Id]);
+ALTER TABLE [N1RentFlat] ADD CONSTRAINT
+	FK_N1RentFlat_PageLink_PageLinkId FOREIGN KEY ([PageLinkId]) REFERENCES [PageLink]([Id]);
+
+CREATE INDEX idx_N1RentFlat_N1HouseInfoId ON [N1RentFlat] ([N1HouseInfoId]);
+CREATE INDEX idx_N1RentFlat_N1AgencyId ON [N1RentFlat] ([N1AgencyId]);

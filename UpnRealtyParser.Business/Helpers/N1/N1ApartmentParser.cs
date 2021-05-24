@@ -9,11 +9,11 @@ namespace UpnRealtyParser.Business.Helpers
     public class N1ApartmentParser : BaseHttpParser
     {
         /// <summary> Предварительное получение квартир прямо со страницы с их перечнем </summary>
-        public List<N1Flat> GetN1SellFlatsFromTablePage(string webPageText, N1HouseParser houseParser)
+        public List<N1FlatBase> GetN1SellFlatsFromTablePage(string webPageText, N1HouseParser houseParser)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
 
-            List<N1Flat> flats = new List<N1Flat>();
+            List<N1FlatBase> flats = new List<N1FlatBase>();
 
             List<IElement> flatCards = pageHtmlDoc.All
                 .Where(x => x.LocalName == "div" && x.ClassName == "living-list-card__main-container")
@@ -21,7 +21,7 @@ namespace UpnRealtyParser.Business.Helpers
 
             foreach (IElement flatCard in flatCards)
             {
-                N1Flat n1Flat = getN1SellFlatFromSingleHtmlCard(flatCard);
+                N1FlatBase n1Flat = getN1AnyFlatFromSingleHtmlCard(flatCard);
                 N1HouseInfo n1House = houseParser.GetBasicN1HouseFromSingleApartmentCard(flatCard);
                 n1Flat.ConnectedHouseForAddition = n1House;
 
@@ -32,9 +32,9 @@ namespace UpnRealtyParser.Business.Helpers
             return flats;
         }
 
-        private N1Flat getN1SellFlatFromSingleHtmlCard(IElement flatCard)
+        private N1FlatBase getN1AnyFlatFromSingleHtmlCard(IElement flatCard)
         {
-            N1Flat flat = new N1Flat();
+            N1FlatBase flat = new N1FlatBase();
 
             fillApartmentAreaFromSingleCard(flat, flatCard);
             fillApartmentPriceFromSingleCard(flat, flatCard);
@@ -128,15 +128,15 @@ namespace UpnRealtyParser.Business.Helpers
             flat.Href = hrefStr;
         }
 
-        public N1Flat GetN1FlatFromPageText(string webPageText)
+        public N1FlatBase GetN1FlatFromPageText(string webPageText)
         {
             IDocument pageHtmlDoc = getPreparedHtmlDocument(webPageText).Result;
             return GetN1FlatFromPageText(pageHtmlDoc, webPageText);
         }
 
-        public N1Flat GetN1FlatFromPageText(IDocument pageHtmlDoc, string webPageText)
+        public N1FlatBase GetN1FlatFromPageText(IDocument pageHtmlDoc, string webPageText)
         {
-            N1Flat flat = new N1Flat();
+            N1FlatBase flat = new N1FlatBase();
 
             fillPriceAndRoomAmount(flat, webPageText);
             fillSpace(flat, pageHtmlDoc);
