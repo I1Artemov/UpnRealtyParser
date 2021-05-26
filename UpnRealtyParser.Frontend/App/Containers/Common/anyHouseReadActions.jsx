@@ -49,10 +49,10 @@ export function errorReceiveStatistics(err) {
     };
 }
 
-export function getHouse(id, getHouseHref) {
+export function getHouse(id, getHouseHref, siteName) {
 
     return (dispatch) => {
-        let queryTrailer = '?id=' + id;
+        let queryTrailer = '?id=' + id + '&siteName=' + siteName;
 
         dispatch(startReceivingHouse());
         fetch(getHouseHref + queryTrailer)
@@ -67,10 +67,10 @@ export function getHouse(id, getHouseHref) {
     };
 }
 
-export function getStatistics(id, getStatisticsHref) {
+export function getStatistics(id, getStatisticsHref, siteName) {
 
     return (dispatch) => {
-        let queryTrailer = '?id=' + id;
+        let queryTrailer = '?id=' + id + '&siteName=' + siteName;
 
         dispatch(startReceivingStatistics());
         fetch(getStatisticsHref + queryTrailer)

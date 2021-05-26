@@ -36,8 +36,8 @@ export const HOUSES_TABLE_COLUMNS = [
         key: 'address',
         render: (text, row) => (
             (row.sourceSite === 'UPN') ?
-                <Link to={"/upnhouse/" + row.id}>{text}</Link>
-                : text
+                <Link to={"/upnhouse/" + row.id }>{text}</Link>
+                : <Link to={"/n1house/" + row.id }>{text}</Link>
         )
     },
     {

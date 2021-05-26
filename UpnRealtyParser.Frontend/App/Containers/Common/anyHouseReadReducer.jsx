@@ -12,7 +12,8 @@ const initialState = {
     houseStatistics: null,
     isLoading: false,
     isStatisticsLoading: false,
-    error: ""
+    error: "",
+    siteName: "upn"
 };
 
 export default function house(state = initialState, action) {

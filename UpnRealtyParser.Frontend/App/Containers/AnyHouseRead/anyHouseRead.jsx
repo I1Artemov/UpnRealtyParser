@@ -10,20 +10,21 @@ import AnyHouseRead from '../Common/anyHouseReadComponent.jsx';
 
 import 'antd/dist/antd.css';
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state, ownProps) => {
     return {
         houseInfo: state.anyHouseReadReducer.houseInfo,
         houseStatistics: state.anyHouseReadReducer.houseStatistics,
         error: state.anyHouseReadReducer.error,
         isLoading: state.anyHouseReadReducer.isLoading,
-        isStatisticsLoading: state.anyHouseReadReducer.isStatisticsLoading
+        isStatisticsLoading: state.anyHouseReadReducer.isStatisticsLoading,
+        siteName: ownProps.siteName
     };
 };
 
-let mapActionsToProps = (dispatch) => {
+let mapActionsToProps = (dispatch, ownProps) => {
     return {
-        getHouse: (id) => dispatch(getHouse(id, Href_HouseController_GetSingleHouse)),
-        getStatistics: (id) => dispatch(getStatistics(id, Href_HouseController_GetSingleHouseStatistics))
+        getHouse: (id) => dispatch(getHouse(id, Href_HouseController_GetSingleHouse, ownProps.siteName)),
+        getStatistics: (id) => dispatch(getStatistics(id, Href_HouseController_GetSingleHouseStatistics, ownProps.siteName))
     };
 };
 

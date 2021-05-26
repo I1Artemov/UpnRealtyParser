@@ -28,9 +28,9 @@ function errorReceiveFlatPrices(err) {
     };
 }
 
-export function getAvgPrices(houseId) {
+export function getAvgPrices(houseId, siteName) {
     return (dispatch) => {
-        let queryTrailer = '?id=' + houseId;
+        let queryTrailer = '?id=' + houseId + '&siteName=' + siteName;
 
         dispatch(startReceivingRoomFlatPrices());
         fetch(Href_HouseController_GetSingleHousePricePlotPoints + queryTrailer)

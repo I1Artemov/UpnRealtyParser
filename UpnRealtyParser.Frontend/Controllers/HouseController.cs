@@ -19,6 +19,8 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly EFGenericRepo<N1HouseInfo, RealtyParserContext> _n1HouseRepo;
         private readonly EFGenericRepo<UpnFlat, RealtyParserContext> _upnSellFlatRepo;
         private readonly EFGenericRepo<UpnRentFlat, RealtyParserContext> _upnRentFlatRepo;
+        private readonly EFGenericRepo<N1Flat, RealtyParserContext> _n1SellFlatRepo;
+        private readonly EFGenericRepo<N1RentFlat, RealtyParserContext> _n1RentFlatRepo;
         private readonly EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
         private readonly EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> _paybackPointsRepo;
 
@@ -27,6 +29,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             EFGenericRepo<N1HouseInfo, RealtyParserContext> n1HouseRepo,
             EFGenericRepo<UpnFlat, RealtyParserContext> upnSellFlatRepo,
             EFGenericRepo<UpnRentFlat, RealtyParserContext> upnRentFlatRepo,
+            EFGenericRepo<N1Flat, RealtyParserContext> n1SellFlatRepo,
+            EFGenericRepo<N1RentFlat, RealtyParserContext> n1RentFlatRepo,
             EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo,
             EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> paybackPointsRepo)
         {
@@ -35,6 +39,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             _n1HouseRepo = n1HouseRepo;
             _upnSellFlatRepo = upnSellFlatRepo;
             _upnRentFlatRepo = upnRentFlatRepo;
+            _n1SellFlatRepo = n1SellFlatRepo;
+            _n1RentFlatRepo = n1RentFlatRepo;
             _statsRepo = statsRepo;
             _paybackPointsRepo = paybackPointsRepo;
         }
@@ -82,7 +88,7 @@ namespace UpnRealtyParser.Frontend.Controllers
                 return Json(new { houseInfo = upnFoundHouse });
             }
 
-            UpnHouseInfo n1FoundHouse = _upnHouseRepo.GetWithoutTracking(x => x.Id == id.Value);
+            N1HouseInfo n1FoundHouse = _n1HouseRepo.GetWithoutTracking(x => x.Id == id.Value);
             if (n1FoundHouse == null)
                 return makeErrorResult(string.Format("не найден дом N1 с ID = {0}", id.Value));
             return Json(new { houseInfo = n1FoundHouse });
@@ -90,25 +96,39 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getsinglestatistics")]
         [HttpGet]
-        public IActionResult GetSingleHouseStatistics(int? id)
+        public IActionResult GetSingleHouseStatistics(int? id, string siteName)
         {
             if (!id.HasValue)
                 return makeErrorResult("Не указан ID дома");
 
-            HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator = 
-                new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(
-                    _upnSellFlatRepo, _upnRentFlatRepo, _upnHouseRepo, _statsRepo);
-            HouseStatistics houseStatistics = calculator.GetStatisticsForHouse(id.Value);
+            HouseStatistics houseStatistics = null;
+            if (string.IsNullOrEmpty(siteName) || siteName.ToLower() == "upn")
+            {
+                HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> upnCalculator =
+                    new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(
+                        _upnSellFlatRepo, _upnRentFlatRepo, _upnHouseRepo, _statsRepo);
+                houseStatistics = upnCalculator.GetStatisticsForHouse(id.Value);
+            }
+            else
+            {
+                HouseStatisticsCalculator<N1Flat, N1RentFlat, N1HouseInfo> n1Calculator =
+                    new HouseStatisticsCalculator<N1Flat, N1RentFlat, N1HouseInfo>(
+                        _n1SellFlatRepo, _n1RentFlatRepo, _n1HouseRepo, _statsRepo);
+                houseStatistics = n1Calculator.GetStatisticsForHouse(id.Value);
+            }
 
             return Json(new { houseStatistics });
         }
 
         [Route("getsingle/averageprice/points")]
         [HttpGet]
-        public IActionResult GetSingleHouseAveragePricePlotPoints(int? id)
+        public IActionResult GetSingleHouseAveragePricePlotPoints(int? id, string siteName)
         {
             if (!id.HasValue)
                 return makeErrorResult("Не указан ID дома");
+
+            if(siteName != "upn")
+                return Json(new { points = new List<PointDateTimeWithValue>() });
 
             HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator =
                 new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(

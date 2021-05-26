@@ -88,17 +88,18 @@ class FlatPriceStatisticsPlot extends React.Component {
     }
 }
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state, ownProps) => {
     return {
         allRoomPrices: state.flatPriceStatisticsPlotReducer.allRoomPrices,
         error: state.flatPriceStatisticsPlotReducer.error,
-        isInfoLoading: state.flatPriceStatisticsPlotReducer.isInfoLoading
+        isInfoLoading: state.flatPriceStatisticsPlotReducer.isInfoLoading,
+        siteName: ownProps.siteName
     };
 };
 
-let mapActionsToProps = (dispatch) => {
+let mapActionsToProps = (dispatch, ownProps) => {
     return {
-        getAvgPrices: (houseId) => dispatch(getAvgPrices(houseId))
+        getAvgPrices: (houseId) => dispatch(getAvgPrices(houseId, ownProps.siteName))
     };
 };
 

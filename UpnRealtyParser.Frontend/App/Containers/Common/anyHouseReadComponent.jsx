@@ -35,6 +35,8 @@ class AnyHouseRead extends React.Component {
         let errorMessage = this.props.error;
         let centerLatitude = houseData.latitude === undefined ? 56.8519 : houseData.latitude;
         let centerLongitude = houseData.longitude === undefined ? 60.6122 : houseData.longitude;
+        let siteName = this.props.siteName;
+        let siteNameSpanClass = siteName === "upn" ? "siteSourceUpn" : "siteSourceN1";
 
         let isStatisticsLoading = this.props.isStatisticsLoading;
         let houseStatistics = this.props.houseStatistics;
@@ -50,9 +52,13 @@ class AnyHouseRead extends React.Component {
                 <div>
                     <Breadcrumb style={{ margin: '16px 0' }}>
                         <Breadcrumb.Item>Дома</Breadcrumb.Item>
-                        <Breadcrumb.Item>УПН</Breadcrumb.Item>
+                        <Breadcrumb.Item>
+                            <span className={siteNameSpanClass}>{siteName.toUpperCase()}</span>
+                        </Breadcrumb.Item>
                     </Breadcrumb>
-                    <Divider orientation={"center"}>Информация о доме УПН, ID {houseData.id}</Divider>
+                    <Divider orientation={"center"}>
+                        <span className={siteNameSpanClass}>Информация о доме {siteName.toUpperCase()}, ID {houseData.id}</span>
+                    </Divider>
                     <SingleHouseInfo houseData={houseData} />
                     {
                         (isStatisticsLoading || !houseStatistics) &&
@@ -65,7 +71,7 @@ class AnyHouseRead extends React.Component {
                         !isStatisticsLoading && houseStatistics &&
                         <SingleHouseStatistics houseStatistics={houseStatistics} />
                     }
-                    <FlatPriceStatisticsPlot houseId={houseId} />
+                    <FlatPriceStatisticsPlot houseId={houseId} siteName={siteName} />
 
                     <div style={{ display: "inline-block", width: "48%", float: "right" }}>
                         <Divider orientation={"center"}>Расположение дома</Divider>

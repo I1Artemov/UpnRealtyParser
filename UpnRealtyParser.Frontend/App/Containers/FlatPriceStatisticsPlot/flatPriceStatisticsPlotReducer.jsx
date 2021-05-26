@@ -7,7 +7,8 @@
 const initialState = {
     allRoomPrices: [{ xAxis: null, yAxis: 0 }],
     isInfoLoading: false,
-    error: ""
+    error: "",
+    siteName: "upn"
 };
 
 export default function points(state = initialState, action) {

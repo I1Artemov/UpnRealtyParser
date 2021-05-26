@@ -11,7 +11,7 @@ import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
 import UpnAgencyIndex from './UpnAgencyIndex/upnAgencyIndex.jsx';
 import WebProxyIndex from './WebProxyIndex/webProxyIndex.jsx';
 import LogEntryIndex from './LogEntryIndex/logEntryIndex.jsx';
-import UpnHouseRead from './UpnHouseRead/upnHouseRead.jsx';
+import AnyHouseRead from './AnyHouseRead/anyHouseRead.jsx';
 import PaybackMap from './PaybackMap/paybackMap.jsx';
 import SiteIndex from '../Stateless/siteIndex.jsx';
 
@@ -43,7 +43,8 @@ export default class App extends React.Component {
                                         <Route exact path="/sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="upn" {...props} />} />
                                         <Route exact path="/n1sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="n1" {...props} />} />
                                         <Route exact path="/rentflat/:id" component={UpnRentFlatRead} />
-                                        <Route exact path="/upnhouse/:id" component={UpnHouseRead} />
+                                        <Route exact path="/upnhouse/:id" render={(props) => <AnyHouseRead siteName="upn" {...props} />} />
+                                        <Route exact path="/n1house/:id" render={(props) => <AnyHouseRead siteName="n1" {...props} />} />
                                         <Route exact path="/paybackmap" component={PaybackMap} />
                                         <Route path="/" component={SiteIndex} />
                                     </Switch>
