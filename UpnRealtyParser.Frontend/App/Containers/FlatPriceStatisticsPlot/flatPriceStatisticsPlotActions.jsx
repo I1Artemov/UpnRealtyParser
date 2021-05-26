@@ -4,7 +4,7 @@
     GET_ALLROOM_POINTS_IN_PROGRESS
     } from './flatPriceStatisticsPlotConstants.jsx';
 
-import { Href_UpnHouseController_GetSingleHousePricePlotPoints } from "../../const.jsx";
+import { Href_HouseController_GetSingleHousePricePlotPoints } from "../../const.jsx";
 import "isomorphic-fetch";
 
 function startReceivingRoomFlatPrices() {
@@ -33,7 +33,7 @@ export function getAvgPrices(houseId) {
         let queryTrailer = '?id=' + houseId;
 
         dispatch(startReceivingRoomFlatPrices());
-        fetch(Href_UpnHouseController_GetSingleHousePricePlotPoints + queryTrailer)
+        fetch(Href_HouseController_GetSingleHousePricePlotPoints + queryTrailer)
             .then((response) => {
                 return response.json();
             }).then((data) => {

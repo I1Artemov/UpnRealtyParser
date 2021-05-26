@@ -12,17 +12,19 @@ namespace UpnRealtyParser.Frontend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UpnHouseController : BaseController
+    public class HouseController : BaseController
     {
         private readonly EFGenericRepo<HouseSitelessVM, RealtyParserContext> _unitedHouseRepo;
         private readonly EFGenericRepo<UpnHouseInfo, RealtyParserContext> _upnHouseRepo;
+        private readonly EFGenericRepo<N1HouseInfo, RealtyParserContext> _n1HouseRepo;
         private readonly EFGenericRepo<UpnFlat, RealtyParserContext> _upnSellFlatRepo;
         private readonly EFGenericRepo<UpnRentFlat, RealtyParserContext> _upnRentFlatRepo;
         private readonly EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
         private readonly EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> _paybackPointsRepo;
 
-        public UpnHouseController(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo,
+        public HouseController(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo,
             EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo,
+            EFGenericRepo<N1HouseInfo, RealtyParserContext> n1HouseRepo,
             EFGenericRepo<UpnFlat, RealtyParserContext> upnSellFlatRepo,
             EFGenericRepo<UpnRentFlat, RealtyParserContext> upnRentFlatRepo,
             EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo,
@@ -30,6 +32,7 @@ namespace UpnRealtyParser.Frontend.Controllers
         {
             _unitedHouseRepo = unitedHouseRepo;
             _upnHouseRepo = upnHouseRepo;
+            _n1HouseRepo = n1HouseRepo;
             _upnSellFlatRepo = upnSellFlatRepo;
             _upnRentFlatRepo = upnRentFlatRepo;
             _statsRepo = statsRepo;
@@ -66,16 +69,23 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getsingle")]
         [HttpGet]
-        public IActionResult GetSingleHouse(int? id)
+        public IActionResult GetSingleHouse(int? id, string siteName)
         {
             if (!id.HasValue)
                 return makeErrorResult("Не указан ID дома");
 
-            UpnHouseInfo foundHouse = _upnHouseRepo.GetWithoutTracking(x => x.Id == id.Value);
-            if (foundHouse == null)
-                return makeErrorResult(string.Format("не найден дом с ID = {0}", id.Value));
+            if(string.IsNullOrEmpty(siteName) || siteName.ToLower() == "upn")
+            {
+                UpnHouseInfo upnFoundHouse = _upnHouseRepo.GetWithoutTracking(x => x.Id == id.Value);
+                if (upnFoundHouse == null)
+                    return makeErrorResult(string.Format("не найден дом UPN с ID = {0}", id.Value));
+                return Json(new { houseInfo = upnFoundHouse });
+            }
 
-            return Json(new { houseInfo = foundHouse });
+            UpnHouseInfo n1FoundHouse = _upnHouseRepo.GetWithoutTracking(x => x.Id == id.Value);
+            if (n1FoundHouse == null)
+                return makeErrorResult(string.Format("не найден дом N1 с ID = {0}", id.Value));
+            return Json(new { houseInfo = n1FoundHouse });
         }
 
         [Route("getsinglestatistics")]

@@ -3,7 +3,7 @@
     GET_POINTS_ERROR,
     GET_POINTS_IN_PROGRESS
 } from './paybackMapConstants.jsx';
-import { Href_UpnHouseController_GetPaybackMapPoints } from "../../const.jsx";
+import { Href_HouseController_GetPaybackMapPoints } from "../../const.jsx";
 
 import "isomorphic-fetch";
 
@@ -31,7 +31,7 @@ export function getAllPoints() {
 
     return (dispatch) => {
         dispatch(startReceivingPoints());
-        fetch(Href_UpnHouseController_GetPaybackMapPoints)
+        fetch(Href_HouseController_GetPaybackMapPoints)
             .then((response) => {
                 var parsedJson = response.json();
                 return parsedJson;

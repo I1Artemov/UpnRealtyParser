@@ -2,8 +2,8 @@
 import { getHouse, getStatistics } from '../Common/anyHouseReadActions.jsx';
 
 import {
-    Href_UpnHouseController_GetSingleHouse,
-    Href_UpnHouseController_GetSingleHouseStatistics
+    Href_HouseController_GetSingleHouse,
+    Href_HouseController_GetSingleHouseStatistics
 } from "../../const.jsx";
 
 import AnyHouseRead from '../Common/anyHouseReadComponent.jsx';
@@ -22,8 +22,8 @@ let mapStateToProps = (state) => {
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getHouse: (id) => dispatch(getHouse(id, Href_UpnHouseController_GetSingleHouse)),
-        getStatistics: (id) => dispatch(getStatistics(id, Href_UpnHouseController_GetSingleHouseStatistics))
+        getHouse: (id) => dispatch(getHouse(id, Href_HouseController_GetSingleHouse)),
+        getStatistics: (id) => dispatch(getStatistics(id, Href_HouseController_GetSingleHouseStatistics))
     };
 };
 

@@ -4,7 +4,7 @@ export const Href_UpnSellFlatController_GetSingleFlat = "/api/UpnSellFlat/getsin
 export const Href_UpnRentFlatController_GetAllFlats = "api/UpnRentFlat/getall";
 export const Href_UpnRentFlatController_GetSingleFlat = "/api/UpnRentFlat/getsingle";
 
-export const Href_UpnHouseController_GetAllFlats = "api/UpnHouse/getall";
+export const Href_HouseController_GetAllFlats = "api/House/getall";
 export const Href_UpnAgencyController_GetAllAgencies = "api/UpnAgency/getall";
 export const Href_WebProxyController_GetAllProxies = "api/WebProxy/getall";
 export const Href_ParsingStateController_GetAllStates = "api/LogEntry/getall";
@@ -12,8 +12,8 @@ export const Href_ParsingStateController_GetAllStates = "api/LogEntry/getall";
 export const Href_N1SellFlatController_GetAllFlats = "api/N1SellFlat/getall";
 export const Href_N1SellFlatController_GetSingleFlat = "/api/N1SellFlat/getsingle";
 
-export const Href_UpnHouseController_GetSingleHouse = "/api/UpnHouse/getsingle";
-export const Href_UpnHouseController_GetSingleHouseStatistics = "/api/UpnHouse/getsinglestatistics";
+export const Href_HouseController_GetSingleHouse = "/api/House/getsingle";
+export const Href_HouseController_GetSingleHouseStatistics = "/api/House/getsinglestatistics";
 
-export const Href_UpnHouseController_GetSingleHousePricePlotPoints = "/api/UpnHouse/getsingle/averageprice/points";
-export const Href_UpnHouseController_GetPaybackMapPoints = "/api/UpnHouse/payback/points";
+export const Href_HouseController_GetSingleHousePricePlotPoints = "/api/House/getsingle/averageprice/points";
+export const Href_HouseController_GetPaybackMapPoints = "/api/House/payback/points";

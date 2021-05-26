@@ -8,7 +8,7 @@
     SET_ADDRESS_PART,
     CLEAR_SEARCH_PARAMETERS
 } from './upnHouseIndexConstants.jsx';
-import { Href_UpnHouseController_GetAllFlats } from "../../const.jsx";
+import { Href_HouseController_GetAllFlats } from "../../const.jsx";
 import "isomorphic-fetch";
 
 export function startReceivingHouses() {
@@ -81,7 +81,7 @@ export function getAllHouses(pagination, minBuildYear, isShowUpn, isShowN1, addr
         if (isShowN1 !== null && isShowN1 !== undefined) queryTrailer += '&isShowN1=' + isShowN1;
         if (addressPart !== null && addressPart !== undefined) queryTrailer += '&addressPart=' + addressPart;
 
-        fetch(Href_UpnHouseController_GetAllFlats + queryTrailer)
+        fetch(Href_HouseController_GetAllFlats + queryTrailer)
             .then((response) => {
                 return response.json();
             }).then((data) => {
