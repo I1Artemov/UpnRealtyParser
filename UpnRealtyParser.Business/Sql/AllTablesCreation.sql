@@ -474,3 +474,9 @@ ALTER TABLE [N1RentFlat] ADD CONSTRAINT
 
 CREATE INDEX idx_N1RentFlat_N1HouseInfoId ON [N1RentFlat] ([N1HouseInfoId]);
 CREATE INDEX idx_N1RentFlat_N1AgencyId ON [N1RentFlat] ([N1AgencyId]);
+
+-- 27.05.2021 Поле с адресом дома в таблице для карты окупаемости
+ALTER TABLE [PaybackPeriodPoint] ADD [HouseAddress] nvarchar(512);
+
+UPDATE [PaybackPeriodPoint] SET [HouseAddress] = 
+	(SELECT TOP 1 [Address] FROM [UpnHouseInfo] WHERE [Id] = [UpnHouseId]);

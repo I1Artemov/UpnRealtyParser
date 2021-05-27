@@ -237,7 +237,8 @@ namespace UpnRealtyParser.Business.Helpers
                     UpnHouseId = upnHouseId.GetValueOrDefault(0),
                     Latitude = houseInfo?.Latitude,
                     Longitude = houseInfo?.Longitude,
-                    PaybackYears = totalPayback
+                    PaybackYears = totalPayback,
+                    HouseAddress = houseInfo.Address
                 };
                 paybackPoints.Add(paybackPoint);
             }

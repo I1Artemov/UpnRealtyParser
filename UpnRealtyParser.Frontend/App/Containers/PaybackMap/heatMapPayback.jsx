@@ -27,7 +27,7 @@ export default function HeatmapFunction(props) {
 
         // Маркеры домов со всплывающими уведомлениями
         props.points.forEach((p) => {
-            var popupText = "<a href='/upnhouse/" + p.upnHouseId + "'>HouseId = " + p.upnHouseId + "</a>, окупаемость - " +
+            var popupText = "<a href='/upnhouse/" + p.upnHouseId + "'>" + p.houseAddress + "</a>, окупаемость - " +
                 Math.floor(p.paybackYears * 10) / 10 + " лет";
             var marker = L.marker([p.latitude, p.longitude], { icon: customMarker })
                 .bindPopup(popupText);
