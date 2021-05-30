@@ -66,7 +66,9 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         dataIndex: 'shortenedDescription',
         key: 'shortenedDescription',
         render: (text, row) => (
-            <Link to={"/n1sellflat/" + row.id}>{text}</Link>
+            (text == null || text == '') ?
+                <Link to={"/n1sellflat/" + row.id}>{'Описание отсутствует'}</Link> :
+                <Link to={"/n1sellflat/" + row.id}>{text}</Link>
         )
     }
 ];

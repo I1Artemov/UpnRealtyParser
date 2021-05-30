@@ -45,8 +45,8 @@ class AnyFlatRead extends React.Component {
             );
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
             // Без этого могут попасть значения undefined и компонент не отрендерится
-            let centerLatitude = flatData.houseLatitude === undefined ? 56.8519 : flatData.houseLatitude;
-            let centerLongitude = flatData.houseLongitude === undefined ? 60.6122 : flatData.houseLongitude;
+            let centerLatitude = flatData.houseLatitude ? flatData.houseLatitude : 56.8519;
+            let centerLongitude = flatData.houseLongitude ? flatData.houseLongitude : 60.6122;
             let mapContainerWidth = flatData.downloadedPhotoHref ? "69%" : "100%";
             return (
                 <div>
@@ -83,7 +83,10 @@ class AnyFlatRead extends React.Component {
                             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
+                        {
+                        flatData.houseLatitude && flatData.houseLongitude &&
                         <Marker position={[flatData.houseLatitude, flatData.houseLongitude]} icon={customMarker}></Marker>
+                        }
                     </MapContainer>
                     <div style={{ clear: "both" }}></div>
                     <div style={{ marginTop: "15px", marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>

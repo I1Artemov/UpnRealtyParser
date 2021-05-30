@@ -33,8 +33,8 @@ class AnyHouseRead extends React.Component {
         let houseData = this.props.houseInfo;
         let isLoading = this.props.isLoading;
         let errorMessage = this.props.error;
-        let centerLatitude = houseData.latitude === undefined ? 56.8519 : houseData.latitude;
-        let centerLongitude = houseData.longitude === undefined ? 60.6122 : houseData.longitude;
+        let centerLatitude = houseData.houseLatitude ? houseData.houseLatitude : 56.8519;
+        let centerLongitude = houseData.houseLongitude ? houseData.houseLongitude : 60.6122;
         let siteName = this.props.siteName;
         let siteNameSpanClass = siteName === "upn" ? "siteSourceUpn" : "siteSourceN1";
 
@@ -81,7 +81,10 @@ class AnyHouseRead extends React.Component {
                                 attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            <Marker position={[centerLatitude, centerLongitude]} icon={customMarker}></Marker>
+                            {
+                                centerLatitude && centerLongitude &&
+                                <Marker position={[centerLatitude, centerLongitude]} icon={customMarker}></Marker>
+                            }
                         </MapContainer>
                     </div>
                     <div style={{ clear: "both" }}></div>
