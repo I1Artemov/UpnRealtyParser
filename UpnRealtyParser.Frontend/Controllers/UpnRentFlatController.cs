@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
+using UpnRealtyParser.Business;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
@@ -70,7 +71,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
                 _pageLinkRepo, _upnPhotoRepo);
             apartmentHelper.FillSingleApartmentWithAdditionalInfo(foundFlat);
-            apartmentHelper.FillSingleApartmentWithPhotoHrefs(foundFlat);
+            apartmentHelper.FillSingleApartmentWithPhotoHrefs(foundFlat, Const.LinkTypeRentFlat);
 
             return Json(new { flatInfo = foundFlat });
         }
