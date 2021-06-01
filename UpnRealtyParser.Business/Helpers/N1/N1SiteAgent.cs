@@ -466,7 +466,8 @@ namespace UpnRealtyParser.Business.Helpers
             existingFlat.IsFilledCompletely = true;
             existingFlat.LastCheckDate = DateTime.Now;
             existingFlat.PlanningType = fullFlat.PlanningType;
-            existingFlat.Price = fullFlat.Price;
+            if (fullFlat.Price.HasValue)
+                existingFlat.Price = fullFlat.Price;
             existingFlat.PropertyType = fullFlat.PropertyType;
             existingFlat.BalconyAmount = fullFlat.BalconyAmount;
             existingFlat.BathroomType = fullFlat.BathroomType;
@@ -474,10 +475,12 @@ namespace UpnRealtyParser.Business.Helpers
             existingFlat.Description = fullFlat.Description;
             if(fullFlat.FlatFloor.HasValue)
                 existingFlat.FlatFloor = fullFlat.FlatFloor;
-            existingFlat.RoomAmount = fullFlat.RoomAmount;
+            if (fullFlat.RoomAmount.HasValue)
+                existingFlat.RoomAmount = fullFlat.RoomAmount;
             existingFlat.SpaceKitchen = fullFlat.SpaceKitchen;
             existingFlat.SpaceLiving = fullFlat.SpaceLiving;
-            existingFlat.SpaceSum = fullFlat.SpaceSum;
+            if (fullFlat.SpaceSum.HasValue)
+                existingFlat.SpaceSum = fullFlat.SpaceSum;
 
             if(isRentFlat)
             {
