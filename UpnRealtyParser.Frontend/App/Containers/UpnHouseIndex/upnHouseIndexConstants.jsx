@@ -77,7 +77,7 @@ export const HOUSES_TABLE_COLUMNS = [
     },
     {
         title: 'До метро',
-        dataIndex: 'closestSubwayStationRange',
-        key: 'closestSubwayStationRange'
+        dataIndex: 'closestSubwayRangeInfo',
+        key: 'closestSubwayRangeInfo'
     }
 ];

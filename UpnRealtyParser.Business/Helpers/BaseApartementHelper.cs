@@ -127,7 +127,7 @@ namespace UpnRealtyParser.Business.Helpers
                 return;
 
             singleFlat.ClosestSubwayName = foundStation.Name;
-            singleFlat.ClosestSubwayRangeStr = Math.Round(foundHouse.ClosestSubwayStationRange.Value).ToString();
+            singleFlat.ClosestSubwayStationRange = foundHouse.ClosestSubwayStationRange;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace UpnRealtyParser.Business.Models
 {
@@ -33,16 +34,8 @@ namespace UpnRealtyParser.Business.Models
         /// <summary>
         /// До метро: "(станция метро) ((расстояние) м.)"
         /// </summary>
-        public string SubwaySummary
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(ClosestSubwayName) || !ClosestSubwayStationRange.HasValue)
-                    return "н/у";
-
-                return string.Format("{0} ({1} м.)", ClosestSubwayName, ClosestSubwayStationRange);
-            }
-        }
+        public string SubwaySummary =>
+            Helpers.Utils.GetFormattedSubwaySummaryString(ClosestSubwayName, ClosestSubwayStationRange);
 
         /// <summary>
         /// Даты создания и проверки наличия на сайте через тире

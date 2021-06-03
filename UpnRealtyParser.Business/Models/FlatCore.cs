@@ -53,7 +53,7 @@ namespace UpnRealtyParser.Business.Models
         public string ClosestSubwayName { get; set; }
 
         [NotMapped]
-        public string ClosestSubwayRangeStr { get; set; }
+        public double? ClosestSubwayStationRange { get; set; }
 
         [NotMapped]
         public string AgencyName { get; set; }
@@ -104,16 +104,8 @@ namespace UpnRealtyParser.Business.Models
         /// <summary>
         /// До метро: "(станция метро) ((расстояние) м.)"
         /// </summary>
-        public string SubwaySummary
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(ClosestSubwayName) || string.IsNullOrEmpty(ClosestSubwayRangeStr))
-                    return "н/у";
-
-                return string.Format("{0} ({1} м.)", ClosestSubwayName, ClosestSubwayRangeStr);
-            }
-        }
+        public string SubwaySummary =>
+            Helpers.Utils.GetFormattedSubwaySummaryString(ClosestSubwayName, ClosestSubwayStationRange);
 
         /// <summary>
         /// Даты создания и проверки наличия на сайте через тире

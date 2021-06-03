@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Text;
+
 namespace UpnRealtyParser.Business.Helpers
 {
     public static class Utils
@@ -34,6 +34,33 @@ namespace UpnRealtyParser.Business.Helpers
                 return parsedDate;
 
             return null;
+        }
+
+        /// <summary>
+        /// Возвращает строку вида "До метро: "(станция метро)" ((расстояние) м./км.)
+        /// </summary>
+        public static string GetFormattedSubwaySummaryString(string stationName, double? distance)
+        {
+            if (string.IsNullOrEmpty(stationName) || !distance.HasValue)
+                return "н/у";
+
+            string subwayRangeStr = GetFormattedSubwayDistanceString(distance);
+            return string.Format("{0} ({1})", stationName, subwayRangeStr);
+        }
+
+        /// <summary>
+        /// расстояние переводит в строку вида "N м." или "N км."
+        /// </summary>
+        public static string GetFormattedSubwayDistanceString(double? distance)
+        {
+            if (!distance.HasValue)
+                return "";
+
+            string subwayRangeStr = distance.Value > 1000 ?
+                (Math.Round(distance.Value / 100) / 10).ToString() + " км."
+                : Math.Round(distance.Value).ToString() + " м.";
+
+            return subwayRangeStr;
         }
     }
 }
