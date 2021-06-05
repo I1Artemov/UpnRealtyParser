@@ -42,7 +42,7 @@ namespace UpnRealtyParser.Frontend.Controllers
         [HttpGet]
         public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId)
+            int? closestSubwayStationId, string addressPart)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
@@ -69,6 +69,8 @@ namespace UpnRealtyParser.Frontend.Controllers
                 string stationName = foundStation?.Name;
                 allSellFlats = allSellFlats.Where(x => x.ClosestSubwayName == stationName);
             }
+            if(!string.IsNullOrEmpty(addressPart))
+                allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
             int totalCount = allSellFlats.Count();
 
             List<UpnFlatVmForTable> filteredFlats = allSellFlats

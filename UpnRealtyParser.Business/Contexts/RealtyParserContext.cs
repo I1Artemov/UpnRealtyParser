@@ -34,7 +34,7 @@ namespace UpnRealtyParser.Business.Contexts
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // todo: Вынести в конфиг
-            optionsBuilder.UseSqlServer(@"Data Source=.\MSSQL14LOCAL;Database=RealtyParser;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-33U76GA;Database=RealtyParser;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

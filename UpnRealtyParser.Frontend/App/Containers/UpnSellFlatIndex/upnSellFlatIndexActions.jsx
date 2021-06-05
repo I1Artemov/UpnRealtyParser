@@ -10,6 +10,7 @@
     SET_MIN_BUILD_YEAR,
     SET_MAX_SUBWAY_DISTANCE,
     SET_CLOSEST_SUBWAY_STATION_ID,
+    SET_ADDRESS_PART,
     CLEAR_SEARCH_PARAMETERS,
     SAVE_PAGING_PARAMETERS
 } from './upnSellFlatIndexConstants.jsx';
@@ -102,6 +103,14 @@ export function setClosestSubwayStationId(ev) {
     };
 }
 
+export function setAddressPart(ev) {
+    let addressPart = ev.target.value;
+    return {
+        type: SET_ADDRESS_PART,
+        payload: addressPart
+    };
+}
+
 export function savePagingParameters(pagination) {
     return {
         type: SAVE_PAGING_PARAMETERS,
@@ -119,7 +128,7 @@ export function clearSearchParameters() {
 }
 
 export function getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor,
-    minBuildYear, maxSubwayDistance, closestSubwayStationId) {
+    minBuildYear, maxSubwayDistance, closestSubwayStationId, addressPart) {
 
     let targetPage = !pagination.current ? 1 : pagination.current;
     let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
@@ -135,6 +144,7 @@ export function getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isEx
         if (minBuildYear !== null && minBuildYear !== undefined) queryTrailer += '&minBuildYear=' + minBuildYear;
         if (maxSubwayDistance !== null && maxSubwayDistance !== undefined) queryTrailer += '&maxSubwayDistance=' + maxSubwayDistance;
         if (closestSubwayStationId !== null && closestSubwayStationId !== undefined) queryTrailer += '&closestSubwayStationId=' + closestSubwayStationId;
+        if (addressPart !== null && addressPart !== undefined) queryTrailer += '&addressPart=' + addressPart;
 
         fetch(Href_UpnSellFlatController_GetAllFlats + queryTrailer)
             .then((response) => {

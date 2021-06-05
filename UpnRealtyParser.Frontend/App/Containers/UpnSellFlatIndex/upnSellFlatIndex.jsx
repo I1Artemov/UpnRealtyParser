@@ -4,11 +4,11 @@ import { connect } from 'react-redux';
 import {
     getAllFlats, startReceivingFlats, setShowArchived, setExcludeFirstFloor, setExcludeLastFloor,
     setMinPrice, setMaxPrice, setMinBuildYear, setMaxSubwayDistance, setClosestSubwayStationId,
-    clearSearchParameters, savePagingParameters
+    setAddressPart, clearSearchParameters, savePagingParameters
 } from './upnSellFlatIndexActions.jsx';
 
 import { SELL_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
-import { Table, Breadcrumb, Checkbox, InputNumber, Select, Button } from 'antd';
+import { Table, Breadcrumb, Checkbox, InputNumber, Select, Button, Input } from 'antd';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 
 import 'antd/dist/antd.css';
@@ -19,7 +19,7 @@ class UpnSellFlatIndex extends React.Component {
 
         this.props.getAllFlats(pagination, this.props.isShowArchived, this.props.minPrice, this.props.maxPrice,
             this.props.isExcludeFirstFloor, this.props.isExcludeLastFloor, this.props.minBuildYear,
-            this.props.maxSubwayDistance, this.props.closestSubwayStationId);
+            this.props.maxSubwayDistance, this.props.closestSubwayStationId, this.props.addressPart);
     }
 
     componentDidMount() {
@@ -87,6 +87,9 @@ class UpnSellFlatIndex extends React.Component {
 
                         <span>Расстояние до метро, м</span>
                         <InputNumber onChange={this.props.setMaxSubwayDistance.bind(this)} value={this.props.maxSubwayDistance} style={{ marginLeft: 9, marginRight: 28 }} />
+
+                        <span>Адрес содержит</span>
+                        <Input onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ marginLeft: 9, marginRight: 28, width: 240 }} />
                     </div>
                 </div>
                 <Table
@@ -116,6 +119,7 @@ let mapStateToProps = (state) => {
         minBuildYear: state.upnSellFlatIndexReducer.minBuildYear,
         maxSubwayDistance: state.upnSellFlatIndexReducer.maxSubwayDistance,
         closestSubwayStationId: state.upnSellFlatIndexReducer.closestSubwayStationId,
+        addressPart: state.upnHouseIndexReducer.addressPart,
         savedGridPage: state.upnSellFlatIndexReducer.savedGridPage,
         savedGridPageSize: state.upnSellFlatIndexReducer.savedGridPageSize
     };
@@ -124,9 +128,9 @@ let mapStateToProps = (state) => {
 let mapActionsToProps = (dispatch) => {
     return {
         getAllFlats: (pagination, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
-            maxSubwayDistance, closestSubwayStationId) =>
+            maxSubwayDistance, closestSubwayStationId, addressPart) =>
             dispatch(getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
-                maxSubwayDistance, closestSubwayStationId)),
+                maxSubwayDistance, closestSubwayStationId, addressPart)),
         startReceivingFlats: () => dispatch(startReceivingFlats()),
         setShowArchived: (ev) => dispatch(setShowArchived(ev)),
         setExcludeFirstFloor: (ev) => dispatch(setExcludeFirstFloor(ev)),
@@ -136,6 +140,7 @@ let mapActionsToProps = (dispatch) => {
         setMinBuildYear: (ev) => dispatch(setMinBuildYear(ev)),
         setMaxSubwayDistance: (ev) => dispatch(setMaxSubwayDistance(ev)),
         setClosestSubwayStationId: (ev) => dispatch(setClosestSubwayStationId(ev)),
+        setAddressPart: (ev) => dispatch(setAddressPart(ev)),
         clearSearchParameters: () => dispatch(clearSearchParameters()),
         savePagingParameters: (pagination) => dispatch(savePagingParameters(pagination))
     };
