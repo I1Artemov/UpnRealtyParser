@@ -27,6 +27,7 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         title: 'Фото',
         dataIndex: 'firstPhotoFile',
         key: 'firstPhotoFile',
+        align: 'center',
         render: (text, row) => (
             (text === null || text === undefined || text === 'ERR') ? <p>--</p> :
                 <img src={"/images/upnphotos/" + text} width="64" height="64"></img>
@@ -40,22 +41,26 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     {
         title: 'Тип',
         dataIndex: 'flatType',
-        key: 'flatType'
+        key: 'flatType',
+        align: 'center'
     },
     {
         title: 'Комнат',
         dataIndex: 'roomAmount',
-        key: 'roomAmount'
+        key: 'roomAmount',
+        align: 'center'
     },
     {
         title: 'Площадь',
         dataIndex: 'spaceSum',
-        key: 'spaceSum'
+        key: 'spaceSum',
+        align: 'center'
     },
     {
         title: 'Этаж',
         dataIndex: 'floorSummary',
-        key: 'floorSummary'
+        key: 'floorSummary',
+        align: 'center'
     },
     {
         title: 'Адрес',
@@ -70,12 +75,14 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     {
         title: 'Материал дома',
         dataIndex: 'houseWallMaterial',
-        key: 'houseWallMaterial'
+        key: 'houseWallMaterial',
+        align: 'center'
     },
     {
         title: 'Построена',
         dataIndex: 'houseBuildYear',
-        key: 'houseBuildYear'
+        key: 'houseBuildYear',
+        align: 'center'
     },
     {
         title: 'До метро',

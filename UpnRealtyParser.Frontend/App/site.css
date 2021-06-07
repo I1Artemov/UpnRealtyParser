@@ -12,6 +12,12 @@
     padding-bottom: 6px;
 }
 
+#content th.ant-table-cell {
+    text-align: center;
+    font-weight: bold;
+    color: #686868;
+}
+
 .centered-content-div-w-margin {
     width: auto;
     text-align: center;

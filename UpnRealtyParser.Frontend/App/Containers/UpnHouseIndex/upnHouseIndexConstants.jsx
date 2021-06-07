@@ -20,6 +20,7 @@ export const HOUSES_TABLE_COLUMNS = [
         title: 'Сайт',
         dataIndex: 'sourceSite',
         key: 'sourceSite',
+        align: 'center',
         render: (text, row) => (
             (text === 'UPN') ? <span className="siteSourceUpn">{text}</span> :
                 <span className="siteSourceN1">{text}</span>
@@ -43,22 +44,26 @@ export const HOUSES_TABLE_COLUMNS = [
     {
         title: 'Тип',
         dataIndex: 'houseType',
-        key: 'houseType'
+        key: 'houseType',
+        align: 'center'
     },
     {
         title: 'Год постройки',
         dataIndex: 'buildYear',
-        key: 'buildYear'
+        key: 'buildYear',
+        align: 'center'
     },
     {
         title: 'Материал',
         dataIndex: 'wallMaterial',
-        key: 'wallMaterial'
+        key: 'wallMaterial',
+        align: 'center'
     },
     {
         title: 'Этажей',
         dataIndex: 'maxFloor',
-        key: 'maxFloor'
+        key: 'maxFloor',
+        align: 'center'
     },
     {
         title: 'Широта',

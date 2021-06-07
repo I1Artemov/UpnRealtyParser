@@ -19,17 +19,20 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     {
         title: 'Комнат',
         dataIndex: 'roomAmount',
-        key: 'roomAmount'
+        key: 'roomAmount',
+        align: 'center'
     },
     {
         title: 'Площадь',
         dataIndex: 'spaceSum',
-        key: 'spaceSum'
+        key: 'spaceSum',
+        align: 'center'
     },
     {
         title: 'Этаж',
         dataIndex: 'floorSummary',
-        key: 'floorSummary'
+        key: 'floorSummary',
+        align: 'center'
     },
     {
         title: 'Адрес',
@@ -39,17 +42,20 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     {
         title: 'Тип дома',
         dataIndex: 'houseType',
-        key: 'houseType'
+        key: 'houseType',
+        align: 'center'
     },
     {
         title: 'Материал дома',
         dataIndex: 'houseWallMaterial',
-        key: 'houseWallMaterial'
+        key: 'houseWallMaterial',
+        align: 'center'
     },
     {
         title: 'Построена',
         dataIndex: 'houseBuildYear',
-        key: 'houseBuildYear'
+        key: 'houseBuildYear',
+        align: 'center'
     },
     {
         title: 'До метро',
