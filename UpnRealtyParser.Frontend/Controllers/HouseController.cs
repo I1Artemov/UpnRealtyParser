@@ -150,7 +150,8 @@ namespace UpnRealtyParser.Frontend.Controllers
                     _upnSellFlatRepo, _upnRentFlatRepo, _upnHouseRepo, _statsRepo);
 
             List<PaybackPeriodPoint> points = _paybackPointsRepo
-                .GetAllWithoutTracking().ToList();
+                .GetAllWithoutTracking()
+                .Where(x => x.PaybackYears < 40).ToList();
 
             return Json(new { points });
         }

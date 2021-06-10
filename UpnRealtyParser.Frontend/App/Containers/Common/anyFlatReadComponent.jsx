@@ -24,6 +24,7 @@ function returnToFlatsPage() {
 class AnyFlatRead extends React.Component {
     componentDidMount() {
         const id = this.props.match.params.id;
+        this.props.hideFlatPhotos();
         this.props.startReceivingFlat();
         this.props.getFlat(id);
         returnToFlatsPage = returnToFlatsPage.bind(this);
