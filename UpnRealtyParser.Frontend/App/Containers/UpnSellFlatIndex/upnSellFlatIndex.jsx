@@ -88,7 +88,7 @@ class UpnSellFlatIndex extends React.Component {
                         <span>Расстояние до метро, м</span>
                         <InputNumber onChange={this.props.setMaxSubwayDistance.bind(this)} value={this.props.maxSubwayDistance} style={{ marginLeft: 9, marginRight: 28 }} />
 
-                        <span>Адрес содержит</span>
+                        <span>Улица</span>
                         <Input onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ marginLeft: 9, marginRight: 28, width: 240 }} />
                     </div>
                 </div>

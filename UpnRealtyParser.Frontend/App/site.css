@@ -97,3 +97,12 @@ div.house-statistics-block p {
     padding-left: 8px;
     background-color: rgb(255, 255, 255);
 }
+
+#content .ant-descriptions-item-label {
+    font-weight: bold;
+    color: #636363;
+    padding: 4px 12px;
+}
+#content .ant-descriptions-item-content {
+    padding: 4px 12px;
+}

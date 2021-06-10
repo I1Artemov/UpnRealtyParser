@@ -52,7 +52,7 @@ class UpnHouseIndex extends React.Component {
                 <span>Год постройки от</span>
                 <InputNumber onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2025} style={{ marginLeft: 9, marginRight: 28 }} />
 
-                <span>Адрес содержит</span>
+                <span>Улица</span>
                 <Input onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ marginLeft: 9, marginRight: 28, width: 400 }} />
 
                 <Button onClick={this.handleTableChange.bind(this)} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
