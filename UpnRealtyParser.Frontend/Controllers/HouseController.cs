@@ -85,12 +85,14 @@ namespace UpnRealtyParser.Frontend.Controllers
                 UpnHouseInfo upnFoundHouse = _upnHouseRepo.GetWithoutTracking(x => x.Id == id.Value);
                 if (upnFoundHouse == null)
                     return makeErrorResult(string.Format("не найден дом UPN с ID = {0}", id.Value));
+                findAndSetSimilarHouseId(upnFoundHouse, siteName.ToUpper());
                 return Json(new { houseInfo = upnFoundHouse });
             }
 
             N1HouseInfo n1FoundHouse = _n1HouseRepo.GetWithoutTracking(x => x.Id == id.Value);
             if (n1FoundHouse == null)
                 return makeErrorResult(string.Format("не найден дом N1 с ID = {0}", id.Value));
+            findAndSetSimilarHouseId(n1FoundHouse, siteName.ToUpper());
             return Json(new { houseInfo = n1FoundHouse });
         }
 
@@ -154,6 +156,27 @@ namespace UpnRealtyParser.Frontend.Controllers
                 .Where(x => x.PaybackYears < 40).ToList();
 
             return Json(new { points });
+        }
+
+        /// <summary>
+        /// У дома targetHouse заполняет ID похожего дома, собранного с другого сайта
+        /// </summary>
+        protected void findAndSetSimilarHouseId(HouseInfoCore targetHouse, string siteName)
+        {
+            if (_unitedHouseRepo == null || targetHouse == null)
+                return;
+
+            HouseSitelessVM targetHouseWithIdentity = _unitedHouseRepo.GetAllWithoutTracking()
+                .FirstOrDefault(x => x.Id == targetHouse.Id && x.SourceSite == siteName);
+
+            if (targetHouseWithIdentity?.SimilarIdentity == null)
+                return;
+
+            HouseSitelessVM similarHouse = _unitedHouseRepo.GetAllWithoutTracking()
+                .FirstOrDefault(x => x.SimilarIdentity == targetHouseWithIdentity.SimilarIdentity
+                                && x.SourceSite != siteName);
+
+            targetHouse.SimilarHouseFromDifferentSiteId = similarHouse?.Id;
         }
     }
 }

@@ -59,7 +59,7 @@ class AnyHouseRead extends React.Component {
                     <Divider orientation={"center"}>
                         <span className={siteNameSpanClass}>Информация о доме {siteName.toUpperCase()}, ID {houseData.id}</span>
                     </Divider>
-                    <SingleHouseInfo houseData={houseData} />
+                    <SingleHouseInfo houseData={houseData} siteName={siteName}/>
                     {
                         (isStatisticsLoading || !houseStatistics) &&
                         <div className="centered-content-div-w-margin">

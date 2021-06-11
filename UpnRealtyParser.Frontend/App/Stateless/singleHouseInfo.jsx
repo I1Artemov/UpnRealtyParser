@@ -4,6 +4,14 @@ import { Descriptions } from 'antd';
 class SingleHouseInfo extends React.Component {
     render() {
         let houseData = this.props.houseData;
+        let siteName = this.props.siteName;
+        let similarHouseUrl = null;
+        let otherSiteName = siteName === "upn" ? "Похожий дом N1" : "Похожий дом UPN";
+        if (houseData.similarHouseFromDifferentSiteId) {
+            similarHouseUrl = siteName === "upn" ?
+                "/n1house/" + houseData.similarHouseFromDifferentSiteId :
+                "/upnhouse/" + houseData.similarHouseFromDifferentSiteId;
+        }
 
         return (
             <div>
@@ -18,7 +26,12 @@ class SingleHouseInfo extends React.Component {
                     <Descriptions.Item label="Этажей">{houseData.maxFloor}</Descriptions.Item>
                     <Descriptions.Item label="Широта">{houseData.latitude}</Descriptions.Item>
                     <Descriptions.Item label="Долгота">{houseData.longitude}</Descriptions.Item>
-
+                    {
+                        similarHouseUrl &&
+                        <Descriptions.Item label={otherSiteName} span={3}>
+                            <a href={similarHouseUrl}>{similarHouseUrl}</a>
+                        </Descriptions.Item>
+                    }
                     {
                         houseData.builderCompany &&
                         <Descriptions.Item label="Застройщик" span={3}>{houseData.builderCompany}</Descriptions.Item>

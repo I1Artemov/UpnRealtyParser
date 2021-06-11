@@ -1,4 +1,6 @@
-﻿namespace UpnRealtyParser.Business.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace UpnRealtyParser.Business.Models
 {
     public class HouseInfoCore : IdInfo
     {
@@ -19,5 +21,11 @@
         public int? ClosestSubwayStationId { get; set; }
 
         public double? ClosestSubwayStationRange { get; set; }
+
+        /// <summary>
+        /// ID дома с таким же адресом, но собранного с другого сайта
+        /// </summary>
+        [NotMapped]
+        public int? SimilarHouseFromDifferentSiteId { get; set; }
     }
 }
