@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllPoints } from "./paybackMapActions.jsx";
-import { Divider, Spin } from 'antd';
+import { Divider, Spin, InputNumber, Button } from 'antd';
 
 import HeatMapFunctional from './heatMapPayback.jsx';
 
@@ -42,7 +42,18 @@ class PaybackMap extends React.Component {
             return (
                 <div>
                     <Divider orientation={"center"}>Карта окупаемости</Divider>
-                    <HeatMapFunctional points={normalizedPoints}/>
+                    <HeatMapFunctional points={normalizedPoints} />
+                    <div style={{ marginTop: '8px' }}>
+                        <div id="heat-legend-color-gradient"></div>
+                        <div style={{ display: 'inline-block', marginRight: '6px'}}>Отображать с окупаемостью до </div>
+                        <InputNumber style={{ display: 'inline-block', marginRight: '6px' }} />
+                        <div style={{ display: 'inline-block'}}>лет</div>
+                        <Button type="primary" style={{ display: 'inline-block', marginLeft: '16px'}}>Применить</Button>
+                    </div>
+                    <div>
+                        <div id="heat-legend-minimal-value">10 лет</div>
+                        <div id="heat-legend-maximal-value">20 лет</div>
+                    </div>
                 </div>
             );
         } else {

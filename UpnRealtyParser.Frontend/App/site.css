@@ -106,3 +106,21 @@ div.house-statistics-block p {
 #content .ant-descriptions-item-content {
     padding: 4px 12px;
 }
+
+#heat-legend-color-gradient {
+    display: inline-block;
+    margin-bottom: -6px;
+    margin-right: 32px;
+    height: 20px;
+    width: 320px;
+    background: linear-gradient(0.25turn, #6561E8, #58F1F1, #22F41A, #F7E423, #FD1201);
+}
+
+#heat-legend-minimal-value {
+    display: inline-block;
+}
+
+#heat-legend-maximal-value {
+    display: inline-block;
+    margin-left: 260px;
+}
