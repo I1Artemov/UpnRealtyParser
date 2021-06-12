@@ -20,15 +20,15 @@ class PaybackMap extends React.Component {
 
         let maximalPaybackYears = 1;
         if (points.length > 1) {
-            maximalPaybackYears = points.reduce(function (prev, current) {
-                return (prev.paybackYears > current.paybackYears) ? prev.paybackYears : current.paybackYears;
-            });
+            maximalPaybackYears = points.reduce(function (prevMax, currentPoint) {
+                return (currentPoint.paybackYears > prevMax) ? currentPoint.paybackYears : prevMax;
+            }, 0);
         }
         
         let normalizedPoints = points.map((point, i) => {
             return {
                 ...point,
-                normalizedPaybackYears: 5 * point.paybackYears / maximalPaybackYears
+                normalizedPaybackYears: 15 * (1 - (point.paybackYears / maximalPaybackYears))
             };
         });
 
