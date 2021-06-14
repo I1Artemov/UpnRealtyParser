@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import { getAllPoints } from "./paybackMapActions.jsx";
+import { getAllPoints, setPaybackLimit } from "./paybackMapActions.jsx";
 import { Divider, Spin, InputNumber, Button } from 'antd';
 
 import HeatMapFunctional from './heatMapPayback.jsx';
@@ -11,6 +11,10 @@ import 'antd/dist/antd.css';
 class PaybackMap extends React.Component {
     componentDidMount() {
         this.props.getAllPoints();
+    }
+
+    applyFilters() {
+        this.props.getAllPoints(this.props.paybackLimit);
     }
 
     render() {
@@ -46,9 +50,9 @@ class PaybackMap extends React.Component {
                     <div style={{ marginTop: '8px' }}>
                         <div id="heat-legend-color-gradient"></div>
                         <div style={{ display: 'inline-block', marginRight: '6px'}}>Отображать с окупаемостью до </div>
-                        <InputNumber style={{ display: 'inline-block', marginRight: '6px' }} />
+                        <InputNumber onChange={this.props.setPaybackLimit.bind(this)} value={this.props.paybackLimit} min={1} max={80} style={{ display: 'inline-block', marginRight: '6px' }} />
                         <div style={{ display: 'inline-block'}}>лет</div>
-                        <Button type="primary" style={{ display: 'inline-block', marginLeft: '16px'}}>Применить</Button>
+                        <Button onClick={this.applyFilters.bind(this)} type="primary" style={{ display: 'inline-block', marginLeft: '16px'}}>Применить</Button>
                     </div>
                     <div>
                         <div id="heat-legend-minimal-value">10 лет</div>
@@ -70,13 +74,15 @@ let mapStateToProps = (state) => {
     return {
         points: state.paybackMapReducer.points,
         error: state.paybackMapReducer.error,
-        isLoading: state.paybackMapReducer.isLoading
+        isLoading: state.paybackMapReducer.isLoading,
+        paybackLimit: state.paybackMapReducer.paybackLimit
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllPoints: () => dispatch(getAllPoints())
+        getAllPoints: (paybackLimit) => dispatch(getAllPoints(paybackLimit)),
+        setPaybackLimit: (ev) => dispatch(setPaybackLimit(ev))
     };
 };
 
