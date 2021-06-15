@@ -319,9 +319,12 @@ namespace UpnRealtyParser.Business.Helpers
 
         private bool isFlatAlreadyInDbAndFilled(int pageLinkId, bool isRentFlats)
         {
-            N1FlatBase foundFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
-            if(foundFlat == null)
+            N1FlatBase foundFlat = null;
+            if(!isRentFlats)
+                foundFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
+            else
                 foundFlat = _rentFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == pageLinkId);
+
             if (foundFlat == null)
                 return true;
 
