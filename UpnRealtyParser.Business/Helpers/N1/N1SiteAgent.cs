@@ -222,7 +222,7 @@ namespace UpnRealtyParser.Business.Helpers
                     {
                         DistanceCalculator distanceCalc = new DistanceCalculator(_dbContext);
                         distanceCalc.FindClosestSubwayForSingleHouse(flat.ConnectedHouseForAddition);
-                        isHouseCreatedSuccessfully = updateOrAddHouse(flat.ConnectedHouseForAddition, false);
+                        isHouseCreatedSuccessfully = updateOrAddHouse(flat.ConnectedHouseForAddition, isRentFlats, false);
                     }
                     if (!isHouseCreatedSuccessfully)
                     {
@@ -349,13 +349,22 @@ namespace UpnRealtyParser.Business.Helpers
         /// Если нет, то добавляет в БД с сохранением. Если да, то объекту присваивает Id существующего дома.
         /// Если существующий дом еще не до конца заполнен, то заполняет его данными из нового объекта
         /// </summary>
-        private bool updateOrAddHouse(N1HouseInfo house, bool isFillingFromApartPage, PageLink existingApartmentLink = null)
+        private bool updateOrAddHouse(N1HouseInfo house, bool isFillingFromApartPage, bool isRent, PageLink existingApartmentLink = null)
         {
             // Сначала пытаемся найти дом для дозаполнения по ID, но если он неизвестен, то проверяем адрес
             int existingApartmentLinkId = existingApartmentLink == null ? -1 : existingApartmentLink.Id;
-            N1Flat existingFlat = _sellFlatRepo.GetAllWithoutTracking()
-                .FirstOrDefault(x => x.PageLinkId == existingApartmentLinkId);
-            int existingHouseId = existingFlat == null ? -1 : existingFlat.N1HouseInfoId.GetValueOrDefault(-1);
+            int existingHouseId;
+            if (!isRent)
+            {
+                N1Flat existingFlat = _sellFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == existingApartmentLinkId);
+                existingHouseId = existingFlat == null ? -1 : existingFlat.N1HouseInfoId.GetValueOrDefault(-1);
+            }
+            else
+            {
+                N1RentFlat existingFlat = _rentFlatRepo.GetAllWithoutTracking().FirstOrDefault(x => x.PageLinkId == existingApartmentLinkId);
+                existingHouseId = existingFlat == null ? -1 : existingFlat.N1HouseInfoId.GetValueOrDefault(-1);
+            }
+            
             N1HouseInfo existingHouse = _houseRepo.GetAll()
                 .FirstOrDefault(x => x.Id == existingHouseId);
 
@@ -512,7 +521,7 @@ namespace UpnRealtyParser.Business.Helpers
             {
                 DistanceCalculator distanceCalc = new DistanceCalculator(_dbContext);
                 distanceCalc.FindClosestSubwayForSingleHouse(house);
-                isHouseCreatedSuccessfully = updateOrAddHouse(house, true, apartmentLink);
+                isHouseCreatedSuccessfully = updateOrAddHouse(house, true, isRentFlats, apartmentLink);
             }
             if (!isHouseCreatedSuccessfully)
             {
@@ -527,22 +536,11 @@ namespace UpnRealtyParser.Business.Helpers
 
             // Сбор сведений о квартире
             N1ApartmentParser apartmentParser = new N1ApartmentParser();
-            int flatId;
-            // TODO: Rent flats
-            /*if (isRentFlats)
-            {
-                UpnRentFlat upnRentFlat = apartmentParser.GetUpnRentFlatFromPageText(fieldValueElements);
-                updateOrAddRentFlat(upnRentFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1));
-                flatId = upnRentFlat.Id.GetValueOrDefault(0);
-            }
-            else
-            {*/
-                N1FlatBase n1SellFlat = apartmentParser.GetN1FlatFromPageText(apartmentPageHtml);
-                updateOrAddAnyFlat(n1SellFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1), isRentFlats);
-                flatId = n1SellFlat.Id.GetValueOrDefault(0);
-            //}
 
-            // TODO: Сбор ссылок на фотографии квартиры
+            N1FlatBase n1SellFlat = apartmentParser.GetN1FlatFromPageText(apartmentPageHtml);
+            updateOrAddAnyFlat(n1SellFlat, house.Id.GetValueOrDefault(1), apartmentLink.Id, agency.Id.GetValueOrDefault(1), isRentFlats);
+            int flatId = n1SellFlat.Id.GetValueOrDefault(0);
+
             List<string> photoHrefs = apartmentParser.GetPhotoHrefsFromPage(apartmentPageHtml);
             updateOrAddPhotoHrefs(photoHrefs, flatId, isRentFlats);
         }
