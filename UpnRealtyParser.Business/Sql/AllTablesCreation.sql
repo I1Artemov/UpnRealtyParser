@@ -480,3 +480,9 @@ ALTER TABLE [PaybackPeriodPoint] ADD [HouseAddress] nvarchar(512);
 
 UPDATE [PaybackPeriodPoint] SET [HouseAddress] = 
 	(SELECT TOP 1 [Address] FROM [UpnHouseInfo] WHERE [Id] = [UpnHouseId]);
+
+--16.06.2021 Чистка имен агентов N1 от разметки
+--update N1Agency set [AgentName] = REPLACE([AgentName], '<span class="ui-kit-link__inner" _v-689e5c11="">', '');
+--update N1Agency set [AgentName] = REPLACE([AgentName], '</span>', '');
+--update N1Agency set [AgentName] = LTRIM([AgentName]);
+--update N1Agency set [AgentName] = RTRIM([AgentName]);

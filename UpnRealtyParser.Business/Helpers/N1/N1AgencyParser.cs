@@ -29,7 +29,7 @@ namespace UpnRealtyParser.Business.Helpers
             if (string.IsNullOrEmpty(agencyName))
                 return;
 
-            agency.Name = agencyName;
+            agency.Name = agencyName.Trim();
         }
 
         private void fillAgentName(N1Agency agency, IDocument pageHtmlDoc)
@@ -40,6 +40,10 @@ namespace UpnRealtyParser.Business.Helpers
 
             if (string.IsNullOrEmpty(agentName))
                 return;
+
+            agentName = agentName.Replace("<span class=\"ui-kit-link__inner\" _v-689e5c11=\"\">", "");
+            agentName = agentName.Replace("</span>", "");
+            agentName = agentName.Trim();
 
             agency.AgentName = agentName;
 
