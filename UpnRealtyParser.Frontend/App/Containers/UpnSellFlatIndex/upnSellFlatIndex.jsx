@@ -74,15 +74,15 @@ class UpnSellFlatIndex extends React.Component {
                     <div style={{ marginTop: "6px" }}>
                         <span>Ближайшая станция</span>
                         <Select onChange={this.props.setClosestSubwayStationId.bind(this)} style={{ width: 229, marginLeft: 9, marginRight: 28 }} placeholder="Выберите станцию">
-                            <Option value="1">Проспект космонавтов</Option>
-                            <Option value="2">Уралмаш</Option>
-                            <Option value="3">Машиностроителей</Option>
-                            <Option value="4">Уральская</Option>
-                            <Option value="5">Динамо</Option>
-                            <Option value="6">Площадь 1905 года</Option>
-                            <Option value="7">Геологическая</Option>
-                            <Option value="8">Чкаловская</Option>
-                            <Option value="9">Ботаническая</Option>
+                            <Select.Option value="1">Проспект космонавтов</Select.Option>
+                            <Select.Option value="2">Уралмаш</Select.Option>
+                            <Select.Option value="3">Машиностроителей</Select.Option>
+                            <Select.Option value="4">Уральская</Select.Option>
+                            <Select.Option value="5">Динамо</Select.Option>
+                            <Select.Option value="6">Площадь 1905 года</Select.Option>
+                            <Select.Option value="7">Геологическая</Select.Option>
+                            <Select.Option value="8">Чкаловская</Select.Option>
+                            <Select.Option value="9">Ботаническая</Select.Option>
                         </Select>
 
                         <span>Расстояние до метро, м</span>
