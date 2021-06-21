@@ -455,7 +455,7 @@ namespace UpnRealtyParser.Business.Helpers
             else
             {
                 N1Flat sellFlat = getSellFlatFromBase(anyFlat);
-                _sellFlatRepo.Add(getSellFlatFromBase(anyFlat));
+                _sellFlatRepo.Add(sellFlat);
                 _sellFlatRepo.Save();
                 flatIdFromDb = sellFlat.Id;
             }
