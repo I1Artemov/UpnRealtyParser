@@ -11,6 +11,7 @@ import 'antd/dist/antd.css';
 class PaybackMap extends React.Component {
     componentDidMount() {
         this.props.getAllPoints();
+        document.title = "Ural Realty Parser - Карта окупаемости";
     }
 
     applyFilters() {

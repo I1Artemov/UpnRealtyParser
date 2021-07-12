@@ -11,7 +11,7 @@ class LogEntryIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingLogEntries();
         this.props.getAllLogEntries(new Object());
-        // todo: bind
+        document.title = "Ural Realty Parser - Лог";
     }
 
     handleTableChange(pagination, filters, sorter) {

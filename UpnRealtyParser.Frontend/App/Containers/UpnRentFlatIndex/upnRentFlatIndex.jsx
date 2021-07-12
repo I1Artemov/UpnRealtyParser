@@ -12,7 +12,7 @@ class UpnRentFlatIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingFlats();
         this.props.getAllFlats(new Object());
-        // todo: bind
+        document.title = "Ural Realty Parser - Квартиры UPN в аренду";
     }
 
     handleTableChange(pagination, filters, sorter) {

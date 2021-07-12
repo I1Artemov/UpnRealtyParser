@@ -11,6 +11,7 @@ class UpnAgencyIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingAgencies();
         this.props.getAllAgencies(new Object());
+        document.title = "Ural Realty Parser - Агентства";
     }
 
     handleTableChange(pagination, filters, sorter) {

@@ -28,6 +28,21 @@ class AnyFlatRead extends React.Component {
         this.props.startReceivingFlat();
         this.props.getFlat(id);
         returnToFlatsPage = returnToFlatsPage.bind(this);
+
+        document.title = this.getPageTitle(id, this.props.siteName, this.props.isRent);
+    }
+
+    /** Формирует текст заголовка вкладки в браузере */
+    getPageTitle(id, siteName, isRent) {
+        let pageTitle = "Ural Realty Parser - Квартира " + siteName;
+        pageTitle = pageTitle + " №" + id;
+
+        if (isRent)
+            pageTitle = pageTitle + " в аренду";
+        else
+            pageTitle = pageTitle + " на продажу";
+
+        return pageTitle;
     }
 
     render() {

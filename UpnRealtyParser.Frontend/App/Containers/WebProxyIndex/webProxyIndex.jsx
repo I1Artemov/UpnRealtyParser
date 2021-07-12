@@ -11,7 +11,7 @@ class WebProxyIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingProxies();
         this.props.getAllProxies(new Object());
-        // todo: bind
+        document.title = "Ural Realty Parser - Прокси";
     }
 
     handleTableChange(pagination, filters, sorter) {

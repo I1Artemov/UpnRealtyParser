@@ -42,7 +42,7 @@ export default class App extends React.Component {
                                         {/*<Route path="/n1rentflats" component={N1RentFlatIndex} />*/}
                                         <Route exact path="/sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="upn" {...props} />} />
                                         <Route exact path="/n1sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="n1" {...props} />} />
-                                        <Route exact path="/rentflat/:id" component={UpnRentFlatRead} />
+                                        <Route exact path="/rentflat/:id" render={(props) => <UpnRentFlatRead siteName="upn" {...props} />} />
                                         <Route exact path="/upnhouse/:id" render={(props) => <AnyHouseRead siteName="upn" {...props} />} />
                                         <Route exact path="/n1house/:id" render={(props) => <AnyHouseRead siteName="n1" {...props} />} />
                                         <Route exact path="/paybackmap" component={PaybackMap} />

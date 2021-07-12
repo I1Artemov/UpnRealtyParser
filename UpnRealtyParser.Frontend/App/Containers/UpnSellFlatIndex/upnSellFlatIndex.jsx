@@ -28,7 +28,7 @@ class UpnSellFlatIndex extends React.Component {
             pageSIze: this.props.savedGridPageSize
         };
         this.getAllFlatsWithParametersFromProps(pagingInfo);
-        // todo: bind
+        document.title = "Ural Realty Parser - Квартиры UPN в продажу";
     }
 
     handleTableChange(pagination, filters, sorter) {

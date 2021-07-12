@@ -24,18 +24,28 @@ class AnyHouseRead extends React.Component {
     /** Нужно, т.к. иначе состояние не обновится после перехода по ссылке на похожий дом */
     componentDidUpdate(prevProps) {
         if (this.props.match.params.id !== prevProps.match.params.id) {
-            const id = this.props.match.params.id;
-            this.props.getHouse(id);
-            returnToHousesPage = returnToHousesPage.bind(this);
-            this.props.getStatistics(id);
+            this.loadComponentDataFromServer();
         }
     }
 
     componentDidMount() {
+        this.loadComponentDataFromServer();
+    }
+
+    loadComponentDataFromServer() {
         const id = this.props.match.params.id;
         this.props.getHouse(id);
         returnToHousesPage = returnToHousesPage.bind(this);
         this.props.getStatistics(id);
+        document.title = this.getPageTitle(id, this.props.siteName);
+    }
+
+    /** Формирует текст заголовка вкладки в браузере */
+    getPageTitle(id, siteName) {
+        let pageTitle = "Ural Realty Parser - Дом ";
+        pageTitle = pageTitle + siteName;
+        pageTitle = pageTitle + " №" + id;
+        return pageTitle;
     }
 
     render() {

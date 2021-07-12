@@ -19,6 +19,7 @@ class UpnHouseIndex extends React.Component {
             pageSIze: 10
         };
         this.getAllHousesWithParametersFromProps(pagingInfo);
+        document.title = "Ural Realty Parser - Дома";
     }
 
     handleTableChange(pagination, filters, sorter) {
