@@ -21,6 +21,16 @@ function returnToHousesPage() {
 }
 
 class AnyHouseRead extends React.Component {
+    /** Нужно, т.к. иначе состояние не обновится после перехода по ссылке на похожий дом */
+    componentDidUpdate(prevProps) {
+        if (this.props.match.params.id !== prevProps.match.params.id) {
+            const id = this.props.match.params.id;
+            this.props.getHouse(id);
+            returnToHousesPage = returnToHousesPage.bind(this);
+            this.props.getStatistics(id);
+        }
+    }
+
     componentDidMount() {
         const id = this.props.match.params.id;
         this.props.getHouse(id);

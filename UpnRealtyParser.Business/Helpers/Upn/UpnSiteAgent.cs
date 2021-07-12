@@ -87,9 +87,10 @@ namespace UpnRealtyParser.Business.Helpers
             int totalTablePages = linksCollector.GetMaxPagesInTable(totalApartmentsAmount.GetValueOrDefault(0));
             string pageUrlTemplate = linksCollector.GetTablePageSwitchLinkTemplate(firstTablePageHtml, isRentFlats);
 
-            if(totalApartmentsAmount.GetValueOrDefault(0) <= 0 || totalTablePages <= 0 || string.IsNullOrEmpty(pageUrlTemplate))
+            if (totalApartmentsAmount.GetValueOrDefault(0) <= 0 || totalTablePages <= 0 || string.IsNullOrEmpty(pageUrlTemplate))
             {
-                _writeToLogDelegate?.Invoke("Ошибка: не удалось обработать первую страницу сайта" + rentLogMessageAddition);
+                _writeToLogDelegate?.Invoke("Ошибка: не удалось обработать первую страницу сайта" + rentLogMessageAddition +
+                    ", aparts = " + totalApartmentsAmount + ", pages: " + totalTablePages + ", urlTemplate = " + pageUrlTemplate);
                 _stateLogger.LogFirstPageLoadingFailure("Не удалось обработать страницу" + rentLogMessageAddition);
                 return;
             }
@@ -105,7 +106,8 @@ namespace UpnRealtyParser.Business.Helpers
                 string currentTablePageUrl = string.Format(pageUrlTemplate, currentPageNumber);
                 string currentTablePageHtml = downloadStringWithHttpRequest(currentTablePageUrl, "windows-1251").Result;
 
-                if (string.IsNullOrEmpty(currentTablePageHtml)) {
+                if (string.IsNullOrEmpty(currentTablePageHtml))
+                {
                     _stateLogger.LogLinksPageLoadingFailure(currentPageNumber, isRentFlats);
                     continue;
                 }
@@ -113,7 +115,7 @@ namespace UpnRealtyParser.Business.Helpers
                 List<string> currentTablePageHrefs = linksCollector.GetLinksFromSinglePage(currentTablePageHtml, isRentFlats);
                 insertHrefsIntoDb(currentTablePageHrefs, Const.SiteNameUpn, currentPageNumber, isRentFlats);
 
-                if(_requestDelayInMs >= 0)
+                if (_requestDelayInMs >= 0)
                     Thread.Sleep(_requestDelayInMs);
 
                 _processedObjectsCount++;

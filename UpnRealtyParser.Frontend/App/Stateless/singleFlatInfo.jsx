@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { Link } from 'react-router-dom';
 import { Row, Col, Descriptions } from 'antd';
 
 class SingleFlatInfo extends React.Component {
@@ -16,7 +17,7 @@ class SingleFlatInfo extends React.Component {
         return (
             <Descriptions bordered column={3}>
                 <Descriptions.Item label="Адрес" span={2}>
-                    <a href={housePageUrl}>{flatData.houseAddress}</a>
+                    <Link to={housePageUrl}>{flatData.houseAddress}</Link>
                 </Descriptions.Item>
                 <Descriptions.Item label="Цена">{flatData.price} руб.</Descriptions.Item>
                 <Descriptions.Item label="Этаж">{flatData.floorSummary}</Descriptions.Item>

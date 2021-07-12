@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { Link } from 'react-router-dom';
 import { Descriptions } from 'antd';
 
 class SingleHouseInfo extends React.Component {
@@ -29,7 +30,7 @@ class SingleHouseInfo extends React.Component {
                     {
                         similarHouseUrl &&
                         <Descriptions.Item label={otherSiteName} span={3}>
-                            <a href={similarHouseUrl}>{similarHouseUrl}</a>
+                            <Link to={similarHouseUrl}>{similarHouseUrl}</Link>
                         </Descriptions.Item>
                     }
                     {
