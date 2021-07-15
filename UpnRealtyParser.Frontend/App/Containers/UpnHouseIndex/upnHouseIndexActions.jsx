@@ -70,7 +70,7 @@ export function clearSearchParameters() {
     };
 }
 
-export function getAllHouses(pagination, minBuildYear, isShowUpn, isShowN1, addressPart) {
+export function getAllHouses(pagination, sorting, minBuildYear, isShowUpn, isShowN1, addressPart) {
     let targetPage = !pagination.current ? 1 : pagination.current;
     let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
 
@@ -80,6 +80,10 @@ export function getAllHouses(pagination, minBuildYear, isShowUpn, isShowN1, addr
         if (isShowUpn !== null && isShowUpn !== undefined) queryTrailer += '&isShowUpn=' + isShowUpn;
         if (isShowN1 !== null && isShowN1 !== undefined) queryTrailer += '&isShowN1=' + isShowN1;
         if (addressPart !== null && addressPart !== undefined) queryTrailer += '&addressPart=' + addressPart;
+        if (sorting !== null && sorting !== undefined) {
+            if (sorting.field !== null && sorting.field !== undefined) queryTrailer += '&sortField=' + sorting.field;
+            if (sorting.order !== null && sorting.order !== undefined) queryTrailer += '&sortOrder=' + sorting.order;
+        }
 
         fetch(Href_HouseController_GetAllFlats + queryTrailer)
             .then((response) => {

@@ -48,25 +48,17 @@ namespace UpnRealtyParser.Frontend.Controllers
         [Route("getall")]
         [HttpGet]
         public IActionResult GetAllHouses(int? page, int? pageSize, int? minBuildYear, bool? isShowUpn,
-            bool? isShowN1, string addressPart)
+            bool? isShowN1, string addressPart, string sortField, string sortOrder)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(20);
 
-            IQueryable<HouseSitelessVM> allHouses = _unitedHouseRepo.GetAllWithoutTracking();
-            if (minBuildYear.HasValue)
-                allHouses = allHouses.Where(x => x.BuildYear >= minBuildYear.Value);
-            if (!isShowUpn.GetValueOrDefault(true))
-                allHouses = allHouses.Where(x => x.SourceSite != Const.SiteNameUpn);
-            if (!isShowN1.GetValueOrDefault(true))
-                allHouses = allHouses.Where(x => x.SourceSite != Const.SiteNameN1);
-            if (!string.IsNullOrEmpty(addressPart))
-                allHouses = allHouses.Where(x => x.Address.Contains(addressPart));
-
+            BaseHouseHelper houseHelper = new BaseHouseHelper(_unitedHouseRepo);
+            IQueryable<HouseSitelessVM> allHouses = houseHelper
+                .GetFilteredAndOrderedHouses(minBuildYear, isShowUpn, isShowN1, addressPart, sortField, sortOrder);
             int totalCount = allHouses.Count();
 
             List<HouseSitelessVM> filteredHouses = allHouses
-                .OrderByDescending(x => x.SimilarIdentity)
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 

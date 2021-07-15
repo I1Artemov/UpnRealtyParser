@@ -23,13 +23,13 @@ class UpnHouseIndex extends React.Component {
     }
 
     handleTableChange(pagination, filters, sorter) {
-        this.getAllHousesWithParametersFromProps(pagination);
+        this.getAllHousesWithParametersFromProps(pagination, sorter);
     }
 
-    getAllHousesWithParametersFromProps(pagination) {
+    getAllHousesWithParametersFromProps(pagination, sorter) {
         this.props.startReceivingHouses();
 
-        this.props.getAllHouses(pagination, this.props.minBuildYear, this.props.isShowUpn,
+        this.props.getAllHouses(pagination, sorter, this.props.minBuildYear, this.props.isShowUpn,
             this.props.isShowN1, this.props.addressPart);
     }
 
@@ -65,6 +65,7 @@ class UpnHouseIndex extends React.Component {
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{ total: totalHousesCount }}
                 loading={isHousesLoading}
+                rowKey={obj => obj.id + '_' + obj.sourceSite}
             />
             </div>
         );
@@ -86,8 +87,8 @@ let mapStateToProps = (state) => {
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllHouses: (pagination, minBuildYear, isShowUpn, isShowN1, addressPart) =>
-            dispatch(getAllHouses(pagination, minBuildYear, isShowUpn, isShowN1, addressPart)),
+        getAllHouses: (pagination, sorter, minBuildYear, isShowUpn, isShowN1, addressPart) =>
+            dispatch(getAllHouses(pagination, sorter, minBuildYear, isShowUpn, isShowN1, addressPart)),
         startReceivingHouses: () => dispatch(startReceivingHouses()),
         setMinBuildYear: (ev) => dispatch(setMinBuildYear(ev)),
         setShowUpn: (ev) => dispatch(setIsShowUpn(ev)),

@@ -14,7 +14,8 @@ export const HOUSES_TABLE_COLUMNS = [
     {
         title: '№',
         dataIndex: 'id',
-        key: 'id'
+        key: 'id',
+        sorter: true
     },
     {
         title: 'Сайт',
@@ -29,7 +30,8 @@ export const HOUSES_TABLE_COLUMNS = [
     {
         title: 'Создан',
         dataIndex: 'creationDatePrintable',
-        key: 'creationDatePrintable'
+        key: 'creationDatePrintable',
+        sorter: true
     },
     {
         title: 'Адрес',
@@ -51,7 +53,8 @@ export const HOUSES_TABLE_COLUMNS = [
         title: 'Год постройки',
         dataIndex: 'buildYear',
         key: 'buildYear',
-        align: 'center'
+        align: 'center',
+        sorter: true
     },
     {
         title: 'Материал',
@@ -83,6 +86,7 @@ export const HOUSES_TABLE_COLUMNS = [
     {
         title: 'До метро',
         dataIndex: 'closestSubwayRangeInfo',
-        key: 'closestSubwayRangeInfo'
+        key: 'closestSubwayRangeInfo',
+        sorter: true
     }
 ];
