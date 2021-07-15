@@ -127,7 +127,7 @@ export function clearSearchParameters() {
     };
 }
 
-export function getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor,
+export function getAllFlats(pagination, sorting, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor,
     minBuildYear, maxSubwayDistance, closestSubwayStationId, addressPart) {
 
     let targetPage = !pagination.current ? 1 : pagination.current;
@@ -145,6 +145,10 @@ export function getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isEx
         if (maxSubwayDistance !== null && maxSubwayDistance !== undefined) queryTrailer += '&maxSubwayDistance=' + maxSubwayDistance;
         if (closestSubwayStationId !== null && closestSubwayStationId !== undefined) queryTrailer += '&closestSubwayStationId=' + closestSubwayStationId;
         if (addressPart !== null && addressPart !== undefined) queryTrailer += '&addressPart=' + addressPart;
+        if (sorting !== null && sorting !== undefined) {
+            if (sorting.field !== null && sorting.field !== undefined) queryTrailer += '&sortField=' + sorting.field;
+            if (sorting.order !== null && sorting.order !== undefined) queryTrailer += '&sortOrder=' + sorting.order;
+        }
 
         fetch(Href_UpnSellFlatController_GetAllFlats + queryTrailer)
             .then((response) => {

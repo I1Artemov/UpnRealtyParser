@@ -21,7 +21,8 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     {
         title: '№',
         dataIndex: 'id',
-        key: 'id'
+        key: 'id',
+        sorter: true
     },
     {
         title: 'Фото',
@@ -36,7 +37,8 @@ export const SELL_FLATS_TABLE_COLUMNS = [
     {
         title: 'Создан/проверен',
         dataIndex: 'createdCheckedDatesSummary',
-        key: 'createdCheckedDatesSummary'
+        key: 'createdCheckedDatesSummary',
+        sorter: true
     },
     {
         title: 'Тип',
@@ -54,7 +56,8 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         title: 'Площадь',
         dataIndex: 'spaceSum',
         key: 'spaceSum',
-        align: 'center'
+        align: 'center',
+        sorter: true
     },
     {
         title: 'Этаж',
@@ -82,17 +85,20 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         title: 'Построена',
         dataIndex: 'houseBuildYear',
         key: 'houseBuildYear',
-        align: 'center'
+        align: 'center',
+        sorter: true
     },
     {
         title: 'До метро',
         dataIndex: 'subwaySummary',
-        key: 'subwaySummary'
+        key: 'subwaySummary',
+        sorter: true
     },
     {
         title: 'Цена',
         dataIndex: 'price',
-        key: 'price'
+        key: 'price',
+        sorter: true
     },
     {
         title: 'Описание',

@@ -42,39 +42,20 @@ namespace UpnRealtyParser.Frontend.Controllers
         [HttpGet]
         public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart)
+            int? closestSubwayStationId, string addressPart, string sortField, string sortOrder)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
-            IQueryable<UpnFlatVmForTable> allSellFlats = _upnFlatVmRepo.GetAllWithoutTracking();
-            
-            if (!isShowArchived.GetValueOrDefault(true))
-                allSellFlats = allSellFlats.Where(x => x.IsArchived.GetValueOrDefault(0) == 0);
-            if (isExcludeFirstFloor.GetValueOrDefault(false))
-                allSellFlats = allSellFlats.Where(x => x.FlatFloor > 1);
-            if (isExcludeLastFloor.GetValueOrDefault(false))
-                allSellFlats = allSellFlats.Where(x => x.FlatFloor < x.HouseMaxFloor);
-            if (minPrice.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.Price >= minPrice.Value);
-            if (maxPrice.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.Price <= maxPrice.Value);
-            if (minBuildYear.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.HouseBuildYear >= minBuildYear.Value);
-            if (maxSubwayDistance.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayStationRange <= maxSubwayDistance.Value);
-            if (closestSubwayStationId.HasValue)
-            {
-                SubwayStation foundStation = _subwayStationRepo.GetAllWithoutTracking().FirstOrDefault(x => x.Id == closestSubwayStationId.Value);
-                string stationName = foundStation?.Name;
-                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayName == stationName);
-            }
-            if(!string.IsNullOrEmpty(addressPart))
-                allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
+            UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
+                _pageLinkRepo, _upnPhotoRepo, _upnFlatVmRepo);
+            IQueryable<UpnFlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedUpnSellFlats(isShowArchived, isExcludeFirstFloor,
+                isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
+                addressPart, sortField, sortOrder);
+
             int totalCount = allSellFlats.Count();
 
             List<UpnFlatVmForTable> filteredFlats = allSellFlats
-                .OrderBy(x => x.Id)
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 

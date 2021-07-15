@@ -14,11 +14,11 @@ namespace UpnRealtyParser.Business.Helpers
         where TAgency : AgencyCore
         where TFlatPhoto : FlatPhotoBase
     {
-        private readonly EFGenericRepo<THouse, RealtyParserContext> _houseRepo;
-        private readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
-        private readonly EFGenericRepo<TAgency, RealtyParserContext> _agencyRepo;
-        private readonly EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
-        private readonly EFGenericRepo<TFlatPhoto, RealtyParserContext> _photoRepo;
+        protected readonly EFGenericRepo<THouse, RealtyParserContext> _houseRepo;
+        protected readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
+        protected readonly EFGenericRepo<TAgency, RealtyParserContext> _agencyRepo;
+        protected readonly EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
+        protected readonly EFGenericRepo<TFlatPhoto, RealtyParserContext> _photoRepo;
 
         public BaseApartementHelper(EFGenericRepo<THouse, RealtyParserContext> houseRepo,
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,

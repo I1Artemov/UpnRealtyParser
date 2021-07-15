@@ -4,6 +4,8 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import App from './Containers/app.jsx';
+import { ConfigProvider } from 'antd';
+import ruRU from 'antd/lib/locale/ru_RU';
 import upnSellFlatIndexReducer from './Containers/UpnSellFlatIndex/upnSellFlatIndexReducer.jsx';
 import upnRentFlatIndexReducer from './Containers/UpnRentFlatIndex/upnRentFlatIndexReducer.jsx';
 import n1SellFlatIndexReducer from './Containers/N1SellFlatIndex/n1SellFlatIndexReducer.jsx';
@@ -42,8 +44,10 @@ function configureStore(initialState) {
 const store = configureStore();
 
 render(
-    <Provider store={store}>
-        <App />
-    </Provider>,
+    <ConfigProvider locale={ruRU}>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </ConfigProvider>,
     document.getElementById('content')
 );

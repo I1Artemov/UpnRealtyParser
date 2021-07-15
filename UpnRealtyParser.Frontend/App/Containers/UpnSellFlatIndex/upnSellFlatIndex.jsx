@@ -14,10 +14,10 @@ import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
 
 class UpnSellFlatIndex extends React.Component {
-    getAllFlatsWithParametersFromProps(pagination) {
+    getAllFlatsWithParametersFromProps(pagination, sorter) {
         this.props.startReceivingFlats();
 
-        this.props.getAllFlats(pagination, this.props.isShowArchived, this.props.minPrice, this.props.maxPrice,
+        this.props.getAllFlats(pagination, sorter, this.props.isShowArchived, this.props.minPrice, this.props.maxPrice,
             this.props.isExcludeFirstFloor, this.props.isExcludeLastFloor, this.props.minBuildYear,
             this.props.maxSubwayDistance, this.props.closestSubwayStationId, this.props.addressPart);
     }
@@ -33,7 +33,7 @@ class UpnSellFlatIndex extends React.Component {
 
     handleTableChange(pagination, filters, sorter) {
         this.props.savePagingParameters(pagination);
-        this.getAllFlatsWithParametersFromProps(pagination);
+        this.getAllFlatsWithParametersFromProps(pagination, sorter);
     }
 
     render() {
@@ -127,9 +127,9 @@ let mapStateToProps = (state) => {
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllFlats: (pagination, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
+        getAllFlats: (pagination, sorter, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
             maxSubwayDistance, closestSubwayStationId, addressPart) =>
-            dispatch(getAllFlats(pagination, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
+            dispatch(getAllFlats(pagination, sorter, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
                 maxSubwayDistance, closestSubwayStationId, addressPart)),
         startReceivingFlats: () => dispatch(startReceivingFlats()),
         setShowArchived: (ev) => dispatch(setShowArchived(ev)),
