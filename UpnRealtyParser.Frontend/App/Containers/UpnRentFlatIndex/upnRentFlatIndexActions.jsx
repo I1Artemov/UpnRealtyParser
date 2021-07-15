@@ -28,13 +28,16 @@ export function errorReceiveAllFlats(err) {
     };
 }
 
-export function getAllFlats(pagination) {
-
+export function getAllFlats(pagination, sorting) {
     let targetPage = !pagination.current ? 1 : pagination.current;
     let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
 
     return (dispatch) => {
         let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
+        if (sorting !== null && sorting !== undefined) {
+            if (sorting.field !== null && sorting.field !== undefined) queryTrailer += '&sortField=' + sorting.field;
+            if (sorting.order !== null && sorting.order !== undefined) queryTrailer += '&sortOrder=' + sorting.order;
+        }
 
         fetch(Href_UpnRentFlatController_GetAllFlats + queryTrailer)
             .then((response) => {

@@ -1,9 +1,9 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
+using UpnRealtyParser.Business.Interfaces;
 
 namespace UpnRealtyParser.Business.Models
 {
-    public class UpnFlatVmForTable : FlatTableVmBase
+    public class UpnFlatVmForTable : FlatTableVmBase, ISortableFlat
     {
         public DateTime? RemovalDate { get; set; }
         public double? SpaceSum { get; set; }

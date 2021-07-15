@@ -37,21 +37,22 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getall")]
         [HttpGet]
-        public IActionResult GetAllFlats(int? page, int? pageSize)
+        public IActionResult GetAllFlats(int? page, int? pageSize, string sortField, string sortOrder)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
-            IQueryable<UpnRentFlat> allSellFlats = _upnFlatRepo.GetAllWithoutTracking();
-            int totalCount = allSellFlats.Count();
-
-            List<UpnRentFlat> filteredFlats = allSellFlats
-                .OrderBy(x => x.Id)
-                .Skip((targetPage - 1) * targetPageSize)
-                .Take(targetPageSize).ToList();
+            IQueryable<UpnRentFlat> allRentFlats = _upnFlatRepo.GetAllWithoutTracking();
+            int totalCount = allRentFlats.Count();
 
             UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
                 _pageLinkRepo, _upnPhotoRepo);
+            allRentFlats = apartmentHelper.ApplySorting(allRentFlats, sortField, sortOrder);
+
+            List<UpnRentFlat> filteredFlats = allRentFlats
+                .Skip((targetPage - 1) * targetPageSize)
+                .Take(targetPageSize).ToList();
+
             apartmentHelper.FillRentApartmentsWithAdditionalInfo(filteredFlats);
 
             return Json(new { flatsList = filteredFlats, totalCount = totalCount });

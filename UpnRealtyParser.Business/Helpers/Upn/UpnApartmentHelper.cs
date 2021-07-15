@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UpnRealtyParser.Business.Contexts;
+using UpnRealtyParser.Business.Interfaces;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Repositories;
 
@@ -68,12 +69,16 @@ namespace UpnRealtyParser.Business.Helpers
             if (!string.IsNullOrEmpty(addressPart))
                 allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
 
-            allSellFlats = applySorting(allSellFlats, sortField, sortOrder);
+            allSellFlats = ApplySorting(allSellFlats, sortField, sortOrder);
 
             return allSellFlats;
         }
 
-        private IQueryable<UpnFlatVmForTable> applySorting(IQueryable<UpnFlatVmForTable> allSellFlats, string sortField, string sortOrder)
+        /// <summary>
+        /// Применяет сортировку к любой коллекции квартир, поддерживающих интерфейс ISortableFlat
+        /// </summary>
+        public IQueryable<T> ApplySorting<T>(IQueryable<T> allSellFlats, string sortField, string sortOrder)
+            where T : ISortableFlat
         {
             if(string.IsNullOrEmpty(sortField) || string.IsNullOrEmpty(sortOrder))
             {
