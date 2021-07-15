@@ -53,8 +53,8 @@ class AnyHouseRead extends React.Component {
         let houseData = this.props.houseInfo;
         let isLoading = this.props.isLoading;
         let errorMessage = this.props.error;
-        let centerLatitude = houseData.houseLatitude ? houseData.houseLatitude : 56.8519;
-        let centerLongitude = houseData.houseLongitude ? houseData.houseLongitude : 60.6122;
+        let centerLatitude = houseData.latitude ? houseData.latitude : 56.8519;
+        let centerLongitude = houseData.longitude ? houseData.longitude : 60.6122;
         let siteName = this.props.siteName;
         let siteNameSpanClass = siteName === "upn" ? "siteSourceUpn" : "siteSourceN1";
 
