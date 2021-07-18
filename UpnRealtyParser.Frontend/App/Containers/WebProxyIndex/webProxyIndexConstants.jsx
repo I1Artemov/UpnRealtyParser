@@ -6,12 +6,16 @@ export const PROXIES_TABLE_COLUMNS = [
     {
         title: '№',
         dataIndex: 'id',
-        key: 'id'
+        key: 'id',
+        align: 'center',
+        sorter: true
     },
     {
         title: 'Создан',
         dataIndex: 'creationDatePrintable',
-        key: 'creationDatePrintable'
+        key: 'creationDatePrintable',
+        align: 'center',
+        sorter: true
     },
     {
         title: 'IP-адрес',
@@ -26,21 +30,29 @@ export const PROXIES_TABLE_COLUMNS = [
 	{
         title: 'Успешные соед.',
         dataIndex: 'successAmount',
-        key: 'successAmount'
+        key: 'successAmount',
+        align: 'center',
+        sorter: true
     },
 	{
         title: 'Неуд. соед.',
         dataIndex: 'failureAmount',
-        key: 'failureAmount'
+        key: 'failureAmount',
+        align: 'center',
+        sorter: true
     },
 	{
         title: 'Последнее успеш. соед.',
         dataIndex: 'lastSuccessDateTime',
-        key: 'lastSuccessDateTime'
+        key: 'lastSuccessDateTime',
+        align: 'center',
+        sorter: true
     },
 	{
         title: 'Последнеяя попытка соед.',
         dataIndex: 'lastUseDateTime',
-        key: 'lastUseDateTime'
+        key: 'lastUseDateTime',
+        align: 'center',
+        sorter: true
     }
 ];

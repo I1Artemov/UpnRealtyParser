@@ -16,7 +16,7 @@ class WebProxyIndex extends React.Component {
 
     handleTableChange(pagination, filters, sorter) {
         this.props.startReceivingProxies();
-        this.props.getAllProxies(pagination);
+        this.props.getAllProxies(pagination, sorter);
     }
 
     render() {
@@ -53,7 +53,7 @@ let mapStateToProps = (state) => {
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllProxies: (pagination) => dispatch(getAllProxies(pagination)),
+        getAllProxies: (pagination, sorter) => dispatch(getAllProxies(pagination, sorter)),
         startReceivingProxies: () => dispatch(startReceivingProxies())
     };
 };
