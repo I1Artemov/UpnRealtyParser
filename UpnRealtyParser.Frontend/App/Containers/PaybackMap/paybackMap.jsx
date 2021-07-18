@@ -56,8 +56,8 @@ class PaybackMap extends React.Component {
                         <Button onClick={this.applyFilters.bind(this)} type="primary" style={{ display: 'inline-block', marginLeft: '16px'}}>Применить</Button>
                     </div>
                     <div>
-                        <div id="heat-legend-minimal-value">10 лет</div>
-                        <div id="heat-legend-maximal-value">20 лет</div>
+                        <div id="heat-legend-minimal-value">20 лет</div>
+                        <div id="heat-legend-maximal-value">10 лет</div>
                     </div>
                 </div>
             );
