@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UpnRealtyParser.Business.Contexts;
-using UpnRealtyParser.Business.Interfaces;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Repositories;
 
@@ -70,44 +69,6 @@ namespace UpnRealtyParser.Business.Helpers
                 allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
 
             allSellFlats = ApplySorting(allSellFlats, sortField, sortOrder);
-
-            return allSellFlats;
-        }
-
-        /// <summary>
-        /// Применяет сортировку к любой коллекции квартир, поддерживающих интерфейс ISortableFlat
-        /// </summary>
-        public IQueryable<T> ApplySorting<T>(IQueryable<T> allSellFlats, string sortField, string sortOrder)
-            where T : ISortableFlat
-        {
-            if(string.IsNullOrEmpty(sortField) || string.IsNullOrEmpty(sortOrder))
-            {
-                allSellFlats = allSellFlats.OrderBy(x => x.Id);
-                return allSellFlats;
-            }
-
-            if (sortField == "id" && sortOrder == "descend") allSellFlats = allSellFlats.OrderByDescending(x => x.Id);
-            else if (sortField == "id") allSellFlats = allSellFlats.OrderBy(x => x.Id);
-
-            if (sortField == "createdCheckedDatesSummary" && sortOrder == "descend") allSellFlats = allSellFlats.OrderByDescending(x => x.LastCheckDate);
-            else if (sortField == "createdCheckedDatesSummary") allSellFlats = allSellFlats.OrderBy(x => x.LastCheckDate);
-
-            if (sortField == "houseBuildYear" && sortOrder == "descend") allSellFlats =
-                    allSellFlats.Where(x => x.HouseBuildYear != null).OrderByDescending(x => x.HouseBuildYear);
-            else if (sortField == "houseBuildYear") allSellFlats = allSellFlats.Where(x => x.HouseBuildYear != null).OrderBy(x => x.HouseBuildYear);
-
-            if (sortField == "price" && sortOrder == "descend") allSellFlats =
-                    allSellFlats.Where(x => x.Price != null).OrderByDescending(x => x.Price);
-            else if (sortField == "price") allSellFlats = allSellFlats.Where(x => x.Price != null).OrderBy(x => x.Price);
-
-            if (sortField == "spaceSum" && sortOrder == "descend") allSellFlats =
-                    allSellFlats.Where(x => x.SpaceSum != null).OrderByDescending(x => x.SpaceSum);
-            else if (sortField == "spaceSum") allSellFlats = allSellFlats.Where(x => x.SpaceSum != null).OrderBy(x => x.SpaceSum);
-
-            if (sortField == "subwaySummary" && sortOrder == "descend") allSellFlats =
-                    allSellFlats.Where(x => x.ClosestSubwayStationRange != null).OrderByDescending(x => x.ClosestSubwayStationRange);
-            else if (sortField == "subwaySummary") allSellFlats =
-                    allSellFlats.Where(x => x.ClosestSubwayStationRange != null).OrderBy(x => x.ClosestSubwayStationRange);
 
             return allSellFlats;
         }

@@ -25,6 +25,12 @@ class UpnRentFlatIndex extends React.Component {
         let totalFlatsCount = this.props.totalFlatsCount;
         let isFlatsLoading = this.props.isFlatsLoading;
         let errorMessage = this.props.error;
+        // Убираем сортировку у колонок, относящихся к дому, т.к. пока нет дозаполнения информацией о домах
+        let editedColumns = SELL_FLATS_TABLE_COLUMNS.map((item) => {
+            if (item.key === "houseBuildYear" || item.key === "subwaySummary")
+                return { ...item, sorter: false }
+            return item;
+        });
 
         if (errorMessage !== undefined && errorMessage !== null && errorMessage !== "") {
             return (
@@ -42,7 +48,7 @@ class UpnRentFlatIndex extends React.Component {
                 </Breadcrumb>
                 <Table
                     dataSource={flatsData}
-                    columns={SELL_FLATS_TABLE_COLUMNS}
+                    columns={editedColumns}
                     onChange={this.handleTableChange.bind(this)}
                     pagination={{ total: totalFlatsCount }}
                     loading={isFlatsLoading}

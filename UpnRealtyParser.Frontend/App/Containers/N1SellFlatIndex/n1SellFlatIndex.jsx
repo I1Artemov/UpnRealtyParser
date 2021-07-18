@@ -16,7 +16,7 @@ class N1SellFlatIndex extends React.Component {
 
     handleTableChange(pagination, filters, sorter) {
         this.props.startReceivingFlats();
-        this.props.getAllFlats(pagination);
+        this.props.getAllFlats(pagination, sorter);
     }
 
     render() {
@@ -55,7 +55,7 @@ let mapStateToProps = (state) => {
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllFlats: (pagination) => dispatch(getAllFlats(pagination)),
+        getAllFlats: (pagination, sorter) => dispatch(getAllFlats(pagination, sorter)),
         startReceivingFlats: () => dispatch(startReceivingFlats())
     };
 };

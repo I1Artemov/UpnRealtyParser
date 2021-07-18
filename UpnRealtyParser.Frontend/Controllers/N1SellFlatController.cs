@@ -36,7 +36,7 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getall")]
         [HttpGet]
-        public IActionResult GetAllFlats(int? page, int? pageSize)
+        public IActionResult GetAllFlats(int? page, int? pageSize, string sortField, string sortOrder)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
@@ -44,12 +44,14 @@ namespace UpnRealtyParser.Frontend.Controllers
             IQueryable<N1Flat> allSellFlats = _n1FlatRepo.GetAllWithoutTracking();
             int totalCount = allSellFlats.Count();
 
+            N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
+                _pageLinkRepo, _n1PhotoRepo);
+            allSellFlats = apartmentHelper.ApplySorting(allSellFlats, sortField, sortOrder);
+
             List<N1Flat> filteredFlats = allSellFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 
-            N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
-                _pageLinkRepo, _n1PhotoRepo);
             apartmentHelper.FillSellApartmentsWithAdditionalInfo(filteredFlats);
 
             return Json(new { flatsList = filteredFlats, totalCount = totalCount });

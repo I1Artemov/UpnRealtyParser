@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using UpnRealtyParser.Business.Interfaces;
 
 namespace UpnRealtyParser.Business.Models
 {
-    public class N1Flat : N1FlatBase
+    public class N1Flat : N1FlatBase, ISortableFlat
     {
     }
 }
