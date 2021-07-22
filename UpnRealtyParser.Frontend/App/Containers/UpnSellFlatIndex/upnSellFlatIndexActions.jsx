@@ -6,6 +6,7 @@
 } from './upnSellFlatIndexConstants.jsx';
 
 import { Href_UpnSellFlatController_GetAllFlats } from "../../const.jsx";
+import { getQueryTrailerWithFilteringParameters } from '../Common/anyFlatIndexActions.jsx';
 import "isomorphic-fetch";
 
 export function startReceivingFlats() {
@@ -47,24 +48,7 @@ export function getAllFlats(pagination, sorting, filteringInfo) {
     return (dispatch) => {
         let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
 
-        if (filteringInfo.isShowArchived !== null && filteringInfo.isShowArchived !== undefined)
-            queryTrailer += '&isShowArchived=' + filteringInfo.isShowArchived;
-        if (filteringInfo.minPrice !== null && filteringInfo.minPrice !== undefined)
-            queryTrailer += '&minPrice=' + filteringInfo.minPrice;
-        if (filteringInfo.maxPrice !== null && filteringInfo.maxPrice !== undefined)
-            queryTrailer += '&maxPrice=' + filteringInfo.maxPrice;
-        if (filteringInfo.isExcludeFirstFloor !== null && filteringInfo.isExcludeFirstFloor !== undefined)
-            queryTrailer += '&isExcludeFirstFloor=' + filteringInfo.isExcludeFirstFloor;
-        if (filteringInfo.isExcludeLastFloor !== null && filteringInfo.isExcludeLastFloor !== undefined)
-            queryTrailer += '&isExcludeLastFloor=' + filteringInfo.isExcludeLastFloor;
-        if (filteringInfo.minBuildYear !== null && filteringInfo.minBuildYear !== undefined)
-            queryTrailer += '&minBuildYear=' + filteringInfo.minBuildYear;
-        if (filteringInfo.maxSubwayDistance !== null && filteringInfo.maxSubwayDistance !== undefined)
-            queryTrailer += '&maxSubwayDistance=' + filteringInfo.maxSubwayDistance;
-        if (filteringInfo.closestSubwayStationId !== null && filteringInfo.closestSubwayStationId !== undefined)
-            queryTrailer += '&closestSubwayStationId=' + filteringInfo.closestSubwayStationId;
-        if (filteringInfo.addressPart !== null && filteringInfo.addressPart !== undefined)
-            queryTrailer += '&addressPart=' + filteringInfo.addressPart;
+        queryTrailer = getQueryTrailerWithFilteringParameters(queryTrailer, filteringInfo);
 
         if (sorting !== null && sorting !== undefined) {
             if (sorting.field !== null && sorting.field !== undefined) queryTrailer += '&sortField=' + sorting.field;

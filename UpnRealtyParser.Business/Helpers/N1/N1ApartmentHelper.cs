@@ -10,7 +10,8 @@ namespace UpnRealtyParser.Business.Helpers
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<N1Agency, RealtyParserContext> agencyRepo,
             EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo,
-            EFGenericRepo<N1FlatPhoto, RealtyParserContext> photoRepo) : base(houseRepo, subwayStationRepo, agencyRepo, pageLinkRepo, photoRepo)
+            EFGenericRepo<N1FlatPhoto, RealtyParserContext> photoRepo) :
+            base(houseRepo, subwayStationRepo, agencyRepo, pageLinkRepo, photoRepo)
         {
         }
     }

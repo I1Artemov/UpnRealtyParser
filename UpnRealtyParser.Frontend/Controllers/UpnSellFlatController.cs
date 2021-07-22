@@ -48,10 +48,10 @@ namespace UpnRealtyParser.Frontend.Controllers
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
             UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
-                _pageLinkRepo, _upnPhotoRepo, _upnFlatVmRepo);
-            IQueryable<UpnFlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedUpnSellFlats(isShowArchived, isExcludeFirstFloor,
+                _pageLinkRepo, _upnPhotoRepo);
+            IQueryable<UpnFlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedSellFlats(isShowArchived, isExcludeFirstFloor,
                 isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
-                addressPart, sortField, sortOrder);
+                addressPart, sortField, sortOrder, _upnFlatVmRepo);
 
             int totalCount = allSellFlats.Count();
 

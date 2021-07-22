@@ -4,19 +4,20 @@ import { connect } from 'react-redux';
 import { getAllFlats, startReceivingFlats } from './n1SellFlatIndexActions.jsx';
 import { SELL_FLATS_TABLE_COLUMNS } from './n1SellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
+import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
 
 import 'antd/dist/antd.css';
 
 class N1SellFlatIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingFlats();
-        this.props.getAllFlats(new Object());
+        this.props.getAllFlats(new Object(), null, this.props.filteringInfo);
         document.title = "Ural Realty Parser - Квартиры N1";
     }
 
     handleTableChange(pagination, filters, sorter) {
         this.props.startReceivingFlats();
-        this.props.getAllFlats(pagination, sorter);
+        this.props.getAllFlats(pagination, sorter, this.props.filteringInfo);
     }
 
     render() {
@@ -31,13 +32,14 @@ class N1SellFlatIndex extends React.Component {
                 <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                 <Breadcrumb.Item>На продажу</Breadcrumb.Item>
             </Breadcrumb>
+            <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} />
             <Table
                 dataSource={flatsData}
                 columns={SELL_FLATS_TABLE_COLUMNS}
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{ total: totalFlatsCount }}
                 loading={isFlatsLoading}
-                rowClassName={(record, index) => (record.isArchived === true ? "archived-flat" : "active-flat")}
+                rowClassName={(record, index) => (record.isArchived === 1 ? "archived-flat" : "active-flat")}
             />
             </div>
         );
@@ -49,13 +51,14 @@ let mapStateToProps = (state) => {
         flatsInfo: state.n1SellFlatIndexReducer.flatsInfo,
         totalFlatsCount: state.n1SellFlatIndexReducer.totalFlatsCount,
         error: state.n1SellFlatIndexReducer.error,
-        isFlatsLoading: state.n1SellFlatIndexReducer.isFlatsLoading
+        isFlatsLoading: state.n1SellFlatIndexReducer.isFlatsLoading,
+        filteringInfo: state.flatSearchBarReducer.filteringInfo
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllFlats: (pagination, sorter) => dispatch(getAllFlats(pagination, sorter)),
+        getAllFlats: (pagination, sorter, filteringInfo) => dispatch(getAllFlats(pagination, sorter, filteringInfo)),
         startReceivingFlats: () => dispatch(startReceivingFlats())
     };
 };

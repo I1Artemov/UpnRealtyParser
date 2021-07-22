@@ -486,3 +486,42 @@ UPDATE [PaybackPeriodPoint] SET [HouseAddress] =
 --update N1Agency set [AgentName] = REPLACE([AgentName], '</span>', '');
 --update N1Agency set [AgentName] = LTRIM([AgentName]);
 --update N1Agency set [AgentName] = RTRIM([AgentName]);
+
+-- 22.07.2021 Вьшка для квартир N1 в связке с домами
+create view [vN1FlatAdditional] as
+((select
+	uf.[Id],
+	uf.[RemovalDate],
+	uf.[CreationDateTime],
+	uf.[LastCheckDate],
+	uf.[PlanningType],
+	uf.[RoomAmount],
+	uf.[SpaceSum],
+	uf.[SpaceLiving],
+	uf.[SpaceKitchen],
+	uf.[FlatFloor],
+	uf.[BathroomType],
+	uf.[BalconyAmount],
+	uf.[Condition],
+	uf.[PropertyType],
+	uf.[Price],
+	uf.[Description],
+	hou.[Address] as [HouseAddress],
+	hou.[BuildYear] as [HouseBuildYear],
+	hou.[HouseType],
+	hou.[MaxFloor] as [HouseMaxFloor],
+	hou.[WallMaterial] as [HouseWallMaterial],
+	station.[Name] as [ClosestSubwayName],
+	hou.[ClosestSubwayStationRange],
+	hou.[Latitude] as [HouseLatitude],
+	hou.[Longitude] as [HouseLongitude],
+	ag.[AgentPhone] as [SellerPhone],
+	ag.[Name] as [AgencyName],
+	(select top 1 pht.[FileName] from [N1FlatPhoto] pht where pht.[FlatId] = uf.[Id] and pht.[RelationType] = 'SellFlat') as [FirstPhotoFile],
+	(
+	IIF(DATEADD(DAY, 7, uf.[LastCheckDate]) < (select max(uftmp.[LastCheckDate]) from [N1Flat] uftmp ), 1, 0)
+	) as [IsArchived]
+from [N1Flat] uf 
+inner join [N1HouseInfo] hou on uf.N1HouseInfoId = hou.Id
+inner join [SubwayStation] station on station.Id = hou.ClosestSubwayStationId
+inner join [N1Agency] ag on uf.N1AgencyId = ag.Id));

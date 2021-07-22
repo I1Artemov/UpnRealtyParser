@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using UpnRealtyParser.Business.Models;
+using UpnRealtyParser.Business.Models.N1;
 
 namespace UpnRealtyParser.Business.Contexts
 {
@@ -8,6 +9,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<PageLink> PageLinks { get; set; }
         public DbSet<UpnFlat> UpnFlats { get; set; }
         public DbSet<UpnFlatVmForTable> UpnFlatVmForTables { get; set; }
+        public DbSet<N1FlatVmForTable> N1FlatVmForTables { get; set; }
         public DbSet<HouseSitelessVM> HouseSitelessVms { get; set; }
         public DbSet<AgencySitelessVM> AgencySitelessVms { get; set; }
         public DbSet<UpnRentFlat> UpnRentFlats { get; set; }
@@ -34,7 +36,7 @@ namespace UpnRealtyParser.Business.Contexts
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             // todo: Вынести в конфиг
-            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-33U76GA;Database=RealtyParser;Trusted_Connection=True;");
+            optionsBuilder.UseSqlServer(@"Data Source=.\MSSQL14LOCAL;Database=RealtyParser;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,6 +45,7 @@ namespace UpnRealtyParser.Business.Contexts
 
             modelBuilder.RemovePluralizingTableNameConvention();
             modelBuilder.Entity<UpnFlatVmForTable>(entity => {entity.ToTable("vUpnFlatAdditional");});
+            modelBuilder.Entity<N1FlatVmForTable>(entity => { entity.ToTable("vN1FlatAdditional"); });
             modelBuilder.Entity<HouseSitelessVM>(entity => { entity.ToTable("vHousesUnitedInfo"); });
             modelBuilder.Entity<AgencySitelessVM>(entity => { entity.ToTable("vAgenciesUnitedInfo"); });
         }

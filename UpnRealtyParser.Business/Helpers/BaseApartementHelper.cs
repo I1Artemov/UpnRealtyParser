@@ -35,20 +35,6 @@ namespace UpnRealtyParser.Business.Helpers
         }
 
         /// <summary>
-        /// Заполняет квартиры на продажу информацией, взятой из данных о доме и об агентстве, для отображения в таблице
-        /// </summary>
-        public void FillSellApartmentsWithAdditionalInfo(List<TSellFlat> flats)
-        {
-            if (flats == null || flats.Count == 0)
-                return;
-
-            foreach (FlatCore flat in flats)
-            {
-                FillSingleApartmentWithAdditionalInfo(flat);
-            }
-        }
-
-        /// <summary>
         /// Заполняет одну квартиру информацией, взятой из данных о доме и об агентстве, для отображения в таблице
         /// </summary>
         public void FillSingleApartmentWithAdditionalInfo(FlatCore flat)
@@ -165,6 +151,60 @@ namespace UpnRealtyParser.Business.Helpers
                     allSellFlats.Where(x => x.ClosestSubwayStationRange != null).OrderByDescending(x => x.ClosestSubwayStationRange);
             else if (sortField == "subwaySummary") allSellFlats =
                     allSellFlats.Where(x => x.ClosestSubwayStationRange != null).OrderBy(x => x.ClosestSubwayStationRange);
+
+            return allSellFlats;
+        }
+
+        /// <summary>
+        /// Применяет сортировку и фильтрацию ко всем квартирам УПН на продажу
+        /// </summary>
+        public IQueryable<T> GetFilteredAndOrderedSellFlats<T>(bool? isShowArchived, bool? isExcludeFirstFloor,
+            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
+            int? closestSubwayStationId, string addressPart, string sortField, string sortOrder,
+            EFGenericRepo<T, RealtyParserContext> flatVmRepo)
+            where T : FlatTableVmBase
+        {
+            IQueryable<T> allSellFlats = flatVmRepo.GetAllWithoutTracking();
+
+            allSellFlats = applyFiltering(allSellFlats, isShowArchived, isExcludeFirstFloor, isExcludeLastFloor, minPrice, maxPrice, minBuildYear,
+                maxSubwayDistance, closestSubwayStationId, addressPart);
+
+            allSellFlats = ApplySorting(allSellFlats, sortField, sortOrder);
+
+            return allSellFlats;
+        }
+
+        /// <summary>
+        /// Применяет к квартирам поиск по пользовательским критериям
+        /// </summary>
+        protected IQueryable<T> applyFiltering<T>(IQueryable<T> allSellFlats, bool? isShowArchived, bool? isExcludeFirstFloor,
+            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
+            int? closestSubwayStationId, string addressPart)
+            where T : IFilterableFlat
+        {
+            if (!isShowArchived.GetValueOrDefault(true))
+                allSellFlats = allSellFlats.Where(x => x.IsArchived.GetValueOrDefault(0) == 0);
+            if (isExcludeFirstFloor.GetValueOrDefault(false))
+                allSellFlats = allSellFlats.Where(x => x.FlatFloor > 1);
+            if (isExcludeLastFloor.GetValueOrDefault(false))
+                allSellFlats = allSellFlats.Where(x => x.FlatFloor < x.HouseMaxFloor);
+            if (minPrice.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.Price >= minPrice.Value);
+            if (maxPrice.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.Price <= maxPrice.Value);
+            if (minBuildYear.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.HouseBuildYear >= minBuildYear.Value);
+            if (maxSubwayDistance.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayStationRange <= maxSubwayDistance.Value);
+            if (closestSubwayStationId.HasValue)
+            {
+                SubwayStation foundStation = _subwayStationRepo.GetAllWithoutTracking()
+                    .FirstOrDefault(x => x.Id == closestSubwayStationId.Value);
+                string stationName = foundStation?.Name;
+                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayName == stationName);
+            }
+            if (!string.IsNullOrEmpty(addressPart))
+                allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
 
             return allSellFlats;
         }
