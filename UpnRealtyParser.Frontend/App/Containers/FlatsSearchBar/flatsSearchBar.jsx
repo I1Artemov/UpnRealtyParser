@@ -6,7 +6,7 @@ import {
     setShowArchived, setExcludeFirstFloor, setExcludeLastFloor,
     setMinPrice, setMaxPrice, setMinBuildYear, setMaxSubwayDistance, setClosestSubwayStationId,
     setAddressPart, clearSearchParameters
-} from './upnSellFlatIndexActions.jsx';
+} from './flatsSearchBarActions.jsx';
 
 import { Checkbox, InputNumber, Select, Button, Input } from 'antd';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
@@ -35,7 +35,7 @@ class FlatsSearchBar extends React.Component {
                     <span>Год постройки от</span>
                     <InputNumber onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2020} style={{ marginLeft: 9, marginRight: 28 }} />
 
-                    <Button onClick={this.handleTableChange.bind(this)} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
+                    <Button onClick={this.props.handleTableChange} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
                     <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
                 </div>
                 <div style={{ marginTop: "6px" }}>
@@ -65,19 +65,19 @@ class FlatsSearchBar extends React.Component {
 
 let mapStateToProps = (state) => {
     return {
-        isShowArchived: state.upnSellFlatIndexReducer.isShowArchived,
-        isExcludeFirstFloor: state.upnSellFlatIndexReducer.isExcludeFirstFloor,
-        isExcludeLastFloor: state.upnSellFlatIndexReducer.isExcludeLastFloor,
-        minPrice: state.upnSellFlatIndexReducer.minPrice,
-        maxPrice: state.upnSellFlatIndexReducer.maxPrice,
-        minBuildYear: state.upnSellFlatIndexReducer.minBuildYear,
-        maxSubwayDistance: state.upnSellFlatIndexReducer.maxSubwayDistance,
-        closestSubwayStationId: state.upnSellFlatIndexReducer.closestSubwayStationId,
-        addressPart: state.upnHouseIndexReducer.addressPart,
+        isShowArchived: state.flatSearchBarReducer.filteringInfo.isShowArchived,
+        isExcludeFirstFloor: state.flatSearchBarReducer.filteringInfo.isExcludeFirstFloor,
+        isExcludeLastFloor: state.flatSearchBarReducer.filteringInfo.isExcludeLastFloor,
+        minPrice: state.flatSearchBarReducer.filteringInfo.minPrice,
+        maxPrice: state.flatSearchBarReducer.filteringInfo.maxPrice,
+        minBuildYear: state.flatSearchBarReducer.filteringInfo.minBuildYear,
+        maxSubwayDistance: state.flatSearchBarReducer.filteringInfo.maxSubwayDistance,
+        closestSubwayStationId: state.flatSearchBarReducer.filteringInfo.closestSubwayStationId,
+        addressPart: state.flatSearchBarReducer.filteringInfo.addressPart,
     };
 };
 
-let mapActionsToProps = (dispatch) => {
+let mapActionsToProps = (dispatch, ownProps) => {
     return {
         setShowArchived: (ev) => dispatch(setShowArchived(ev)),
         setExcludeFirstFloor: (ev) => dispatch(setExcludeFirstFloor(ev)),
@@ -89,6 +89,7 @@ let mapActionsToProps = (dispatch) => {
         setClosestSubwayStationId: (ev) => dispatch(setClosestSubwayStationId(ev)),
         setAddressPart: (ev) => dispatch(setAddressPart(ev)),
         clearSearchParameters: () => dispatch(clearSearchParameters()),
+        handleTableChange: ownProps.handleTableChange // Проброс функции из компонента с таблицей квартир
     };
 };
 

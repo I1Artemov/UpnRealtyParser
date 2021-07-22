@@ -16,9 +16,7 @@ class UpnSellFlatIndex extends React.Component {
     getAllFlatsWithParametersFromProps(pagination, sorter) {
         this.props.startReceivingFlats();
 
-        this.props.getAllFlats(pagination, sorter, this.props.isShowArchived, this.props.minPrice, this.props.maxPrice,
-            this.props.isExcludeFirstFloor, this.props.isExcludeLastFloor, this.props.minBuildYear,
-            this.props.maxSubwayDistance, this.props.closestSubwayStationId, this.props.addressPart);
+        this.props.getAllFlats(pagination, sorter, this.props.filteringInfo);
     }
 
     componentDidMount() {
@@ -47,7 +45,7 @@ class UpnSellFlatIndex extends React.Component {
                     <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                     <Breadcrumb.Item>На продажу</Breadcrumb.Item>
                 </Breadcrumb>
-                <FlatsSearchBar/>
+                <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)}/>
                 <Table
                     dataSource={flatsData}
                     columns={SELL_FLATS_TABLE_COLUMNS}
@@ -68,16 +66,15 @@ let mapStateToProps = (state) => {
         error: state.upnSellFlatIndexReducer.error,
         isFlatsLoading: state.upnSellFlatIndexReducer.isFlatsLoading,
         savedGridPage: state.upnSellFlatIndexReducer.savedGridPage,
-        savedGridPageSize: state.upnSellFlatIndexReducer.savedGridPageSize
+        savedGridPageSize: state.upnSellFlatIndexReducer.savedGridPageSize,
+        filteringInfo: state.flatSearchBarReducer.filteringInfo
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllFlats: (pagination, sorter, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
-            maxSubwayDistance, closestSubwayStationId, addressPart) =>
-            dispatch(getAllFlats(pagination, sorter, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor, minBuildYear,
-                maxSubwayDistance, closestSubwayStationId, addressPart)),
+        getAllFlats: (pagination, sorter, filteringInfo) =>
+            dispatch(getAllFlats(pagination, sorter, filteringInfo)),
         startReceivingFlats: () => dispatch(startReceivingFlats()),
         savePagingParameters: (pagination) => dispatch(savePagingParameters(pagination))
     };

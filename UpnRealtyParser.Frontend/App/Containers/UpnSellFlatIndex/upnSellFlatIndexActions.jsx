@@ -39,8 +39,7 @@ export function savePagingParameters(pagination) {
     }
 }
 
-export function getAllFlats(pagination, sorting, isShowArchived, minPrice, maxPrice, isExcludeFirstFloor, isExcludeLastFloor,
-    minBuildYear, maxSubwayDistance, closestSubwayStationId, addressPart) {
+export function getAllFlats(pagination, sorting, filteringInfo) {
 
     let targetPage = !pagination.current ? 1 : pagination.current;
     let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
@@ -48,15 +47,25 @@ export function getAllFlats(pagination, sorting, isShowArchived, minPrice, maxPr
     return (dispatch) => {
         let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
 
-        if (isShowArchived !== null && isShowArchived !== undefined) queryTrailer += '&isShowArchived=' + isShowArchived;
-        if (minPrice !== null && minPrice !== undefined) queryTrailer += '&minPrice=' + minPrice;
-        if (maxPrice !== null && maxPrice !== undefined) queryTrailer += '&maxPrice=' + maxPrice;
-        if (isExcludeFirstFloor !== null && isExcludeFirstFloor !== undefined) queryTrailer += '&isExcludeFirstFloor=' + isExcludeFirstFloor;
-        if (isExcludeLastFloor !== null && isExcludeLastFloor !== undefined) queryTrailer += '&isExcludeLastFloor=' + isExcludeLastFloor;
-        if (minBuildYear !== null && minBuildYear !== undefined) queryTrailer += '&minBuildYear=' + minBuildYear;
-        if (maxSubwayDistance !== null && maxSubwayDistance !== undefined) queryTrailer += '&maxSubwayDistance=' + maxSubwayDistance;
-        if (closestSubwayStationId !== null && closestSubwayStationId !== undefined) queryTrailer += '&closestSubwayStationId=' + closestSubwayStationId;
-        if (addressPart !== null && addressPart !== undefined) queryTrailer += '&addressPart=' + addressPart;
+        if (filteringInfo.isShowArchived !== null && filteringInfo.isShowArchived !== undefined)
+            queryTrailer += '&isShowArchived=' + filteringInfo.isShowArchived;
+        if (filteringInfo.minPrice !== null && filteringInfo.minPrice !== undefined)
+            queryTrailer += '&minPrice=' + filteringInfo.minPrice;
+        if (filteringInfo.maxPrice !== null && filteringInfo.maxPrice !== undefined)
+            queryTrailer += '&maxPrice=' + filteringInfo.maxPrice;
+        if (filteringInfo.isExcludeFirstFloor !== null && filteringInfo.isExcludeFirstFloor !== undefined)
+            queryTrailer += '&isExcludeFirstFloor=' + filteringInfo.isExcludeFirstFloor;
+        if (filteringInfo.isExcludeLastFloor !== null && filteringInfo.isExcludeLastFloor !== undefined)
+            queryTrailer += '&isExcludeLastFloor=' + filteringInfo.isExcludeLastFloor;
+        if (filteringInfo.minBuildYear !== null && filteringInfo.minBuildYear !== undefined)
+            queryTrailer += '&minBuildYear=' + filteringInfo.minBuildYear;
+        if (filteringInfo.maxSubwayDistance !== null && filteringInfo.maxSubwayDistance !== undefined)
+            queryTrailer += '&maxSubwayDistance=' + filteringInfo.maxSubwayDistance;
+        if (filteringInfo.closestSubwayStationId !== null && filteringInfo.closestSubwayStationId !== undefined)
+            queryTrailer += '&closestSubwayStationId=' + filteringInfo.closestSubwayStationId;
+        if (filteringInfo.addressPart !== null && filteringInfo.addressPart !== undefined)
+            queryTrailer += '&addressPart=' + filteringInfo.addressPart;
+
         if (sorting !== null && sorting !== undefined) {
             if (sorting.field !== null && sorting.field !== undefined) queryTrailer += '&sortField=' + sorting.field;
             if (sorting.order !== null && sorting.order !== undefined) queryTrailer += '&sortOrder=' + sorting.order;

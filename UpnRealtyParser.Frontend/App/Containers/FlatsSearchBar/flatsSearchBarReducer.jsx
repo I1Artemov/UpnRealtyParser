@@ -12,51 +12,55 @@
 } from './flatsSearchBarConstants.jsx';
 
 const initialState = {
-    isShowArchived: true,
-    isExcludeFirstFloor: false,
-    isExcludeLastFloor: false,
-    minPrice: null,
-    maxPrice: null,
-    minBuildYear: null,
-    maxSubwayDistance: null,
-    closestSubwayStationId: null,
-    addressPart: null
+    filteringInfo: {
+        isShowArchived: true,
+        isExcludeFirstFloor: false,
+        isExcludeLastFloor: false,
+        minPrice: null,
+        maxPrice: null,
+        minBuildYear: null,
+        maxSubwayDistance: null,
+        closestSubwayStationId: null,
+        addressPart: null
+    }
 };
 
 export default function searchBar(state = initialState, action) {
     switch (action.type) {
         case SET_SHOW_ARCHIVED:
-            return { ...state, isShowArchived: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, isShowArchived: action.payload } };
 
         case SET_EXCLUDE_FIRST_FLOOR:
-            return { ...state, isExcludeFirstFloor: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, isExcludeFirstFloor: action.payload } };
 
         case SET_EXCLUDE_LAST_FLOOR:
-            return { ...state, isExcludeLastFloor: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, isExcludeLastFloor: action.payload } };
 
         case SET_MIN_PRICE:
-            return { ...state, minPrice: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, minPrice: action.payload } };
 
         case SET_MAX_PRICE:
-            return { ...state, maxPrice: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, maxPrice: action.payload } };
 
         case SET_MIN_BUILD_YEAR:
-            return { ...state, minBuildYear: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, minBuildYear: action.payload } };
 
         case SET_MAX_SUBWAY_DISTANCE:
-            return { ...state, maxSubwayDistance: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, maxSubwayDistance: action.payload } };
 
         case SET_CLOSEST_SUBWAY_STATION_ID:
-            return { ...state, closestSubwayStationId: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, closestSubwayStationId: action.payload } };
 
         case SET_ADDRESS_PART:
-            return { ...state, addressPart: action.payload };
+            return { ...state, filteringInfo: { ...state.filteringInfo, addressPart: action.payload } };
 
         case CLEAR_SEARCH_PARAMETERS:
             return {
-                ...state, isShowArchived: true, isExcludeFirstFloor: false, isExcludeLastFloor: false,
-                minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null,
-                addressPart: null
+                ...state, filteringInfo: {
+                    ...state.filteringInfo, isShowArchived: true, isExcludeFirstFloor: false, isExcludeLastFloor: false,
+                    minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null,
+                    addressPart: null
+                }
             };
 
         default:
