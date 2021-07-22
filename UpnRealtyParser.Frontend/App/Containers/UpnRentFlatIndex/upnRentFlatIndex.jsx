@@ -5,19 +5,20 @@ import { getAllFlats, startReceivingFlats } from './upnRentFlatIndexActions.jsx'
 // Используем те же колонки, что и у квартир на продажу
 import { SELL_FLATS_TABLE_COLUMNS } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
+import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
 
 import 'antd/dist/antd.css';
 
 class UpnRentFlatIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingFlats();
-        this.props.getAllFlats(new Object());
+        this.props.getAllFlats(new Object(), null, this.props.filteringInfo);
         document.title = "Ural Realty Parser - Квартиры UPN в аренду";
     }
 
     handleTableChange(pagination, filters, sorter) {
         this.props.startReceivingFlats();
-        this.props.getAllFlats(pagination, sorter);
+        this.props.getAllFlats(pagination, sorter, this.props.filteringInfo);
     }
 
     render() {
@@ -34,7 +35,7 @@ class UpnRentFlatIndex extends React.Component {
 
         if (errorMessage !== undefined && errorMessage !== null && errorMessage !== "") {
             return (
-                <div>
+                <div>RentFlatCo
                     Ошибка загрузки квартиры: {errorMessage.toString()}
                 </div>
                 );
@@ -46,13 +47,14 @@ class UpnRentFlatIndex extends React.Component {
                     <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                     <Breadcrumb.Item>В аренду</Breadcrumb.Item>
                 </Breadcrumb>
+                <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} />
                 <Table
                     dataSource={flatsData}
                     columns={editedColumns}
                     onChange={this.handleTableChange.bind(this)}
                     pagination={{ total: totalFlatsCount }}
                     loading={isFlatsLoading}
-                    rowClassName={(record, index) => (record.isArchived === true ? "archived-flat" : "active-flat")}
+                    rowClassName={(record, index) => (record.isArchived === 1 ? "archived-flat" : "active-flat")}
                     />
                 </div>
             );
@@ -65,13 +67,14 @@ let mapStateToProps = (state) => {
         flatsInfo: state.upnRentFlatIndexReducer.flatsInfo,
         totalFlatsCount: state.upnRentFlatIndexReducer.totalFlatsCount,
         error: state.upnRentFlatIndexReducer.error,
-        isFlatsLoading: state.upnRentFlatIndexReducer.isFlatsLoading
+        isFlatsLoading: state.upnRentFlatIndexReducer.isFlatsLoading,
+        filteringInfo: state.flatSearchBarReducer.filteringInfo
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllFlats: (pagination, sorter) => dispatch(getAllFlats(pagination, sorter)),
+        getAllFlats: (pagination, sorter, filteringInfo) => dispatch(getAllFlats(pagination, sorter, filteringInfo)),
         startReceivingFlats: () => dispatch(startReceivingFlats())
     };
 };

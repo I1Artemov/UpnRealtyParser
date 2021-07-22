@@ -50,7 +50,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
                 _pageLinkRepo, _n1PhotoRepo);
 
-            IQueryable<N1FlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedSellFlats(isShowArchived, isExcludeFirstFloor,
+            IQueryable<N1FlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedFlats(isShowArchived, isExcludeFirstFloor,
                 isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
                 addressPart, sortField, sortOrder, _n1FlatVmRepo);
 

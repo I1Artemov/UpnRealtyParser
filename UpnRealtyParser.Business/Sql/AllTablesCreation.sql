@@ -525,3 +525,44 @@ from [N1Flat] uf
 inner join [N1HouseInfo] hou on uf.N1HouseInfoId = hou.Id
 inner join [SubwayStation] station on station.Id = hou.ClosestSubwayStationId
 inner join [N1Agency] ag on uf.N1AgencyId = ag.Id));
+
+-- 22.07.2021 Вьшка для квартир UPN в аренду в связке с домами
+create view [vUpnRentFlatAdditional] as
+((select
+	uf.[Id],
+	uf.[RemovalDate],
+	uf.[CreationDateTime],
+	uf.[LastCheckDate],
+	uf.[FlatType],
+	uf.[RoomAmount],
+	uf.[SpaceSum],
+	uf.[SpaceLiving],
+	uf.[SpaceKitchen],
+	uf.[FlatFloor],
+	uf.[JointBathrooms],
+	uf.[SeparateBathrooms],
+	uf.[RenovationType],
+	uf.[RedevelopmentType],
+	uf.[WindowsType],
+	uf.[Furniture],
+	uf.[Price],
+	uf.[Description],
+	hou.[Address] as [HouseAddress],
+	hou.[BuildYear] as [HouseBuildYear],
+	hou.[HouseType],
+	hou.[MaxFloor] as [HouseMaxFloor],
+	hou.[WallMaterial] as [HouseWallMaterial],
+	station.[Name] as [ClosestSubwayName],
+	hou.[ClosestSubwayStationRange],
+	hou.[Latitude] as [HouseLatitude],
+	hou.[Longitude] as [HouseLongitude],
+	ag.[AgentPhone] as [SellerPhone],
+	ag.[Name] as [AgencyName],
+	(select top 1 pht.[FileName] from [UpnFlatPhoto] pht where pht.[FlatId] = uf.[Id] and pht.[RelationType] = 'RentFlat') as [FirstPhotoFile],
+	(
+	IIF(DATEADD(DAY, 7, uf.[LastCheckDate]) < (select max(uftmp.[LastCheckDate]) from [N1Flat] uftmp ), 1, 0)
+	) as [IsArchived]
+from [UpnRentFlat] uf 
+inner join [UpnHouseInfo] hou on uf.UpnHouseInfoId = hou.Id
+inner join [SubwayStation] station on station.Id = hou.ClosestSubwayStationId
+inner join [UpnAgency] ag on uf.UpnAgencyId = ag.Id));

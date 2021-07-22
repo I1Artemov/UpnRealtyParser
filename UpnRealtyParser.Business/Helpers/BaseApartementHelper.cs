@@ -158,7 +158,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Применяет сортировку и фильтрацию ко всем квартирам УПН на продажу
         /// </summary>
-        public IQueryable<T> GetFilteredAndOrderedSellFlats<T>(bool? isShowArchived, bool? isExcludeFirstFloor,
+        public IQueryable<T> GetFilteredAndOrderedFlats<T>(bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
             int? closestSubwayStationId, string addressPart, string sortField, string sortOrder,
             EFGenericRepo<T, RealtyParserContext> flatVmRepo)

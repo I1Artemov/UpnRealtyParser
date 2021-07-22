@@ -14,6 +14,7 @@ namespace UpnRealtyParser.Frontend.Controllers
     public class UpnRentFlatController : BaseController
     {
         private readonly EFGenericRepo<UpnRentFlat, RealtyParserContext> _upnFlatRepo;
+        private readonly EFGenericRepo<UpnRentFlatVmForTable, RealtyParserContext> _upnRentFlatVmRepo;
         private readonly EFGenericRepo<UpnHouseInfo, RealtyParserContext> _upnHouseRepo;
         private readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
         private readonly EFGenericRepo<UpnAgency, RealtyParserContext> _agencyRepo;
@@ -25,7 +26,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<UpnAgency, RealtyParserContext> agencyRepo,
             EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo,
-            EFGenericRepo<UpnFlatPhoto, RealtyParserContext> upnPhotoRepo)
+            EFGenericRepo<UpnFlatPhoto, RealtyParserContext> upnPhotoRepo,
+            EFGenericRepo<UpnRentFlatVmForTable, RealtyParserContext> upnRentFlatVmRepo)
         {
             _upnFlatRepo = upnFlatRepo;
             _upnHouseRepo = upnHouseRepo;
@@ -33,27 +35,30 @@ namespace UpnRealtyParser.Frontend.Controllers
             _subwayStationRepo = subwayStationRepo;
             _pageLinkRepo = pageLinkRepo;
             _upnPhotoRepo = upnPhotoRepo;
+            _upnRentFlatVmRepo = upnRentFlatVmRepo;
         }
 
         [Route("getall")]
         [HttpGet]
-        public IActionResult GetAllFlats(int? page, int? pageSize, string sortField, string sortOrder)
+        public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived, bool? isExcludeFirstFloor,
+            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
+            int? closestSubwayStationId, string addressPart, string sortField, string sortOrder)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
 
-            IQueryable<UpnRentFlat> allRentFlats = _upnFlatRepo.GetAllWithoutTracking();
-            int totalCount = allRentFlats.Count();
 
             UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
                 _pageLinkRepo, _upnPhotoRepo);
-            allRentFlats = apartmentHelper.ApplySorting(allRentFlats, sortField, sortOrder);
+            IQueryable<UpnRentFlatVmForTable> allRentFlats = apartmentHelper.GetFilteredAndOrderedFlats(isShowArchived, isExcludeFirstFloor,
+                isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
+                addressPart, sortField, sortOrder, _upnRentFlatVmRepo);
 
-            List<UpnRentFlat> filteredFlats = allRentFlats
+            int totalCount = allRentFlats.Count();
+
+            List<UpnRentFlatVmForTable> filteredFlats = allRentFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
-
-            apartmentHelper.FillRentApartmentsWithAdditionalInfo(filteredFlats);
 
             return Json(new { flatsList = filteredFlats, totalCount = totalCount });
         }
