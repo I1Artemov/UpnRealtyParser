@@ -9,6 +9,7 @@ import { SELL_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
 
 import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
+import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
 
@@ -25,7 +26,7 @@ class UpnSellFlatIndex extends React.Component {
             pageSIze: this.props.savedGridPageSize
         };
         this.getAllFlatsWithParametersFromProps(pagingInfo);
-        document.title = "Ural Realty Parser - Квартиры UPN в продажу";
+        document.title = SiteTitle + " - Квартиры UPN в продажу";
     }
 
     handleTableChange(pagination, filters, sorter) {

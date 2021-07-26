@@ -6,6 +6,7 @@ import { getAllFlats, startReceivingFlats } from './upnRentFlatIndexActions.jsx'
 import { SELL_FLATS_TABLE_COLUMNS } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
 import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
+import { SiteTitle } from '../../const.jsx'
 
 import 'antd/dist/antd.css';
 
@@ -13,7 +14,7 @@ class UpnRentFlatIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingFlats();
         this.props.getAllFlats(new Object(), null, this.props.filteringInfo);
-        document.title = "Ural Realty Parser - Квартиры UPN в аренду";
+        document.title = SiteTitle + " - Квартиры UPN в аренду";
     }
 
     handleTableChange(pagination, filters, sorter) {

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { getAllAgencies, startReceivingAgencies } from './upnAgencyIndexActions.jsx';
 import { AGENCIES_TABLE_COLUMNS } from './upnAgencyIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
+import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
 
@@ -11,7 +12,7 @@ class UpnAgencyIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingAgencies();
         this.props.getAllAgencies(new Object());
-        document.title = "Ural Realty Parser - Агентства";
+        document.title = SiteTitle + " - Агентства";
     }
 
     handleTableChange(pagination, filters, sorter) {

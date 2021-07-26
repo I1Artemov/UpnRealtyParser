@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import { Divider, Spin, Button, Breadcrumb } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
+import { SiteTitle } from '../../const.jsx';
 
 import L from 'leaflet';
 
@@ -34,7 +35,7 @@ class AnyFlatRead extends React.Component {
 
     /** Формирует текст заголовка вкладки в браузере */
     getPageTitle(id, siteName, isRent) {
-        let pageTitle = "Ural Realty Parser - Квартира " + siteName;
+        let pageTitle = SiteTitle + " - Квартира " + siteName;
         pageTitle = pageTitle + " №" + id;
 
         if (isRent)

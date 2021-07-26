@@ -1,4 +1,6 @@
-﻿export const Href_UpnSellFlatController_GetAllFlats = "api/UpnSellFlat/getall";
+﻿export const SiteTitle = "Ural Realty Parser";
+
+export const Href_UpnSellFlatController_GetAllFlats = "api/UpnSellFlat/getall";
 export const Href_UpnSellFlatController_GetSingleFlat = "/api/UpnSellFlat/getsingle";
 
 export const Href_UpnRentFlatController_GetAllFlats = "api/UpnRentFlat/getall";

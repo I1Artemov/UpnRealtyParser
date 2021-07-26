@@ -8,6 +8,7 @@ import {
 import { HOUSES_TABLE_COLUMNS } from './upnHouseIndexConstants.jsx';
 import { Table, Breadcrumb, Checkbox, Input, InputNumber, Button } from 'antd';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
+import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
 
@@ -19,7 +20,7 @@ class UpnHouseIndex extends React.Component {
             pageSIze: 10
         };
         this.getAllHousesWithParametersFromProps(pagingInfo);
-        document.title = "Ural Realty Parser - Дома";
+        document.title = SiteTitle + " - Дома";
     }
 
     handleTableChange(pagination, filters, sorter) {

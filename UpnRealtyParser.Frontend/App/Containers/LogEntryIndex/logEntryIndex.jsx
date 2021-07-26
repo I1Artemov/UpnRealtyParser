@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { getAllLogEntries, startReceivingLogEntries } from './logEntryIndexActions.jsx';
 import { LOG_ENTRIES_TABLE_COLUMNS } from './logEntryIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
+import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
 
@@ -11,7 +12,7 @@ class LogEntryIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingLogEntries();
         this.props.getAllLogEntries(new Object());
-        document.title = "Ural Realty Parser - Лог";
+        document.title = SiteTitle + " - Лог";
     }
 
     handleTableChange(pagination, filters, sorter) {

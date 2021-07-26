@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllPoints, setPaybackLimit } from "./paybackMapActions.jsx";
 import { Divider, Spin, InputNumber, Button } from 'antd';
+import { SiteTitle } from '../../const.jsx';
 
 import HeatMapFunctional from './heatMapPayback.jsx';
 
@@ -11,7 +12,7 @@ import 'antd/dist/antd.css';
 class PaybackMap extends React.Component {
     componentDidMount() {
         this.props.getAllPoints();
-        document.title = "Ural Realty Parser - Карта окупаемости";
+        document.title = SiteTitle + " - Карта окупаемости";
     }
 
     applyFilters() {

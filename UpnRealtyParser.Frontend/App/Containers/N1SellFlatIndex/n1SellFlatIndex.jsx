@@ -5,6 +5,7 @@ import { getAllFlats, startReceivingFlats } from './n1SellFlatIndexActions.jsx';
 import { SELL_FLATS_TABLE_COLUMNS } from './n1SellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
 import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
+import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
 
@@ -12,7 +13,7 @@ class N1SellFlatIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingFlats();
         this.props.getAllFlats(new Object(), null, this.props.filteringInfo);
-        document.title = "Ural Realty Parser - Квартиры N1";
+        document.title = SiteTitle + " - Квартиры N1";
     }
 
     handleTableChange(pagination, filters, sorter) {

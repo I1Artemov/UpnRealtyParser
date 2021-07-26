@@ -6,6 +6,7 @@ import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleHouseInfo from '../../Stateless/singleHouseInfo.jsx';
 import SingleHouseStatistics from '../../Stateless/singleHouseStatistics.jsx';
 import FlatPriceStatisticsPlot from '../FlatPriceStatisticsPlot/flatPriceStatisticsPlot.jsx';
+import { SiteTitle } from '../../const.jsx';
 
 import L from 'leaflet';
 
@@ -42,7 +43,7 @@ class AnyHouseRead extends React.Component {
 
     /** Формирует текст заголовка вкладки в браузере */
     getPageTitle(id, siteName) {
-        let pageTitle = "Ural Realty Parser - Дом ";
+        let pageTitle = SiteTitle + " - Дом ";
         pageTitle = pageTitle + siteName;
         pageTitle = pageTitle + " №" + id;
         return pageTitle;

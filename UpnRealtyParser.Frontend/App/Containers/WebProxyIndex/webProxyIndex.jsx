@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { getAllProxies, startReceivingProxies } from './webProxyIndexActions.jsx';
 import { PROXIES_TABLE_COLUMNS } from './webProxyIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
+import { SiteTitle } from '../../const.jsx'
 
 import 'antd/dist/antd.css';
 
@@ -11,7 +12,7 @@ class WebProxyIndex extends React.Component {
     componentDidMount() {
         this.props.startReceivingProxies();
         this.props.getAllProxies(new Object());
-        document.title = "Ural Realty Parser - Прокси";
+        document.title = SiteTitle + " - Прокси";
     }
 
     handleTableChange(pagination, filters, sorter) {
