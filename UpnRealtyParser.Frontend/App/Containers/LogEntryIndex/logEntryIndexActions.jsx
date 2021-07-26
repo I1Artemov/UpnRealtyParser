@@ -5,6 +5,7 @@ import {
 } from './logEntryIndexConstants.jsx';
 
 import { Href_ParsingStateController_GetAllStates } from "../../const.jsx";
+import { getQueryTrailerWithPagingParameters } from '../Common/anyFlatIndexActions.jsx';
 import "isomorphic-fetch";
 
 export function startReceivingLogEntries() {
@@ -29,12 +30,8 @@ export function errorReceiveAllLogEntries(err) {
 }
 
 export function getAllLogEntries(pagination) {
-
-    let targetPage = !pagination.current ? 1 : pagination.current;
-    let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
-
     return (dispatch) => {
-        let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
+        let queryTrailer = getQueryTrailerWithPagingParameters('', pagination);
 
         fetch(Href_ParsingStateController_GetAllStates + queryTrailer)
             .then((response) => {

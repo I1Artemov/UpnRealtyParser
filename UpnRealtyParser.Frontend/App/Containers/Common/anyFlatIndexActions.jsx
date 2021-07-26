@@ -26,3 +26,33 @@ export function getQueryTrailerWithFilteringParameters(queryTrailer, filteringIn
 
     return queryTrailer;
 }
+
+/**
+ * Добавляет к "хвосту" URL параметры для постраничного вывода записей в гриде
+ * @param {string} queryTrailer - исходный URL GET-запроса выборки
+ * @param {object} pagination - объект с информацией о пейджинге грида
+ */
+export function getQueryTrailerWithPagingParameters(queryTrailer, pagination) {
+    let targetPage = !pagination.current ? 1 : pagination.current;
+    let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
+
+    queryTrailer = queryTrailer + '?page=' + targetPage + '&pageSize=' + pageSize;
+
+    return queryTrailer;
+}
+
+/**
+ * Добавляет к "хвосту" URL параметры для сортировки записей в гриде
+ * @param {string} queryTrailer - исходный URL GET-запроса выборки квартир
+ * @param {object} sorting - объект с информацией о сортировке
+ */
+export function getQueryTrailerWithSortingParameters(queryTrailer, sorting) {
+    if (sorting == null || sorting == undefined) {
+        return queryTrailer;
+    }
+
+    if (sorting.field !== null && sorting.field !== undefined) queryTrailer += '&sortField=' + sorting.field;
+    if (sorting.order !== null && sorting.order !== undefined) queryTrailer += '&sortOrder=' + sorting.order;
+
+    return queryTrailer;
+}

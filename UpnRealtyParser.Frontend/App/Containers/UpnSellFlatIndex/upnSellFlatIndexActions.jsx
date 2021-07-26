@@ -6,7 +6,11 @@
 } from './upnSellFlatIndexConstants.jsx';
 
 import { Href_UpnSellFlatController_GetAllFlats } from "../../const.jsx";
-import { getQueryTrailerWithFilteringParameters } from '../Common/anyFlatIndexActions.jsx';
+import {
+    getQueryTrailerWithFilteringParameters,
+    getQueryTrailerWithPagingParameters,
+    getQueryTrailerWithSortingParameters
+} from '../Common/anyFlatIndexActions.jsx';
 import "isomorphic-fetch";
 
 export function startReceivingFlats() {
@@ -41,19 +45,10 @@ export function savePagingParameters(pagination) {
 }
 
 export function getAllFlats(pagination, sorting, filteringInfo) {
-
-    let targetPage = !pagination.current ? 1 : pagination.current;
-    let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
-
     return (dispatch) => {
-        let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
-
+        let queryTrailer = getQueryTrailerWithPagingParameters('', pagination);
         queryTrailer = getQueryTrailerWithFilteringParameters(queryTrailer, filteringInfo);
-
-        if (sorting !== null && sorting !== undefined) {
-            if (sorting.field !== null && sorting.field !== undefined) queryTrailer += '&sortField=' + sorting.field;
-            if (sorting.order !== null && sorting.order !== undefined) queryTrailer += '&sortOrder=' + sorting.order;
-        }
+        queryTrailer = getQueryTrailerWithSortingParameters(queryTrailer, sorting);
 
         fetch(Href_UpnSellFlatController_GetAllFlats + queryTrailer)
             .then((response) => {

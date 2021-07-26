@@ -4,6 +4,7 @@
     GET_ALL_AGENCIES_LOADING_IN_PROGRESS
 } from './upnAgencyIndexConstants.jsx';
 import { Href_UpnAgencyController_GetAllAgencies } from "../../const.jsx";
+import { getQueryTrailerWithPagingParameters } from '../Common/anyFlatIndexActions.jsx';
 import "isomorphic-fetch";
 
 export function startReceivingAgencies() {
@@ -28,11 +29,8 @@ export function errorReceiveAllAgencies(err) {
 }
 
 export function getAllAgencies(pagination) {
-    let targetPage = !pagination.current ? 1 : pagination.current;
-    let pageSize = !pagination.pageSize ? 10 : pagination.pageSize;
-
     return (dispatch) => {
-        let queryTrailer = '?page=' + targetPage + '&pageSize=' + pageSize;
+        let queryTrailer = getQueryTrailerWithPagingParameters('', pagination);
 
         fetch(Href_UpnAgencyController_GetAllAgencies + queryTrailer)
             .then((response) => {
