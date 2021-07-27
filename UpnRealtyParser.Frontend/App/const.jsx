@@ -13,6 +13,7 @@ export const Href_ParsingStateController_GetAllStates = "api/LogEntry/getall";
 
 export const Href_N1SellFlatController_GetAllFlats = "api/N1SellFlat/getall";
 export const Href_N1SellFlatController_GetSingleFlat = "/api/N1SellFlat/getsingle";
+export const Href_N1RentFlatController_GetAllFlats = "api/N1RentFlat/getall";
 
 export const Href_HouseController_GetSingleHouse = "/api/House/getsingle";
 export const Href_HouseController_GetSingleHouseStatistics = "/api/House/getsinglestatistics";

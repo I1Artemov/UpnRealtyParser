@@ -5,6 +5,7 @@ import Header from './Header/header.jsx';
 import UpnSellFlatIndex from './UpnSellFlatIndex/upnSellFlatIndex.jsx';
 import UpnRentFlatIndex from './UpnRentFlatIndex/upnRentFlatIndex.jsx';
 import N1SellFlatIndex from './N1SellFlatIndex/n1SellFlatIndex.jsx';
+import N1RentFlatIndex from './N1RentFlatIndex/n1RentFlatIndex.jsx';
 import AnySellFlatReadConnected from './AnySellFlatReadConnected/anySellFlatReadConnected.jsx';
 import UpnRentFlatRead from './UpnRentFlatRead/upnRentFlatRead.jsx';
 import UpnHouseIndex from './UpnHouseIndex/upnHouseIndex.jsx';
@@ -39,7 +40,7 @@ export default class App extends React.Component {
                                         <Route path="/log" component={LogEntryIndex} />
                                         <Route path="/rentflats" component={UpnRentFlatIndex} />
                                         <Route path="/n1sellflats" component={N1SellFlatIndex} />
-                                        {/*<Route path="/n1rentflats" component={N1RentFlatIndex} />*/}
+                                        {<Route path="/n1rentflats" component={N1RentFlatIndex} />}
                                         <Route exact path="/sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="upn" {...props} />} />
                                         <Route exact path="/n1sellflat/:id" render={(props) => <AnySellFlatReadConnected siteName="n1" {...props} />} />
                                         <Route exact path="/rentflat/:id" render={(props) => <UpnRentFlatRead siteName="upn" {...props} />} />
@@ -50,7 +51,7 @@ export default class App extends React.Component {
                                     </Switch>
                                 </main>
                             </Content>
-                            <Footer style={{ textAlign: 'center' }}>UpnRealtyParser ©2021 Created by AIV</Footer>
+                            <Footer style={{ textAlign: 'center' }}>Ural Realty Parser ©2021 Created by AIV</Footer>
                         </Layout>
                     </Layout>
                 </div>

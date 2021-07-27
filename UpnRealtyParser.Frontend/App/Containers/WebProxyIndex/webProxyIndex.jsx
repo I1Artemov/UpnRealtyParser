@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { getAllProxies, startReceivingProxies } from './webProxyIndexActions.jsx';
 import { PROXIES_TABLE_COLUMNS } from './webProxyIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
-import { SiteTitle } from '../../const.jsx'
+import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
 

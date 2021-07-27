@@ -3,11 +3,12 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import {
     getAllFlats, startReceivingFlats, savePagingParameters
-} from './upnSellFlatIndexActions.jsx';
+} from '../Common/anyFlatIndexActions.jsx';
 
 import { SELL_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
 
+import { Href_UpnSellFlatController_GetAllFlats } from "../../const.jsx";
 import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
 import { SiteTitle } from '../../const.jsx';
 
@@ -75,7 +76,7 @@ let mapStateToProps = (state) => {
 let mapActionsToProps = (dispatch) => {
     return {
         getAllFlats: (pagination, sorter, filteringInfo) =>
-            dispatch(getAllFlats(pagination, sorter, filteringInfo)),
+            dispatch(getAllFlats(pagination, sorter, filteringInfo, Href_UpnSellFlatController_GetAllFlats)),
         startReceivingFlats: () => dispatch(startReceivingFlats()),
         savePagingParameters: (pagination) => dispatch(savePagingParameters(pagination))
     };

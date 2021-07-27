@@ -1,10 +1,11 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import { getAllFlats, startReceivingFlats } from './upnRentFlatIndexActions.jsx';
+import { getAllFlats, startReceivingFlats } from '../Common/anyFlatIndexActions.jsx';
 // Используем те же колонки, что и у квартир на продажу
 import { SELL_FLATS_TABLE_COLUMNS } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
+import { Href_UpnRentFlatController_GetAllFlats } from "../../const.jsx";
 import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
 import { SiteTitle } from '../../const.jsx'
 
@@ -75,7 +76,8 @@ let mapStateToProps = (state) => {
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllFlats: (pagination, sorter, filteringInfo) => dispatch(getAllFlats(pagination, sorter, filteringInfo)),
+        getAllFlats: (pagination, sorter, filteringInfo) =>
+            dispatch(getAllFlats(pagination, sorter, filteringInfo, Href_UpnRentFlatController_GetAllFlats)),
         startReceivingFlats: () => dispatch(startReceivingFlats())
     };
 };

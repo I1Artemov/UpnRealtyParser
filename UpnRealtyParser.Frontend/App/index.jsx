@@ -9,6 +9,7 @@ import ruRU from 'antd/lib/locale/ru_RU';
 import upnSellFlatIndexReducer from './Containers/UpnSellFlatIndex/upnSellFlatIndexReducer.jsx';
 import upnRentFlatIndexReducer from './Containers/UpnRentFlatIndex/upnRentFlatIndexReducer.jsx';
 import n1SellFlatIndexReducer from './Containers/N1SellFlatIndex/n1SellFlatIndexReducer.jsx';
+import n1RentFlatIndexReducer from './Containers/N1RentFlatIndex/n1RentFlatIndexReducer.jsx';
 import anySellFlatReadReducer from './Containers/AnySellFlatReadConnected/anySellFlatReadReducer.jsx';
 import upnRentFlatReadReducer from './Containers/UpnRentFlatRead/upnRentFlatReadReducer.jsx';
 import upnHouseIndexReducer from './Containers/UpnHouseIndex/upnHouseIndexReducer.jsx';
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
     upnSellFlatIndexReducer,
     upnRentFlatIndexReducer,
     n1SellFlatIndexReducer,
+    n1RentFlatIndexReducer,
     anySellFlatReadReducer,
     upnRentFlatReadReducer,
 	upnHouseIndexReducer,

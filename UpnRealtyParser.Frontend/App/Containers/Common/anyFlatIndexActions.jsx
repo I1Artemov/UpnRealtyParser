@@ -1,7 +1,15 @@
-﻿/**
+﻿import {
+    GET_ALL_FLATS_SUCCESS,
+    GET_ALL_FLATS_ERROR,
+    GET_ALL_FLATS_LOADING_IN_PROGRESS,
+    SAVE_PAGING_PARAMETERS
+} from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
+import "isomorphic-fetch";
+
+/**
  * Добавляет к "хвосту" URL параметры поиска квартир из объекта filteringInfo
- * @param {string} queryTrailer - исходный URL GET-запроса выборки квартир
- * @param {object} filteringInfo - объект с параметрами отбора квартир
+ * @param {string} queryTrailer исходный URL GET-запроса выборки квартир
+ * @param {object} filteringInfo объект с параметрами отбора квартир
  */
 export function getQueryTrailerWithFilteringParameters(queryTrailer, filteringInfo) {
 
@@ -29,8 +37,8 @@ export function getQueryTrailerWithFilteringParameters(queryTrailer, filteringIn
 
 /**
  * Добавляет к "хвосту" URL параметры для постраничного вывода записей в гриде
- * @param {string} queryTrailer - исходный URL GET-запроса выборки
- * @param {object} pagination - объект с информацией о пейджинге грида
+ * @param {string} queryTrailer исходный URL GET-запроса выборки
+ * @param {object} pagination объект с информацией о пейджинге грида
  */
 export function getQueryTrailerWithPagingParameters(queryTrailer, pagination) {
     let targetPage = !pagination.current ? 1 : pagination.current;
@@ -43,8 +51,8 @@ export function getQueryTrailerWithPagingParameters(queryTrailer, pagination) {
 
 /**
  * Добавляет к "хвосту" URL параметры для сортировки записей в гриде
- * @param {string} queryTrailer - исходный URL GET-запроса выборки квартир
- * @param {object} sorting - объект с информацией о сортировке
+ * @param {string} queryTrailer исходный URL GET-запроса выборки квартир
+ * @param {object} sorting объект с информацией о сортировке
  */
 export function getQueryTrailerWithSortingParameters(queryTrailer, sorting) {
     if (sorting == null || sorting == undefined) {
@@ -55,4 +63,66 @@ export function getQueryTrailerWithSortingParameters(queryTrailer, sorting) {
     if (sorting.order !== null && sorting.order !== undefined) queryTrailer += '&sortOrder=' + sorting.order;
 
     return queryTrailer;
+}
+
+/** Для редьюсера - старт загрузки квартир с сервера */
+export function startReceivingFlats() {
+    return {
+        type: GET_ALL_FLATS_LOADING_IN_PROGRESS
+    };
+}
+
+/** Для редьюсера - обработка успешной загрузки квартир с сервера */
+export function receiveAllFlats(data) {
+    return {
+        type: GET_ALL_FLATS_SUCCESS,
+        flatsInfo: data.flatsList,
+        totalFlatsCount: data.totalCount
+    };
+}
+
+/** Для редьюсера - обработка ошибки при загрузке квартир с сервера */
+export function errorReceiveAllFlats(err) {
+    return {
+        type: GET_ALL_FLATS_ERROR,
+        error: err
+    };
+}
+
+/**
+ * Обработчик сохранения параметров постраничного вывода в состоянии
+ * @param {object} pagination
+ */
+export function savePagingParameters(pagination) {
+    return {
+        type: SAVE_PAGING_PARAMETERS,
+        payload: {
+            current: pagination.current,
+            pageSize: pagination.pageSize
+        }
+    }
+}
+
+/**
+ * Асинхронная функция загрузки квартир с сервера
+ * @param {object} pagination объект с информацией о постраничном выводе
+ * @param {object} sorting объект с информацией о сортировке
+ * @param {object} filteringInfo объект с информацией о фильтрации
+ * @param {string} baseUrl URL GET-метода на сервере, возвращающего квартиры
+ */
+export function getAllFlats(pagination, sorting, filteringInfo, baseUrl) {
+    return (dispatch) => {
+        let queryTrailer = getQueryTrailerWithPagingParameters('', pagination);
+        queryTrailer = getQueryTrailerWithFilteringParameters(queryTrailer, filteringInfo);
+        queryTrailer = getQueryTrailerWithSortingParameters(queryTrailer, sorting);
+
+        fetch(baseUrl + queryTrailer)
+            .then((response) => {
+                return response.json();
+            }).then((data) => {
+                dispatch(receiveAllFlats(data));
+            }).catch((ex) => {
+                dispatch(errorReceiveAllFlats(ex));
+            });
+    };
 }
