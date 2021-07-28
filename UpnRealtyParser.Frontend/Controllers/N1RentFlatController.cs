@@ -5,6 +5,7 @@ using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Repositories;
+using UpnRealtyParser.Business.Models.N1;
 
 namespace UpnRealtyParser.Frontend.Controllers
 {
@@ -13,6 +14,7 @@ namespace UpnRealtyParser.Frontend.Controllers
     public class N1RentFlatController : BaseController
     {
         private readonly EFGenericRepo<N1RentFlat, RealtyParserContext> _n1RentFlatRepo;
+        private readonly EFGenericRepo<N1RentFlatVmForTable, RealtyParserContext> _n1RentFlatVmRepo;
         private readonly EFGenericRepo<N1HouseInfo, RealtyParserContext> _n1HouseRepo;
         private readonly EFGenericRepo<SubwayStation, RealtyParserContext> _subwayStationRepo;
         private readonly EFGenericRepo<N1Agency, RealtyParserContext> _agencyRepo;
@@ -20,6 +22,7 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly EFGenericRepo<N1FlatPhoto, RealtyParserContext> _n1PhotoRepo;
 
         public N1RentFlatController(EFGenericRepo<N1RentFlat, RealtyParserContext> n1RentFlatRepo,
+            EFGenericRepo<N1RentFlatVmForTable, RealtyParserContext> n1RentFlatVmRepo,
             EFGenericRepo<N1HouseInfo, RealtyParserContext> n1HouseRepo,
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<N1Agency, RealtyParserContext> agencyRepo,
@@ -27,6 +30,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             EFGenericRepo<N1FlatPhoto, RealtyParserContext> upnPhotoRepo)
         {
             _n1RentFlatRepo = n1RentFlatRepo;
+            _n1RentFlatVmRepo = n1RentFlatVmRepo;
             _n1HouseRepo = n1HouseRepo;
             _agencyRepo = agencyRepo;
             _subwayStationRepo = subwayStationRepo;
@@ -46,11 +50,13 @@ namespace UpnRealtyParser.Frontend.Controllers
             N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
                 _pageLinkRepo, _n1PhotoRepo);
 
-            IQueryable<N1RentFlat> allRentFlats = _n1RentFlatRepo.GetAllWithoutTracking();
+            IQueryable<N1RentFlatVmForTable> allRentFlats = apartmentHelper.GetFilteredAndOrderedFlats(isShowArchived, isExcludeFirstFloor,
+                isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
+                addressPart, sortField, sortOrder, _n1RentFlatVmRepo);
 
             int totalCount = allRentFlats.Count();
 
-            List<N1RentFlat> filteredFlats = allRentFlats
+            List<N1RentFlatVmForTable> filteredFlats = allRentFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
 

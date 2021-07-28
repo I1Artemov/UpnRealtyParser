@@ -75,10 +75,18 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         title: 'Описание',
         dataIndex: 'shortenedDescription',
         key: 'shortenedDescription',
-        render: (text, row) => (
-            (text == null || text == '') ?
-                <Link to={"/n1sellflat/" + row.id}>{'Описание отсутствует'}</Link> :
-                <Link to={"/n1sellflat/" + row.id}>{text}</Link>
-        )
+        render: (text, row) => {
+            let linkText = text;
+            if (text == null || text == '')
+                linkText = 'Описание отсутствует';
+
+            let linkUrl = "/n1sellflat/" + row.id;
+            if (row.minimalRentPeriod != undefined)
+                linkUrl = "/n1rentflat/" + row.id;
+
+            return (
+                <Link to={linkUrl}>{linkText}</Link>
+            );
+        }
     }
 ];
