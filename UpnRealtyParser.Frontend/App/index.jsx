@@ -11,7 +11,7 @@ import upnRentFlatIndexReducer from './Containers/UpnRentFlatIndex/upnRentFlatIn
 import n1SellFlatIndexReducer from './Containers/N1SellFlatIndex/n1SellFlatIndexReducer.jsx';
 import n1RentFlatIndexReducer from './Containers/N1RentFlatIndex/n1RentFlatIndexReducer.jsx';
 import anySellFlatReadReducer from './Containers/AnySellFlatReadConnected/anySellFlatReadReducer.jsx';
-import upnRentFlatReadReducer from './Containers/UpnRentFlatRead/upnRentFlatReadReducer.jsx';
+import anyRentFlatReadReducer from './Containers/AnyRentFlatReadConnected/anyRentFlatReadReducer.jsx';
 import upnHouseIndexReducer from './Containers/UpnHouseIndex/upnHouseIndexReducer.jsx';
 import upnAgencyIndexReducer from './Containers/UpnAgencyIndex/upnAgencyIndexReducer.jsx';
 import webProxyIndexReducer from './Containers/WebProxyIndex/webProxyIndexReducer.jsx';
@@ -30,7 +30,7 @@ const rootReducer = combineReducers({
     n1SellFlatIndexReducer,
     n1RentFlatIndexReducer,
     anySellFlatReadReducer,
-    upnRentFlatReadReducer,
+    anyRentFlatReadReducer,
 	upnHouseIndexReducer,
 	upnAgencyIndexReducer,
     webProxyIndexReducer,
