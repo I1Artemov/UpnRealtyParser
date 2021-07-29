@@ -5,7 +5,8 @@
     /// </summary>
     public class PaybackPeriodPoint : IdInfo
     {
-        public int UpnHouseId { get; set; }
+        public int HouseId { get; set; }
+        public string SiteName { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
         public double? PaybackYears { get; set; }

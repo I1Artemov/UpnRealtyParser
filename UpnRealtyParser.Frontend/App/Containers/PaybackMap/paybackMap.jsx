@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import { getAllPoints, setPaybackLimit } from "./paybackMapActions.jsx";
-import { Divider, Spin, InputNumber, Button } from 'antd';
+import { getAllPoints, setPaybackLimit, setUseUpnData, setUseN1Data } from "./paybackMapActions.jsx";
+import { Divider, Spin, InputNumber, Button, Checkbox } from 'antd';
 import { SiteTitle } from '../../const.jsx';
 
 import HeatMapFunctional from './heatMapPayback.jsx';
@@ -16,7 +16,7 @@ class PaybackMap extends React.Component {
     }
 
     applyFilters() {
-        this.props.getAllPoints(this.props.paybackLimit);
+        this.props.getAllPoints(this.props.paybackLimit, this.props.isUseUpnData, this.props.isUseN1Data);
     }
 
     render() {
@@ -51,6 +51,10 @@ class PaybackMap extends React.Component {
                     <HeatMapFunctional points={normalizedPoints} />
                     <div style={{ marginTop: '8px' }}>
                         <div id="heat-legend-color-gradient"></div>
+                        <div style={{ display: 'inline-block', marginRight: '6px' }}>Данные UPN </div>
+                        <Checkbox onChange={this.props.setUseUpnData.bind(this)} checked={this.props.isUseUpnData} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
+                        <div style={{ display: 'inline-block', marginRight: '6px' }}>Данные N1 </div>
+                        <Checkbox onChange={this.props.setUseN1Data.bind(this)} checked={this.props.isUseN1Data} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
                         <div style={{ display: 'inline-block', marginRight: '6px'}}>Отображать с окупаемостью до </div>
                         <InputNumber onChange={this.props.setPaybackLimit.bind(this)} value={this.props.paybackLimit} min={1} max={80} style={{ display: 'inline-block', marginRight: '6px' }} />
                         <div style={{ display: 'inline-block'}}>лет</div>
@@ -77,14 +81,18 @@ let mapStateToProps = (state) => {
         points: state.paybackMapReducer.points,
         error: state.paybackMapReducer.error,
         isLoading: state.paybackMapReducer.isLoading,
-        paybackLimit: state.paybackMapReducer.paybackLimit
+        paybackLimit: state.paybackMapReducer.paybackLimit,
+        isUseUpnData: state.paybackMapReducer.isUseUpnData,
+        isUseN1Data: state.paybackMapReducer.isUseN1Data,
     };
 };
 
 let mapActionsToProps = (dispatch) => {
     return {
-        getAllPoints: (paybackLimit) => dispatch(getAllPoints(paybackLimit)),
-        setPaybackLimit: (ev) => dispatch(setPaybackLimit(ev))
+        getAllPoints: (paybackLimit, isUseUpnData, isUseN1Data) => dispatch(getAllPoints(paybackLimit, isUseUpnData, isUseN1Data)),
+        setPaybackLimit: (ev) => dispatch(setPaybackLimit(ev)),
+        setUseUpnData: (ev) => dispatch(setUseUpnData(ev)),
+        setUseN1Data: (ev) => dispatch(setUseN1Data(ev))
     };
 };
 

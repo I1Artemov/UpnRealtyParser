@@ -606,3 +606,14 @@ from [N1RentFlat] uf
 inner join [N1HouseInfo] hou on uf.N1HouseInfoId = hou.Id
 inner join [SubwayStation] station on station.Id = hou.ClosestSubwayStationId
 inner join [N1Agency] ag on uf.N1AgencyId = ag.Id));
+
+
+-- 29.07.2021 Подсчет периода окупаемости еще и по N1, а не только по УПН
+EXEC sp_rename 
+@objname = '[PaybackPeriodPoint].[UpnHouseId]', 
+@newname = 'HouseId', 
+@objtype = 'COLUMN';
+
+ALTER TABLE [PaybackPeriodPoint] ADD [SiteName] nvarchar(64);
+
+UPDATE [PaybackPeriodPoint] SET [SiteName] = 'upn';

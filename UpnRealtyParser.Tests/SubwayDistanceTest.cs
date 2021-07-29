@@ -16,7 +16,7 @@ namespace UpnRealtyParser.Tests
             }
         }
 
-        //[Fact] Ручной, вставка в БД
+        [Fact (Skip = "Ручной, вставка в БД")]
         public void SimilarHousesForUpnFindTest()
         {
             using (var realtyContext = new RealtyParserContext())

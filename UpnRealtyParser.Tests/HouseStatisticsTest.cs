@@ -81,25 +81,41 @@ namespace UpnRealtyParser.Tests
         {
             using (var realtyContext = new RealtyParserContext())
             {
-                EFGenericRepo<UpnFlat, RealtyParserContext> upnFlatRepo =
-                    new EFGenericRepo<UpnFlat, RealtyParserContext>(realtyContext);
-                EFGenericRepo<UpnRentFlat, RealtyParserContext> upnRentFlatRepo =
-                    new EFGenericRepo<UpnRentFlat, RealtyParserContext>(realtyContext);
-
-                EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo =
-                    new EFGenericRepo<UpnHouseInfo, RealtyParserContext>(realtyContext);
-
-                EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo =
-                    new EFGenericRepo<AveragePriceStat, RealtyParserContext>(realtyContext);
-                EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> paybackPointsRepo =
-                    new EFGenericRepo<PaybackPeriodPoint, RealtyParserContext>(realtyContext);
-
-                HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator =
-                    new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(upnFlatRepo, upnRentFlatRepo,
-                        upnHouseRepo, statsRepo, paybackPointsRepo);
-
-                calculator.CalculateAllPaybackPeriodPoints();
+                calculateUpnPaybackPeriods(realtyContext);
+                calculateN1PaybackPeriods(realtyContext);
             }
+        }
+
+        private void calculateUpnPaybackPeriods(RealtyParserContext realtyContext)
+        {
+            var upnFlatRepo = new EFGenericRepo<UpnFlat, RealtyParserContext>(realtyContext);
+            var upnRentFlatRepo = new EFGenericRepo<UpnRentFlat, RealtyParserContext>(realtyContext);
+
+            var upnHouseRepo = new EFGenericRepo<UpnHouseInfo, RealtyParserContext>(realtyContext);
+
+            var statsRepo = new EFGenericRepo<AveragePriceStat, RealtyParserContext>(realtyContext);
+            var paybackPointsRepo = new EFGenericRepo<PaybackPeriodPoint, RealtyParserContext>(realtyContext);
+
+            var calculator = new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(upnFlatRepo, upnRentFlatRepo,
+                    upnHouseRepo, statsRepo, paybackPointsRepo);
+
+            calculator.CalculateAllPaybackPeriodPoints(Const.SiteNameUpn.ToLower());
+        }
+
+        private void calculateN1PaybackPeriods(RealtyParserContext realtyContext)
+        {
+            var upnFlatRepo = new EFGenericRepo<N1Flat, RealtyParserContext>(realtyContext);
+            var upnRentFlatRepo = new EFGenericRepo<N1RentFlat, RealtyParserContext>(realtyContext);
+
+            var upnHouseRepo = new EFGenericRepo<N1HouseInfo, RealtyParserContext>(realtyContext);
+
+            var statsRepo = new EFGenericRepo<AveragePriceStat, RealtyParserContext>(realtyContext);
+            var paybackPointsRepo = new EFGenericRepo<PaybackPeriodPoint, RealtyParserContext>(realtyContext);
+
+            var calculator = new HouseStatisticsCalculator<N1Flat, N1RentFlat, N1HouseInfo>(upnFlatRepo, upnRentFlatRepo,
+                    upnHouseRepo, statsRepo, paybackPointsRepo);
+
+            calculator.CalculateAllPaybackPeriodPoints(Const.SiteNameN1.ToLower());
         }
     }
 }

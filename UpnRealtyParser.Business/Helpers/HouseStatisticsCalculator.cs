@@ -201,21 +201,21 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Вычисляет и возвращает точки для карты окупаемости по всем домам, собранным с УПН
         /// </summary>
-        public void CalculateAllPaybackPeriodPoints()
+        public void CalculateAllPaybackPeriodPoints(string siteName)
         {
             List<PaybackPeriodPoint> paybackPoints = new List<PaybackPeriodPoint>();
-            List<int?> upnHouseIds = _houseRepo.GetAllWithoutTracking().Select(x => x.Id).ToList();
+            List<int?> houseIds = _houseRepo.GetAllWithoutTracking().Select(x => x.Id).ToList();
 
-            foreach (int? upnHouseId in upnHouseIds)
+            foreach (int? houseId in houseIds)
             {
                 var avgSingleSellPrice = _flatRepo.GetAllWithoutTracking()
-                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 1).Average(x => x.Price);
+                    .Where(x => x.HouseInfoId == houseId && x.RoomAmount == 1).Average(x => x.Price);
                 var avgTwoSellPrice = _flatRepo.GetAllWithoutTracking()
-                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 2).Average(x => x.Price);
+                    .Where(x => x.HouseInfoId == houseId && x.RoomAmount == 2).Average(x => x.Price);
                 var avgSingleRentPrice = _rentFlatRepo.GetAllWithoutTracking()
-                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 1).Average(x => x.Price);
+                    .Where(x => x.HouseInfoId == houseId && x.RoomAmount == 1).Average(x => x.Price);
                 var avgTwoRentPrice = _rentFlatRepo.GetAllWithoutTracking()
-                    .Where(x => x.HouseInfoId == upnHouseId && x.RoomAmount == 2).Average(x => x.Price);
+                    .Where(x => x.HouseInfoId == houseId && x.RoomAmount == 2).Average(x => x.Price);
 
                 bool hasSingleInfo = avgSingleSellPrice != null && avgSingleRentPrice != null;
                 bool hasTwoInfo = avgTwoSellPrice != null && avgTwoRentPrice != null;
@@ -231,14 +231,15 @@ namespace UpnRealtyParser.Business.Helpers
                 if (hasSingleInfo && !hasTwoInfo) totalPayback = singlePaybackYears;
                 if (!hasSingleInfo && hasTwoInfo) totalPayback = twoPaybackYears;
 
-                THouse houseInfo = _houseRepo.GetAllWithoutTracking().FirstOrDefault(x => x.Id == upnHouseId);
+                THouse houseInfo = _houseRepo.GetAllWithoutTracking().FirstOrDefault(x => x.Id == houseId);
                 PaybackPeriodPoint paybackPoint = new PaybackPeriodPoint
                 {
-                    UpnHouseId = upnHouseId.GetValueOrDefault(0),
+                    HouseId = houseId.GetValueOrDefault(0),
                     Latitude = houseInfo?.Latitude,
                     Longitude = houseInfo?.Longitude,
                     PaybackYears = totalPayback,
-                    HouseAddress = houseInfo.Address
+                    HouseAddress = houseInfo.Address,
+                    SiteName = siteName
                 };
                 paybackPoints.Add(paybackPoint);
             }
@@ -251,7 +252,7 @@ namespace UpnRealtyParser.Business.Helpers
             foreach(var point in points)
             {
                 PaybackPeriodPoint foundPoint = _paybackPointsRepo.GetAll()
-                    .FirstOrDefault(x => x.UpnHouseId == point.UpnHouseId);
+                    .FirstOrDefault(x => x.HouseId == point.HouseId && x.SiteName == point.SiteName);
 
                 if(foundPoint != null)
                 {

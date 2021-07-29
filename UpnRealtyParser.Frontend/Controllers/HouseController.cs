@@ -137,19 +137,22 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("payback/points")]
         [HttpGet]
-        public IActionResult GetAllPaybackMapPoints(double? paybackLimit)
+        public IActionResult GetAllPaybackMapPoints(double? paybackLimit, bool? isUseUpnData, bool? isUseN1Data)
         {
-            HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator =
-                new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(
-                    _upnSellFlatRepo, _upnRentFlatRepo, _upnHouseRepo, _statsRepo);
-
             if (!paybackLimit.HasValue)
                 paybackLimit = 80.0f;
 
-            List<PaybackPeriodPoint> points = _paybackPointsRepo
+            IQueryable<PaybackPeriodPoint> allPoints = _paybackPointsRepo
                 .GetAllWithoutTracking()
-                .Where(x => x.PaybackYears < paybackLimit.Value).ToList();
+                .Where(x => x.PaybackYears >= 5 && x.PaybackYears < paybackLimit.Value && x.Latitude != null);
 
+            if (isUseUpnData.HasValue && isUseUpnData == false)
+                allPoints = allPoints.Where(x => x.SiteName != Const.SiteNameUpn.ToLower());
+
+            if (isUseN1Data.HasValue && isUseN1Data == false)
+                allPoints = allPoints.Where(x => x.SiteName != Const.SiteNameN1.ToLower());
+
+            List<PaybackPeriodPoint> points = allPoints.ToList();
             return Json(new { points });
         }
 
