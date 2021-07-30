@@ -20,6 +20,7 @@ namespace UpnRealtyParser.Tests
             UpnApartmentParser parser = new UpnApartmentParser();
             List<IElement> fieldValueElements = parser.GetTdElementsFromWebPage(webPageText);
             UpnFlat upnFlat = parser.GetUpnSellFlatFromPageText(fieldValueElements);
+            string houseImageHid = parser.GetHousePhotoGuidFromPage(webPageText);
 
             Assert.Equal(2, upnFlat.RoomAmount);
             Assert.Equal(42, (int)Math.Floor(upnFlat.SpaceSum.Value));
@@ -29,8 +30,8 @@ namespace UpnRealtyParser.Tests
             Assert.Equal(2, upnFlat.JointBathrooms);
             Assert.Null(upnFlat.SeparateBathrooms);
             Assert.Equal("Нет", upnFlat.Furniture);
-            //Assert.Equal("Чистая продажа", upnFlat.SellCondition);
             Assert.Equal(1690000, upnFlat.Price);
+            Assert.Equal("323722964ccf41e1b07181c5bbe92ea1", houseImageHid);
             Assert.StartsWith("Продается двухкомнатная квартира на первом этаже", upnFlat.Description);
         }
 

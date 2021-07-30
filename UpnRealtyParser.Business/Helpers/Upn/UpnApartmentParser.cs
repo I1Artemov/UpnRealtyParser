@@ -247,5 +247,21 @@ namespace UpnRealtyParser.Business.Helpers
                 upnFlat.Description = upnFlat.Description.Trim();
             }
         }
+
+        /// <summary>
+        /// Вытаскивает ID фотографии дома со страницы с квартирой УПН (из ссылки "Посмотреть фото дома")
+        /// </summary>
+        public string GetHousePhotoGuidFromPage(string pageHtml)
+        {
+            int startIndex = pageHtml.IndexOf("var imghid = '");
+            int endIndex = pageHtml.IndexOf("$(function () {");
+
+            if (startIndex <= 0 || endIndex <= 0 || endIndex <= startIndex)
+                return null;
+
+            string extractedHid = pageHtml
+                .Substring(startIndex + "var imghid = '".Length, endIndex - startIndex - "var imghid = '".Length - 8);
+            return extractedHid;
+        }
     }
 }
