@@ -31,6 +31,8 @@ export function getQueryTrailerWithFilteringParameters(queryTrailer, filteringIn
         queryTrailer += '&closestSubwayStationId=' + filteringInfo.closestSubwayStationId;
     if (filteringInfo.addressPart !== null && filteringInfo.addressPart !== undefined)
         queryTrailer += '&addressPart=' + filteringInfo.addressPart;
+    if (filteringInfo.isShowRooms !== null && filteringInfo.isShowRooms !== undefined)
+        queryTrailer += '&isShowRooms=' + filteringInfo.isShowRooms;
 
     return queryTrailer;
 }

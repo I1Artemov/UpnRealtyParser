@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import {
     setShowArchived, setExcludeFirstFloor, setExcludeLastFloor,
     setMinPrice, setMaxPrice, setMinBuildYear, setMaxSubwayDistance, setClosestSubwayStationId,
-    setAddressPart, clearSearchParameters
+    setAddressPart, setShowRooms, clearSearchParameters
 } from './flatsSearchBarActions.jsx';
 
 import { Checkbox, InputNumber, Select, Button, Input } from 'antd';
@@ -57,13 +57,17 @@ class FlatsSearchBar extends React.Component {
 
                     <span>Улица</span>
                     <Input onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ marginLeft: 9, marginRight: 28, width: 240 }} />
+
+                    <span>Отображать комнаты</span>
+                    <Checkbox onChange={this.props.setShowRooms.bind(this)} checked={this.props.isShowRooms} style={{ marginLeft: 9, marginRight: 28 }}
+                        disabled={this.props.siteName == "n1"}></Checkbox>
                 </div>
             </div>
         );
     }
 }
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state, ownProps) => {
     return {
         isShowArchived: state.flatSearchBarReducer.filteringInfo.isShowArchived,
         isExcludeFirstFloor: state.flatSearchBarReducer.filteringInfo.isExcludeFirstFloor,
@@ -74,6 +78,8 @@ let mapStateToProps = (state) => {
         maxSubwayDistance: state.flatSearchBarReducer.filteringInfo.maxSubwayDistance,
         closestSubwayStationId: state.flatSearchBarReducer.filteringInfo.closestSubwayStationId,
         addressPart: state.flatSearchBarReducer.filteringInfo.addressPart,
+        isShowRooms: state.flatSearchBarReducer.filteringInfo.isShowRooms,
+        siteName: ownProps.siteName
     };
 };
 
@@ -89,6 +95,7 @@ let mapActionsToProps = (dispatch, ownProps) => {
         setClosestSubwayStationId: (ev) => dispatch(setClosestSubwayStationId(ev)),
         setAddressPart: (ev) => dispatch(setAddressPart(ev)),
         clearSearchParameters: () => dispatch(clearSearchParameters()),
+        setShowRooms: (ev) => dispatch(setShowRooms(ev)),
         handleTableChange: ownProps.handleTableChange // Проброс функции из компонента с таблицей квартир
     };
 };

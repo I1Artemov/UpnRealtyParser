@@ -8,6 +8,7 @@
     SET_MAX_SUBWAY_DISTANCE,
     SET_CLOSEST_SUBWAY_STATION_ID,
     SET_ADDRESS_PART,
+    SET_SHOW_ROOMS,
     CLEAR_SEARCH_PARAMETERS
 } from './flatsSearchBarConstants.jsx';
 
@@ -80,6 +81,14 @@ export function setAddressPart(ev) {
     return {
         type: SET_ADDRESS_PART,
         payload: addressPart
+    };
+}
+
+export function setShowRooms(ev) {
+    let isShow = ev.target.checked;
+    return {
+        type: SET_SHOW_ROOMS,
+        payload: isShow
     };
 }
 

@@ -8,6 +8,7 @@
     SET_MAX_SUBWAY_DISTANCE,
     SET_CLOSEST_SUBWAY_STATION_ID,
     SET_ADDRESS_PART,
+    SET_SHOW_ROOMS,
     CLEAR_SEARCH_PARAMETERS
 } from './flatsSearchBarConstants.jsx';
 
@@ -21,7 +22,8 @@ const initialState = {
         minBuildYear: null,
         maxSubwayDistance: null,
         closestSubwayStationId: null,
-        addressPart: null
+        addressPart: null,
+        isShowRooms: true
     }
 };
 
@@ -54,12 +56,15 @@ export default function searchBar(state = initialState, action) {
         case SET_ADDRESS_PART:
             return { ...state, filteringInfo: { ...state.filteringInfo, addressPart: action.payload } };
 
+        case SET_SHOW_ROOMS:
+            return { ...state, filteringInfo: { ...state.filteringInfo, isShowRooms: action.payload } };
+
         case CLEAR_SEARCH_PARAMETERS:
             return {
                 ...state, filteringInfo: {
                     ...state.filteringInfo, isShowArchived: true, isExcludeFirstFloor: false, isExcludeLastFloor: false,
                     minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null,
-                    addressPart: null
+                    addressPart: null, isShowRooms: true
                 }
             };
 

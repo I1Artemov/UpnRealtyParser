@@ -52,7 +52,7 @@ namespace UpnRealtyParser.Frontend.Controllers
 
             IQueryable<N1RentFlatVmForTable> allRentFlats = apartmentHelper.GetFilteredAndOrderedFlats(isShowArchived, isExcludeFirstFloor,
                 isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
-                addressPart, sortField, sortOrder, _n1RentFlatVmRepo);
+                addressPart, true, sortField, sortOrder, _n1RentFlatVmRepo);
 
             int totalCount = allRentFlats.Count();
 

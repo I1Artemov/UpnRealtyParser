@@ -49,7 +49,7 @@ class UpnRentFlatIndex extends React.Component {
                     <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                     <Breadcrumb.Item>В аренду</Breadcrumb.Item>
                 </Breadcrumb>
-                <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} />
+                <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"upn"}/>
                 <Table
                     dataSource={flatsData}
                     columns={editedColumns}

@@ -34,7 +34,7 @@ class N1SellFlatIndex extends React.Component {
                 <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                 <Breadcrumb.Item>На продажу</Breadcrumb.Item>
             </Breadcrumb>
-            <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} />
+            <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"n1"}/>
             <Table
                 dataSource={flatsData}
                 columns={SELL_FLATS_TABLE_COLUMNS}

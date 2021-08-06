@@ -13,5 +13,6 @@
         double? ClosestSubwayStationRange { get; set; }
         string ClosestSubwayName { get; set; }
         string HouseAddress { get; set; }
+        int? RoomAmount { get; set; }
     }
 }

@@ -10,10 +10,11 @@ export const SELL_FLATS_TABLE_COLUMNS = [
         title: '№',
         dataIndex: 'id',
         key: 'id',
-        sorter: true
+        sorter: true,
+        align: 'center'
     },
     {
-        title: 'Создан/проверен',
+        title: 'Создан/ проверен',
         dataIndex: 'createdCheckedDatesSummary',
         key: 'createdCheckedDatesSummary',
         sorter: true

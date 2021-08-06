@@ -160,14 +160,14 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public IQueryable<T> GetFilteredAndOrderedFlats<T>(bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart, string sortField, string sortOrder,
+            int? closestSubwayStationId, string addressPart, bool? isShowRooms, string sortField, string sortOrder,
             EFGenericRepo<T, RealtyParserContext> flatVmRepo)
             where T : FlatTableVmBase
         {
             IQueryable<T> allSellFlats = flatVmRepo.GetAllWithoutTracking();
 
             allSellFlats = applyFiltering(allSellFlats, isShowArchived, isExcludeFirstFloor, isExcludeLastFloor, minPrice, maxPrice, minBuildYear,
-                maxSubwayDistance, closestSubwayStationId, addressPart);
+                maxSubwayDistance, closestSubwayStationId, addressPart, isShowRooms);
 
             allSellFlats = ApplySorting(allSellFlats, sortField, sortOrder);
 
@@ -179,7 +179,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         protected IQueryable<T> applyFiltering<T>(IQueryable<T> allSellFlats, bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart)
+            int? closestSubwayStationId, string addressPart, bool? isShowRooms)
             where T : IFilterableFlat
         {
             if (!isShowArchived.GetValueOrDefault(true))
@@ -205,6 +205,8 @@ namespace UpnRealtyParser.Business.Helpers
             }
             if (!string.IsNullOrEmpty(addressPart))
                 allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
+            if (!isShowRooms.GetValueOrDefault(true))
+                allSellFlats = allSellFlats.Where(x => x.RoomAmount.GetValueOrDefault(0) != 0);
 
             return allSellFlats;
         }
