@@ -1,4 +1,7 @@
-﻿import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT } from './userConstants.jsx';
+﻿import {
+    LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT,
+    SET_LOGIN_FORM_LOGIN, SET_LOGIN_FORM_PASSWORD, SET_LOGIN_FORM_SUBMITTED
+} from './userConstants.jsx';
 import { userService } from './userService.jsx';
 //import { history } from '../_helpers';
 
@@ -33,4 +36,28 @@ export function login(username, password) {
 export function logout() {
     userService.logout();
     return { type: LOGOUT };
+}
+
+export function setLoginPageLogin(ev) {
+    const login = ev;
+    return {
+        type: SET_LOGIN_FORM_LOGIN,
+        payload: login
+    };
+}
+
+export function setLoginPagePassword(ev) {
+    const pass = ev;
+    return {
+        type: SET_LOGIN_FORM_PASSWORD,
+        payload: pass
+    };
+}
+
+export function setLoginPageSubmitted(ev) {
+    const isSubmitted = ev;
+    return {
+        type: SET_LOGIN_FORM_SUBMITTED,
+        payload: isSubmitted
+    };
 }

@@ -1,6 +1,11 @@
 ﻿import { Href_User_Authenticate } from '../../const.jsx';
 
-export function login(username, password) {
+export const userService = {
+    login,
+    logout
+};
+
+function login(username, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -20,7 +25,7 @@ export function login(username, password) {
         });
 }
 
-export function logout() {
+function logout() {
     // При выходе просто стираем токен из LocalStorage
     localStorage.removeItem('user');
 }

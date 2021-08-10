@@ -6,7 +6,7 @@ const initialState = user ?
     { loggedIn: true, user } :
     {};
 
-export function authentication(state = initialState, action) {
+export default function authentication(state = initialState, action) {
     switch (action.type) {
         case LOGIN_REQUEST:
             return {
