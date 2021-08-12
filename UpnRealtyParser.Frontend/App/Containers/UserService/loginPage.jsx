@@ -2,49 +2,42 @@
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { login, logout, setLoginPageLogin, setLoginPagePassword, setLoginPageSubmitted } from './userActions.jsx';
+import { doLogin, doLogout, setLoginPageLogin, setLoginPagePassword, setLoginPageSubmitted } from './userActions.jsx';
 
 class LoginPage extends React.Component {
-    constructor(props) {
+    /*constructor(props) {
         super(props);
 
         // reset login status
-        this.props.logout();
-    }
+        this.props.doLogout();
+    }*/
 
     handleSubmit(e) {
         e.preventDefault();
 
         this.props.setLoginPageSubmitted(true);
-        const login = this.props.login;
-        const password = this.props.const;
 
-        if (login && password) {
-            this.props.login(login, password);
+        if (this.props.login && this.props.password) {
+            this.props.doLogin(this.props.login, this.props.password);
         }
     }
 
     render() {
-        const loggingIn = this.props.loggingIn;
-        const login = this.props.login;
-        const password = this.props.password;
-        const submitted = this.props.submitted;
-
         return (
             <div>
                 <h2>Login</h2>
-                <form name="form" onSubmit={this.handleSubmit}>
+                <form name="form" onSubmit={this.handleSubmit.bind(this)}>
                     <div>
                         <label htmlFor="login">Username</label>
-                        <input type="text" className="form-control" name="login" value={login} onChange={this.props.setLoginPageLogin.bind(this)} />
-                        {submitted && !login &&
+                        <input type="text" className="form-control" name="login" value={this.props.login} onChange={this.props.setLoginPageLogin.bind(this)} />
+                        {this.props.submitted && !this.props.login &&
                             <div className="help-block">Username is required</div>
                         }
                     </div>
                     <div>
                         <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" name="password" value={password} onChange={this.props.setLoginPagePassword.bind(this)} />
-                        {submitted && !password &&
+                        <input type="password" className="form-control" name="password" value={this.props.password} onChange={this.props.setLoginPagePassword.bind(this)} />
+                        {this.props.submitted && !this.props.password &&
                             <div className="help-block">Password is required</div>
                         }
                     </div>
@@ -59,8 +52,8 @@ class LoginPage extends React.Component {
 
 let mapActionsToProps = (dispatch) => {
     return {
-        login: () => dispatch(login()),
-        logout: () => dispatch(logout()),
+        doLogin: (login, password) => dispatch(doLogin(login, password)),
+        doLogout: () => dispatch(doLogout()),
         setLoginPageLogin: (ev) => dispatch(setLoginPageLogin(ev)),
         setLoginPagePassword: (ev) => dispatch(setLoginPagePassword(ev)),
         setLoginPageSubmitted: (ev) => dispatch(setLoginPageSubmitted(ev)),

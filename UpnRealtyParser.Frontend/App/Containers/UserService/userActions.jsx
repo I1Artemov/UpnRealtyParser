@@ -3,7 +3,9 @@
     SET_LOGIN_FORM_LOGIN, SET_LOGIN_FORM_PASSWORD, SET_LOGIN_FORM_SUBMITTED
 } from './userConstants.jsx';
 import { userService } from './userService.jsx';
-//import { history } from '../_helpers';
+import { createBrowserHistory } from 'history';
+
+const history = createBrowserHistory({ forceRefresh: true });
 
 function loginRequest(user) {
     return { type: LOGIN_REQUEST, user }
@@ -15,15 +17,15 @@ function loginFailure(error) {
     return { type: LOGIN_FAILURE, error }
 }
 
-export function login(username, password) {
+export function doLogin(username, password) {
     return dispatch => {
         dispatch(loginRequest({ username }));
 
-        userService.login(username, password)
+        userService.doLogin(username, password)
             .then(
                 user => {
                     dispatch(loginSuccess(user));
-                    //history.push('/');
+                    history.push('/');
                 },
                 error => {
                     dispatch(loginFailure(error));
@@ -33,13 +35,13 @@ export function login(username, password) {
     };
 }
 
-export function logout() {
-    userService.logout();
+export function doLogout() {
+    userService.doLogout();
     return { type: LOGOUT };
 }
 
 export function setLoginPageLogin(ev) {
-    const login = ev;
+    const login = ev.target.value;
     return {
         type: SET_LOGIN_FORM_LOGIN,
         payload: login
@@ -47,7 +49,7 @@ export function setLoginPageLogin(ev) {
 }
 
 export function setLoginPagePassword(ev) {
-    const pass = ev;
+    const pass = ev.target.value;
     return {
         type: SET_LOGIN_FORM_PASSWORD,
         payload: pass

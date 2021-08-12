@@ -13,10 +13,13 @@ namespace UpnRealtyParser.Business.Helpers
             if (login != "admin")
                 return null;
 
-            byte[] requiredHash = new System.Security.Cryptography.HMACSHA512()
+            /*byte[] requiredHash = new System.Security.Cryptography.HMACSHA512()
                 .ComputeHash(System.Text.Encoding.UTF8.GetBytes("nothing"));
 
             if (!verifyPasswordHash(password, requiredHash))
+                return null;*/
+
+            if (password != "nothing")
                 return null;
 
             UserInfo user = new UserInfo { Login = login };

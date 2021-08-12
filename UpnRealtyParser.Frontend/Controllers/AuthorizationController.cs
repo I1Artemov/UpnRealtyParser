@@ -26,7 +26,8 @@ namespace UpnRealtyParser.Frontend.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("authenticate")]
+        [HttpPost]
+        [Route("authenticate")]
         public IActionResult Authenticate([FromBody] UserInfo userInfo)
         {
             var user = _authHelper.Authenticate(userInfo.Login, userInfo.Password);

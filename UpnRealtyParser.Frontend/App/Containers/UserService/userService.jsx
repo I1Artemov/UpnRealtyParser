@@ -1,15 +1,17 @@
 ﻿import { Href_User_Authenticate } from '../../const.jsx';
 
 export const userService = {
-    login,
-    logout
+    doLogin,
+    doLogout
 };
 
-function login(username, password) {
+function doLogin(username, password) {
     const requestOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify(
+            { login: username, password: password }
+        )
     };
 
     return fetch(Href_User_Authenticate, requestOptions)
@@ -25,7 +27,7 @@ function login(username, password) {
         });
 }
 
-function logout() {
+function doLogout() {
     // При выходе просто стираем токен из LocalStorage
     localStorage.removeItem('user');
 }
