@@ -2,7 +2,7 @@
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { doLogin, doLogout, setLoginPageLogin, setLoginPagePassword, setLoginPageSubmitted } from './userActions.jsx';
+import { doLogin, setLoginPageLogin, setLoginPagePassword, setLoginPageSubmitted } from './userActions.jsx';
 
 class LoginPage extends React.Component {
     /*constructor(props) {
@@ -53,7 +53,6 @@ class LoginPage extends React.Component {
 let mapActionsToProps = (dispatch) => {
     return {
         doLogin: (login, password) => dispatch(doLogin(login, password)),
-        doLogout: () => dispatch(doLogout()),
         setLoginPageLogin: (ev) => dispatch(setLoginPageLogin(ev)),
         setLoginPagePassword: (ev) => dispatch(setLoginPagePassword(ev)),
         setLoginPageSubmitted: (ev) => dispatch(setLoginPageSubmitted(ev)),
