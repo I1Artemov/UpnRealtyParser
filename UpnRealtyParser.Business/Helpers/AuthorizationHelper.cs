@@ -1,25 +1,37 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Cryptography;
+using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Models;
+using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Business.Helpers
 {
     public class AuthorizationHelper
     {
+        private readonly EFGenericRepo<UserInfo, RealtyParserContext> _userRepo;
+
+        public AuthorizationHelper(EFGenericRepo<UserInfo, RealtyParserContext> userRepo)
+        {
+            _userRepo = userRepo;
+        }
+
+        /// <summary>
+        /// Проверка реквизитов пользователя (пароль сверяется по хэшу)
+        /// </summary>
         public UserInfo Authenticate(string login, string password)
         {
             if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
                 return null;
 
-            if (login != "admin")
+            UserInfo foundUser = _userRepo.GetAllWithoutTracking().FirstOrDefault(x => x.Login == login);
+
+            if (foundUser == null)
                 return null;
 
-            /*byte[] requiredHash = new System.Security.Cryptography.HMACSHA512()
-                .ComputeHash(System.Text.Encoding.UTF8.GetBytes("nothing"));
+            byte[] requiredHash = foundUser.PasswordHash;
 
             if (!verifyPasswordHash(password, requiredHash))
-                return null;*/
-
-            if (password != "nothing")
                 return null;
 
             UserInfo user = new UserInfo { Login = login };
@@ -30,11 +42,10 @@ namespace UpnRealtyParser.Business.Helpers
         {
             if (password == null) throw new ArgumentNullException("password");
             if (string.IsNullOrWhiteSpace(password)) throw new ArgumentException("Value cannot be empty or whitespace only string.", "password");
-            if (storedHash.Length != 64) throw new ArgumentException("Invalid length of password hash (64 bytes expected).", "passwordHash");
 
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            using (var sha1 = new SHA1CryptoServiceProvider())
             {
-                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                var computedHash = sha1.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
                 for (int i = 0; i < computedHash.Length; i++)
                 {
                     if (computedHash[i] != storedHash[i]) return false;

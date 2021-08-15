@@ -6,9 +6,11 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Options;
+using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Frontend.Controllers
 {
@@ -19,9 +21,10 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly AuthorizationHelper _authHelper;
         private readonly AppOptions _appOptions;
 
-        public AuthorizationController(IOptions<AppOptions> appOptions)
+        public AuthorizationController(IOptions<AppOptions> appOptions,
+            EFGenericRepo<UserInfo, RealtyParserContext> userRepo)
         {
-            _authHelper = new AuthorizationHelper();
+            _authHelper = new AuthorizationHelper(userRepo);
             _appOptions = appOptions.Value;
         }
 

@@ -31,6 +31,7 @@ export default function authentication(state = initialState, action) {
         case LOGIN_SUCCESS:
             return {
                 loggedIn: true,
+                isLoginFailed: false,
                 user: action.user
             };
         case LOGIN_FAILURE:

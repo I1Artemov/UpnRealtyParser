@@ -10,5 +10,7 @@ namespace UpnRealtyParser.Business.Models
 
         [NotMapped]
         public string Password { get; set; }
+
+        public string FullName { get; set; }
     }
 }

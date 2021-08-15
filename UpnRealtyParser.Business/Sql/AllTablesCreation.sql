@@ -617,3 +617,15 @@ EXEC sp_rename
 ALTER TABLE [PaybackPeriodPoint] ADD [SiteName] nvarchar(64);
 
 UPDATE [PaybackPeriodPoint] SET [SiteName] = 'upn';
+
+-- 15.08.2021 Таблица с пользователями
+create table [UserInfo] (
+	[Id] int IDENTITY(1,1),
+	[CreationDateTime] datetime,
+	[Login] nvarchar(max),
+	[FullName] nvarchar(max),
+	[PasswordHash] varbinary(256),
+	PRIMARY KEY ([Id])
+);
+
+INSERT INTO [UserInfo]([CreationDateTime], [Login], [FullName], [PasswordHash]) VALUES ('20210815', 'admin', 'Admin', HashBytes('SHA1','nothing'));
