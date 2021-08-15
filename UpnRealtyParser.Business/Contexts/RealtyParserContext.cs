@@ -30,6 +30,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<AveragePriceStat> AveragePriceStats { get; set; }
         public DbSet<ServiceStage> ServiceStages { get; set; }
         public DbSet<PaybackPeriodPoint> PaybackPeriodPoints { get; set; }
+        public DbSet<UserInfo> UserInfos { get; set; }
 
         public RealtyParserContext(DbContextOptions<RealtyParserContext> options) : base(options) { }
 

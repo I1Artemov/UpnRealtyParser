@@ -20,6 +20,7 @@ import flatPriceStatisticsPlotReducer from './Containers/FlatPriceStatisticsPlot
 import anyHouseReadReducer from './Containers/Common/anyHouseReadReducer.jsx';
 import paybackMapReducer from './Containers/PaybackMap/paybackMapReducer.jsx';
 import flatSearchBarReducer from './Containers/FlatsSearchBar/flatsSearchBarReducer.jsx';
+import authenticationReducer from './Containers/UserService/authenticationReducer.jsx';
 
 import './site.css';
 import '../node_modules/leaflet/dist/leaflet.css';
@@ -38,7 +39,8 @@ const rootReducer = combineReducers({
     anyHouseReadReducer,
     flatPriceStatisticsPlotReducer,
     paybackMapReducer,
-    flatSearchBarReducer
+    flatSearchBarReducer,
+    authenticationReducer
 });
 
 function configureStore(initialState) {

@@ -124,3 +124,58 @@ div.house-statistics-block p {
     display: inline-block;
     margin-left: 260px;
 }
+
+#loginButton {
+    width: 150px;
+    text-align: center;
+    border-style: solid;
+    border-width: 1px;
+    border-color: lightgray;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#loginButton:hover {
+    border-color: white;
+}
+
+#loginButton a {
+    color: lightgray;
+}
+
+#userNameDiv {
+    display: inline-block;
+    font-weight: bold;
+    color: white;
+}
+
+#logoutButton {
+    margin-left: 65px;
+    display: inline-block;
+    color: lightgray;
+    border: none;
+    background-color: transparent;
+}
+
+#logoutButton:hover {
+    color: white;
+}
+
+#userIconInSideBar {
+    font-size: 20px;
+    margin-left: 25px;
+    margin-right: 10px;
+    color: #67b5e3;
+    display: inline-block;
+}
+
+#userSideBarWrapper {
+    margin-top: 20px;
+    height: 35px;
+    background-color: #374659;
+}
+
+#loginForm button {
+    width: 100px;
+}

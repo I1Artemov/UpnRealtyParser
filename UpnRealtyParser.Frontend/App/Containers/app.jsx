@@ -15,6 +15,8 @@ import LogEntryIndex from './LogEntryIndex/logEntryIndex.jsx';
 import AnyHouseRead from './AnyHouseRead/anyHouseRead.jsx';
 import PaybackMap from './PaybackMap/paybackMap.jsx';
 import SiteIndex from '../Stateless/siteIndex.jsx';
+import LoginPage from './UserService/loginPage.jsx';
+import { PrivateRoute } from './UserService/PrivateRoute.jsx';
 
 import { Layout } from 'antd';
 
@@ -37,7 +39,7 @@ export default class App extends React.Component {
                                         <Route path="/houses" component={UpnHouseIndex} />
                                         <Route path="/agencies" component={UpnAgencyIndex} />
                                         <Route path="/webproxies" component={WebProxyIndex} />
-                                        <Route path="/log" component={LogEntryIndex} />
+                                        <PrivateRoute path="/log" component={LogEntryIndex} />
                                         <Route path="/rentflats" component={UpnRentFlatIndex} />
                                         <Route path="/n1sellflats" component={N1SellFlatIndex} />
                                         <Route path="/n1rentflats" component={N1RentFlatIndex} />
@@ -48,6 +50,7 @@ export default class App extends React.Component {
                                         <Route exact path="/upnhouse/:id" render={(props) => <AnyHouseRead siteName="upn" {...props} />} />
                                         <Route exact path="/n1house/:id" render={(props) => <AnyHouseRead siteName="n1" {...props} />} />
                                         <Route exact path="/paybackmap" component={PaybackMap} />
+                                        <Route path="/login" component={LoginPage} />
                                         <Route path="/" component={SiteIndex} />
                                     </Switch>
                                 </main>

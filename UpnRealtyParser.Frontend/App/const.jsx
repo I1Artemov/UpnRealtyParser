@@ -21,3 +21,5 @@ export const Href_HouseController_GetSingleHouseStatistics = "/api/House/getsing
 
 export const Href_HouseController_GetSingleHousePricePlotPoints = "/api/House/getsingle/averageprice/points";
 export const Href_HouseController_GetPaybackMapPoints = "/api/House/payback/points";
+
+export const Href_User_Authenticate = "/api/authorization/authenticate";
