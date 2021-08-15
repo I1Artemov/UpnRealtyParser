@@ -16,13 +16,15 @@ const initialState = user ?
     {
         login: '',
         password: '',
-        loginFormSubmitted: false
+        loginFormSubmitted: false,
+        isLoginFailed: false
     };
 
 export default function authentication(state = initialState, action) {
     switch (action.type) {
         case LOGIN_REQUEST:
             return {
+                ...state,
                 loggingIn: true,
                 user: action.user
             };
@@ -32,7 +34,7 @@ export default function authentication(state = initialState, action) {
                 user: action.user
             };
         case LOGIN_FAILURE:
-            return {};
+            return { ...state, loginFormSubmitted: false, isLoginFailed: true };
         case LOGOUT:
             return {};
         case SET_LOGIN_FORM_LOGIN:

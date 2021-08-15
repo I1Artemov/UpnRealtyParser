@@ -1,51 +1,62 @@
 ﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import { Form, Input, Button, PageHeader, message } from 'antd';
 
 import { doLogin, setLoginPageLogin, setLoginPagePassword, setLoginPageSubmitted } from './userActions.jsx';
 
 class LoginPage extends React.Component {
-    /*constructor(props) {
-        super(props);
-
-        // reset login status
-        this.props.doLogout();
-    }*/
-
     handleSubmit(e) {
-        e.preventDefault();
-
         this.props.setLoginPageSubmitted(true);
 
         if (this.props.login && this.props.password) {
             this.props.doLogin(this.props.login, this.props.password);
         }
+
+        if(this.props.isLoginFailed)
+            message.error("Неправильный логин или пароль");
     }
 
     render() {
         return (
-            <div>
-                <h2>Login</h2>
-                <form name="form" onSubmit={this.handleSubmit.bind(this)}>
-                    <div>
-                        <label htmlFor="login">Username</label>
-                        <input type="text" className="form-control" name="login" value={this.props.login} onChange={this.props.setLoginPageLogin.bind(this)} />
-                        {this.props.submitted && !this.props.login &&
-                            <div className="help-block">Username is required</div>
-                        }
-                    </div>
-                    <div>
-                        <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" name="password" value={this.props.password} onChange={this.props.setLoginPagePassword.bind(this)} />
-                        {this.props.submitted && !this.props.password &&
-                            <div className="help-block">Password is required</div>
-                        }
-                    </div>
-                    <div>
-                        <button className="btn btn-primary">Login</button>
-                    </div>
-                </form>
-            </div>
+            <>
+            <PageHeader
+                className="site-page-header"
+                backIcon={false}
+                onBack={() => null}
+                title="Вход в приложение"
+                subTitle="Введите данные пользователя"
+            />
+            <Form name="loginForm" labelCol={{ span: 8 }} wrapperCol={{ span: 8 }} onFinish={this.handleSubmit.bind(this)}>
+                <Form.Item label="Логин" name="login"
+                rules={[
+                    {
+                    required: true,
+                    message: 'Пожалуйста, введите логин'
+                    }
+                ]}
+                >
+                    <Input onChange={this.props.setLoginPageLogin.bind(this)} value={this.props.login} />
+                </Form.Item>
+
+                <Form.Item label="Пароль" name="password"
+                rules={[
+                    {
+                    required: true,
+                    message: 'Пожалуйста, введите пароль'
+                    }
+                ]}
+                >
+                    <Input.Password onChange={this.props.setLoginPagePassword.bind(this)} value={this.props.password}/>
+                </Form.Item>
+
+                <Form.Item wrapperCol={{ offset: 11, span: 5 }}>
+                    <Button type="primary" htmlType="submit">
+                            Войти
+                    </Button>
+                </Form.Item>
+            </Form>
+            </>
         );
     }
 }
@@ -64,7 +75,8 @@ let mapStateToProps = (state) => {
         loggingIn: state.authenticationReducer.loggingIn,
         login: state.authenticationReducer.login,
         password: state.authenticationReducer.password,
-        loginFormSubmitted: state.authenticationReducer.loginFormSubmitted
+        loginFormSubmitted: state.authenticationReducer.loginFormSubmitted,
+        isLoginFailed: state.authenticationReducer.isLoginFailed,
     };
 }
 

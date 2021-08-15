@@ -19,7 +19,7 @@ class UserBar extends React.Component {
         if (!userInfoStr) {
             return (
                 <div id={"loginButton"}>
-                    <Link to="/login">Войти</Link>
+                    <Link to="/login">Вход</Link>
                 </div>
             );
         }

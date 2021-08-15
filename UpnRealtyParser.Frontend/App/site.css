@@ -175,3 +175,7 @@ div.house-statistics-block p {
     height: 35px;
     background-color: #374659;
 }
+
+#loginForm button {
+    width: 100px;
+}
