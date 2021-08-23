@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { withRouter } from "react-router-dom";
-import { Divider, Spin, Button, Breadcrumb } from 'antd';
+import { Divider, Spin, Button, PageHeader } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
 import { SiteTitle } from '../../const.jsx';
@@ -53,6 +53,7 @@ class AnyFlatRead extends React.Component {
         let isShowPhotos = this.props.isShowApartmentPhotos;
         let breadcrumbHeader = this.props.isRent ? "Квартира в аренду" : "Квартира на продажу";
         let siteName = this.props.siteName;
+        let siteNameSpanClass = siteName === "upn" ? "siteSourceUpn" : "siteSourceN1";
 
         if (isLoading === true) {
             return (
@@ -67,11 +68,15 @@ class AnyFlatRead extends React.Component {
             let mapContainerWidth = flatData.downloadedPhotoHref ? "69%" : "100%";
             return (
                 <div>
-                    <Breadcrumb style={{ margin: '16px 0' }}>
-                        <Breadcrumb.Item>{siteName}</Breadcrumb.Item>
-                        <Breadcrumb.Item>{breadcrumbHeader}</Breadcrumb.Item>
-                    </Breadcrumb>
-                    <Divider orientation={"center"}>{breadcrumbHeader}, ID {flatData.id}</Divider>
+                    <div className={siteNameSpanClass}>
+                        <PageHeader
+                            className="site-page-header"
+                            backIcon={false}
+                            onBack={() => null}
+                            title={"Информация о квартире, ID " + flatData.id}
+                            subTitle={"Сайт: " + siteName.toUpperCase() + ". " + breadcrumbHeader}
+                        />
+                    </div>
                     <SingleFlatInfo flatData={flatData} siteName={siteName}/>
                     {/* TODO: Отдельный компонент для отображения фотографий */}
                     <div style={{ marginTop: "10px", marginBottom: "10px", textAlign: "center"}}>

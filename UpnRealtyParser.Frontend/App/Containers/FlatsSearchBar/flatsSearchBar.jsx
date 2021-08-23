@@ -17,30 +17,37 @@ class FlatsSearchBar extends React.Component {
         return (
             <div className="search-bar-above-table">
                 <div>
-                    <span>Отображать архивные</span>
-                    <Checkbox onChange={this.props.setShowArchived.bind(this)} checked={this.props.isShowArchived} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
+                    <label htmlFor="showArchivedCheckbox">Отображать архивные</label>
+                    <Checkbox id={"showArchivedCheckbox"} className="search-bar-input-with-margin"
+                        onChange={this.props.setShowArchived.bind(this)} checked={this.props.isShowArchived}></Checkbox>
 
-                    <span>Цена от</span>
-                    <InputNumber onChange={this.props.setMinPrice.bind(this)} value={this.props.minPrice} min={0} style={{ width: 110, marginLeft: 9, marginRight: 28 }} />
+                    <label htmlFor="minPriceInput">Цена от</label>
+                    <InputNumber id={"minPriceInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setMinPrice.bind(this)} value={this.props.minPrice} min={0} style={{ width: 110 }} />
 
-                    <span>Цена до</span>
-                    <InputNumber onChange={this.props.setMaxPrice.bind(this)} value={this.props.maxPrice} min={0} style={{ width: 110, marginLeft: 9, marginRight: 28 }} />
+                    <label htmlFor="maxPriceInput">Цена до</label>
+                    <InputNumber id={"maxPriceInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setMaxPrice.bind(this)} value={this.props.maxPrice} min={0} style={{ width: 110 }} />
 
-                    <span>Не первый этаж</span>
-                    <Checkbox onChange={this.props.setExcludeFirstFloor.bind(this)} checked={this.props.isExcludeFirstFloor} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
+                    <label htmlFor="excludeFirstFloorCheckbox">Не первый этаж</label>
+                    <Checkbox id={"excludeFirstFloorCheckbox"} className="search-bar-input-with-margin"
+                        onChange={this.props.setExcludeFirstFloor.bind(this)} checked={this.props.isExcludeFirstFloor}></Checkbox>
 
-                    <span>Не последний этаж</span>
-                    <Checkbox onChange={this.props.setExcludeLastFloor.bind(this)} checked={this.props.isExcludeLastFloor} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
+                    <label htmlFor="excludeLastFloorCheckbox">Не последний этаж</label>
+                    <Checkbox id={"excludeLastFloorCheckbox"} className="search-bar-input-with-margin"
+                        onChange={this.props.setExcludeLastFloor.bind(this)} checked={this.props.isExcludeLastFloor}></Checkbox>
 
-                    <span>Год постройки от</span>
-                    <InputNumber onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2020} style={{ marginLeft: 9, marginRight: 28 }} />
+                    <label htmlFor="minBuildYearInput">Год постройки от</label>
+                    <InputNumber id={"minBuildYearInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2020} />
 
                     <Button onClick={this.props.handleTableChange} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
                     <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
                 </div>
                 <div style={{ marginTop: "6px" }}>
-                    <span>Ближайшая станция</span>
-                    <Select onChange={this.props.setClosestSubwayStationId.bind(this)} style={{ width: 229, marginLeft: 9, marginRight: 28 }} placeholder="Выберите станцию">
+                    <label htmlFor="closestSubwayStationIdSelect">Ближайшая станция</label>
+                    <Select id={"closestSubwayStationIdSelect"} className="search-bar-input-with-margin"
+                        onChange={this.props.setClosestSubwayStationId.bind(this)} style={{ width: 229 }} placeholder="Выберите станцию">
                         <Select.Option value="1">Проспект космонавтов</Select.Option>
                         <Select.Option value="2">Уралмаш</Select.Option>
                         <Select.Option value="3">Машиностроителей</Select.Option>
@@ -52,14 +59,17 @@ class FlatsSearchBar extends React.Component {
                         <Select.Option value="9">Ботаническая</Select.Option>
                     </Select>
 
-                    <span>Расстояние до метро, м</span>
-                    <InputNumber onChange={this.props.setMaxSubwayDistance.bind(this)} value={this.props.maxSubwayDistance} style={{ marginLeft: 9, marginRight: 28 }} />
+                    <label htmlFor="maxSubwayDistanceInput">Расстояние до метро, м</label>
+                    <InputNumber id={"maxSubwayDistanceInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setMaxSubwayDistance.bind(this)} value={this.props.maxSubwayDistance} />
 
-                    <span>Улица</span>
-                    <Input onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ marginLeft: 9, marginRight: 28, width: 240 }} />
+                    <label htmlFor="addressPartInput">Улица</label>
+                    <Input id={"addressPartInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ width: 240 }} />
 
-                    <span>Отображать комнаты</span>
-                    <Checkbox onChange={this.props.setShowRooms.bind(this)} checked={this.props.isShowRooms} style={{ marginLeft: 9, marginRight: 28 }}
+                    <label htmlFor="showRoomsCheckbox">Отображать комнаты</label>
+                    <Checkbox id={"showRoomsCheckbox"} className="search-bar-input-with-margin"
+                        onChange={this.props.setShowRooms.bind(this)} checked={this.props.isShowRooms}
                         disabled={this.props.siteName == "n1"}></Checkbox>
                 </div>
             </div>

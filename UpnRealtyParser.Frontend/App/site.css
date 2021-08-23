@@ -46,12 +46,14 @@ tr.archived-flat a {
     margin-bottom: 30px;
 }
 
-span.siteSourceUpn {
+span.siteSourceUpn,
+.siteSourceUpn .ant-page-header-heading-sub-title {
     color: #609ed0;
     font-weight: bold;
 }
 
-span.siteSourceN1 {
+span.siteSourceN1,
+.siteSourceN1 .ant-page-header-heading-sub-title {
     color: darkred;
     font-weight: bold;
 }
@@ -178,4 +180,9 @@ div.house-statistics-block p {
 
 #loginForm button {
     width: 100px;
+}
+
+.search-bar-input-with-margin {
+    margin-left: 9px;
+    margin-right: 28px;
 }

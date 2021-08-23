@@ -44,17 +44,21 @@ class UpnHouseIndex extends React.Component {
                 <PageHeader className="site-page-header" backIcon={false} onBack={() => null}
                     title="Дома УПН и N1" />
             <div className="search-bar-above-table">
-                <span>Из УПН</span>
-                <Checkbox onChange={this.props.setShowUpn.bind(this)} checked={this.props.isShowUpn} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
+                <label htmlFor="showUpnInput">Из УПН</label>
+                <Checkbox id={"showUpnInput"} className="search-bar-input-with-margin"
+                    onChange={this.props.setShowUpn.bind(this)} checked={this.props.isShowUpn}></Checkbox>
 
-                <span>Из N1</span>
-                <Checkbox onChange={this.props.setShowN1.bind(this)} checked={this.props.isShowN1} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
+                <label htmlFor="showN1Input">Из N1</label>
+                <Checkbox id={"showN1Input"} className="search-bar-input-with-margin"
+                    onChange={this.props.setShowN1.bind(this)} checked={this.props.isShowN1}></Checkbox>
 
-                <span>Год постройки от</span>
-                <InputNumber onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2025} style={{ marginLeft: 9, marginRight: 28 }} />
+                <label htmlFor="minBuildYearInput">Год постройки от</label>
+                <InputNumber id={"minBuildYearInput"} className="search-bar-input-with-margin"
+                    onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2025} />
 
-                <span>Улица</span>
-                <Input onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ marginLeft: 9, marginRight: 28, width: 400 }} />
+                <label htmlFor="addressPartInput">Улица</label>
+                <Input id={"addressPartInput"} className="search-bar-input-with-margin"
+                    onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ width: 400 }} />
 
                 <Button onClick={this.handleTableChange.bind(this)} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
                 <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>

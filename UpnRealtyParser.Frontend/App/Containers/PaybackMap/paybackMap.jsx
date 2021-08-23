@@ -52,12 +52,15 @@ class PaybackMap extends React.Component {
                     <HeatMapFunctional points={normalizedPoints} />
                     <div style={{ marginTop: '8px' }}>
                         <div id="heat-legend-color-gradient"></div>
-                        <div style={{ display: 'inline-block', marginRight: '6px' }}>Данные UPN </div>
-                        <Checkbox onChange={this.props.setUseUpnData.bind(this)} checked={this.props.isUseUpnData} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
-                        <div style={{ display: 'inline-block', marginRight: '6px' }}>Данные N1 </div>
-                        <Checkbox onChange={this.props.setUseN1Data.bind(this)} checked={this.props.isUseN1Data} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>
-                        <div style={{ display: 'inline-block', marginRight: '6px'}}>Отображать с окупаемостью до </div>
-                        <InputNumber onChange={this.props.setPaybackLimit.bind(this)} value={this.props.paybackLimit} min={1} max={80} style={{ display: 'inline-block', marginRight: '6px' }} />
+                        <label htmlFor="useUpnDataCheckbox">Данные UPN </label>
+                        <Checkbox id={"useUpnDataCheckbox"} className="search-bar-input-with-margin"
+                            onChange={this.props.setUseUpnData.bind(this)} checked={this.props.isUseUpnData}></Checkbox>
+                        <label htmlFor="useN1DataCheckbox">Данные N1 </label>
+                        <Checkbox id="useN1DataCheckbox" className="search-bar-input-with-margin"
+                            onChange={this.props.setUseN1Data.bind(this)} checked={this.props.isUseN1Data}></Checkbox>
+                        <label htmlFor="paybackLimitInput">Отображать с окупаемостью до </label>
+                        <InputNumber id="paybackLimitInput"
+                            onChange={this.props.setPaybackLimit.bind(this)} value={this.props.paybackLimit} min={1} max={80} style={{ display: 'inline-block', marginRight: '6px' }} />
                         <div style={{ display: 'inline-block'}}>лет</div>
                         <Button onClick={this.applyFilters.bind(this)} type="primary" style={{ display: 'inline-block', marginLeft: '16px'}}>Применить</Button>
                     </div>

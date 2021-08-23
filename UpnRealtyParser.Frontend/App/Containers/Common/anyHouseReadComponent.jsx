@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { withRouter } from "react-router-dom";
-import { Divider, Spin, Button, Breadcrumb } from 'antd';
+import { Divider, Spin, Button, PageHeader } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleHouseInfo from '../../Stateless/singleHouseInfo.jsx';
 import SingleHouseStatistics from '../../Stateless/singleHouseStatistics.jsx';
@@ -71,15 +71,15 @@ class AnyHouseRead extends React.Component {
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
             return (
                 <div>
-                    <Breadcrumb style={{ margin: '16px 0' }}>
-                        <Breadcrumb.Item>Дома</Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <span className={siteNameSpanClass}>{siteName.toUpperCase()}</span>
-                        </Breadcrumb.Item>
-                    </Breadcrumb>
-                    <Divider orientation={"center"}>
-                        <span className={siteNameSpanClass}>Информация о доме {siteName.toUpperCase()}, ID {houseData.id}</span>
-                    </Divider>
+                    <div className={siteNameSpanClass}>
+                        <PageHeader
+                            className="site-page-header "
+                            backIcon={false}
+                            onBack={() => null}
+                            title={"Информация о доме, ID " + houseData.id}
+                            subTitle={"Сайт: " + siteName.toUpperCase()}
+                            />
+                    </div>
                     <SingleHouseInfo houseData={houseData} siteName={siteName}/>
                     {
                         (isStatisticsLoading || !houseStatistics) &&
