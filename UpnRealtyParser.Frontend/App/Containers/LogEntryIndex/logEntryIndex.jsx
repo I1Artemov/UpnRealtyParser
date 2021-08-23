@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllLogEntries, startReceivingLogEntries } from './logEntryIndexActions.jsx';
 import { LOG_ENTRIES_TABLE_COLUMNS } from './logEntryIndexConstants.jsx';
-import { Table, Breadcrumb } from 'antd';
+import { Table, PageHeader } from 'antd';
 import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
@@ -27,10 +27,8 @@ class LogEntryIndex extends React.Component {
 
         return (
             <div>
-            <Breadcrumb style={{ margin: '16px 0' }}>
-                <Breadcrumb.Item>Администрирование</Breadcrumb.Item>
-                <Breadcrumb.Item>Лог</Breadcrumb.Item>
-            </Breadcrumb>
+            <PageHeader className="site-page-header" backIcon={false} onBack={() => null}
+                    title="Журнал событий" subTitle="Администрирование"/>
             <Table
                 dataSource={logEntriesData}
                 columns={LOG_ENTRIES_TABLE_COLUMNS}

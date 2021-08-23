@@ -6,7 +6,7 @@ import {
     setAddressPart, clearSearchParameters
 } from './upnHouseIndexActions.jsx';
 import { HOUSES_TABLE_COLUMNS } from './upnHouseIndexConstants.jsx';
-import { Table, Breadcrumb, Checkbox, Input, InputNumber, Button } from 'antd';
+import { Table, PageHeader, Checkbox, Input, InputNumber, Button } from 'antd';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { SiteTitle } from '../../const.jsx';
 
@@ -41,9 +41,8 @@ class UpnHouseIndex extends React.Component {
 
         return (
             <div>
-            <Breadcrumb style={{ margin: '16px 0' }}>
-                <Breadcrumb.Item>Дома УПН и N1</Breadcrumb.Item>
-            </Breadcrumb>
+                <PageHeader className="site-page-header" backIcon={false} onBack={() => null}
+                    title="Дома УПН и N1" />
             <div className="search-bar-above-table">
                 <span>Из УПН</span>
                 <Checkbox onChange={this.props.setShowUpn.bind(this)} checked={this.props.isShowUpn} style={{ marginLeft: 9, marginRight: 28 }}></Checkbox>

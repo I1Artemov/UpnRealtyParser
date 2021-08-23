@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllAgencies, startReceivingAgencies } from './upnAgencyIndexActions.jsx';
 import { AGENCIES_TABLE_COLUMNS } from './upnAgencyIndexConstants.jsx';
-import { Table, Breadcrumb } from 'antd';
+import { Table, PageHeader } from 'antd';
 import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
@@ -27,10 +27,8 @@ class UpnAgencyIndex extends React.Component {
 
         return (
             <div>
-            <Breadcrumb style={{ margin: '16px 0' }}>
-                <Breadcrumb.Item>Upn</Breadcrumb.Item>
-                <Breadcrumb.Item>Агентства</Breadcrumb.Item>
-            </Breadcrumb>
+                <PageHeader className="site-page-header" backIcon={false} onBack={() => null}
+                    title="Агентства УПН и N1" />
             <Table
                 dataSource={agenciesData}
                 columns={AGENCIES_TABLE_COLUMNS}

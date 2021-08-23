@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllPoints, setPaybackLimit, setUseUpnData, setUseN1Data } from "./paybackMapActions.jsx";
-import { Divider, Spin, InputNumber, Button, Checkbox } from 'antd';
+import { PageHeader, Spin, InputNumber, Button, Checkbox } from 'antd';
 import { SiteTitle } from '../../const.jsx';
 
 import HeatMapFunctional from './heatMapPayback.jsx';
@@ -47,7 +47,8 @@ class PaybackMap extends React.Component {
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
             return (
                 <div>
-                    <Divider orientation={"center"}>Карта окупаемости</Divider>
+                    <PageHeader className="site-page-header" backIcon={false} onBack={() => null}
+                        title="Карта окупаемости" subTitle="Статистика по УПН и N1 за весь период сбора данных"/>
                     <HeatMapFunctional points={normalizedPoints} />
                     <div style={{ marginTop: '8px' }}>
                         <div id="heat-legend-color-gradient"></div>

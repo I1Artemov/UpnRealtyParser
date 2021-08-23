@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllProxies, startReceivingProxies } from './webProxyIndexActions.jsx';
 import { PROXIES_TABLE_COLUMNS } from './webProxyIndexConstants.jsx';
-import { Table, Breadcrumb } from 'antd';
+import { Table, PageHeader } from 'antd';
 import { SiteTitle } from '../../const.jsx';
 
 import 'antd/dist/antd.css';
@@ -27,10 +27,8 @@ class WebProxyIndex extends React.Component {
 
         return (
             <div>
-            <Breadcrumb style={{ margin: '16px 0' }}>
-                <Breadcrumb.Item>Администрирование</Breadcrumb.Item>
-                <Breadcrumb.Item>Прокси</Breadcrumb.Item>
-            </Breadcrumb>
+                <PageHeader className="site-page-header" backIcon={false} onBack={() => null}
+                    title="Список HTTP-прокси" subTitle="Администрирование"/>
             <Table
                 dataSource={proxiesData}
                 columns={PROXIES_TABLE_COLUMNS}
