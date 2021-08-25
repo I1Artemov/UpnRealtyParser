@@ -147,11 +147,13 @@ namespace UpnRealtyParser.Business.Helpers
         /// Берет все собранные дома УПН и для каждого рассчитывает средние цены квартир
         /// за месяцы, за которые статистика еще не была посчитана
         /// </summary>
-        public void CalculateAllUpnHouseAvgPricesAndSaveToDb(string site)
+        public void CalculateAllUpnHouseAvgPricesAndSaveToDb(string site, Action<string> writeToLogDelegate)
         {
             List<int> houseIds = _houseRepo.GetAllWithoutTracking()
                 .Where(x => x.Id != null)
                 .Select(x => x.Id.Value).ToList();
+            int housesCount = houseIds.Count;
+            int processedCounter = 0;
 
             foreach (int houseId in houseIds)
             {
@@ -166,7 +168,11 @@ namespace UpnRealtyParser.Business.Helpers
                     currentStartDt = currentStartDt.AddMonths(1);
                 }
 
+                processedCounter++;
                 _statsRepo.Save();
+
+                if (processedCounter % 10 == 0 && writeToLogDelegate != null)
+                    writeToLogDelegate(string.Format("Обработано {0} домов из {1}", processedCounter, housesCount));
             }
         }
 

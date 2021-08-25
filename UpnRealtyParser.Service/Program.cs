@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using UpnRealtyParser.Business;
+using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
 
@@ -84,6 +85,13 @@ namespace UpnRealtyParser.Service
                     {
                         WriteDebugLog("Подсчет новой статистики по домам.");
                         upnAgent.CalculateHousesStatistics();
+                        WriteDebugLog("Поиск похожих домов с разных сайтов");
+                        upnAgent.CloseConnection();
+                        using (var realtyContext = new RealtyParserContext())
+                        {
+                            DistanceCalculator calculator = new DistanceCalculator(realtyContext);
+                            calculator.FindSimilarN1ForAllUpnHouses();
+                        }
                         // Если завершился сбор арендных квартир, то выходим из цикла
                         WriteDebugLog("Обработка полностью завершена. Остановка цикла.");
                         break;

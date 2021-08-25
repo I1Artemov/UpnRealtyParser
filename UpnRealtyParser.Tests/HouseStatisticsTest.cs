@@ -72,7 +72,7 @@ namespace UpnRealtyParser.Tests
                 HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo> calculator =
                     new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(upnFlatRepo, upnRentFlatRepo, null, statsRepo);
 
-                calculator.CalculateAllUpnHouseAvgPricesAndSaveToDb(Const.SiteNameUpn);
+                calculator.CalculateAllUpnHouseAvgPricesAndSaveToDb(Const.SiteNameUpn, null);
             }
         }
 

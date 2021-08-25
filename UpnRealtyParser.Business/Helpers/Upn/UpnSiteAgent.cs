@@ -472,7 +472,7 @@ namespace UpnRealtyParser.Business.Helpers
                     new HouseStatisticsCalculator<UpnFlat, UpnRentFlat, UpnHouseInfo>(
                         _sellFlatRepo, _rentFlatRepo, _houseRepo, _statsRepo);
 
-            calculator.CalculateAllUpnHouseAvgPricesAndSaveToDb(Const.SiteNameUpn);
+            calculator.CalculateAllUpnHouseAvgPricesAndSaveToDb(Const.SiteNameUpn, _writeToLogDelegate);
         }
     }
 }
