@@ -160,14 +160,19 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         public IQueryable<T> GetFilteredAndOrderedFlats<T>(bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart, bool? isShowRooms, string sortField, string sortOrder,
-            EFGenericRepo<T, RealtyParserContext> flatVmRepo)
+            int? closestSubwayStationId, string addressPart, bool? isShowRooms, string startDate, string endDate,
+            string sortField, string sortOrder, EFGenericRepo<T, RealtyParserContext> flatVmRepo)
             where T : FlatTableVmBase
         {
+            DateTime? startDt = Utils.TryGetDateTimeFromString(startDate, "yyyy-MM-dd");
+            if (startDt == null) startDt = DateTime.Now.AddMonths(-6);
+            DateTime? endDt = Utils.TryGetDateTimeFromString(endDate, "yyyy-MM-dd");
+            if (endDt == null) endDt = DateTime.Now;
+
             IQueryable<T> allSellFlats = flatVmRepo.GetAllWithoutTracking();
 
             allSellFlats = applyFiltering(allSellFlats, isShowArchived, isExcludeFirstFloor, isExcludeLastFloor, minPrice, maxPrice, minBuildYear,
-                maxSubwayDistance, closestSubwayStationId, addressPart, isShowRooms);
+                maxSubwayDistance, closestSubwayStationId, addressPart, isShowRooms, startDt, endDt);
 
             allSellFlats = ApplySorting(allSellFlats, sortField, sortOrder);
 
@@ -179,7 +184,7 @@ namespace UpnRealtyParser.Business.Helpers
         /// </summary>
         protected IQueryable<T> applyFiltering<T>(IQueryable<T> allSellFlats, bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart, bool? isShowRooms)
+            int? closestSubwayStationId, string addressPart, bool? isShowRooms, DateTime? startDt, DateTime? endDt)
             where T : IFilterableFlat
         {
             if (!isShowArchived.GetValueOrDefault(true))
@@ -207,6 +212,10 @@ namespace UpnRealtyParser.Business.Helpers
                 allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
             if (!isShowRooms.GetValueOrDefault(true))
                 allSellFlats = allSellFlats.Where(x => x.RoomAmount.GetValueOrDefault(0) != 0);
+            if (startDt.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.CreationDateTime >= startDt);
+            if (endDt.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.CreationDateTime <= endDt);
 
             return allSellFlats;
         }

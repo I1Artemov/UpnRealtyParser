@@ -1,4 +1,6 @@
-﻿namespace UpnRealtyParser.Business.Interfaces
+﻿using System;
+
+namespace UpnRealtyParser.Business.Interfaces
 {
     /// <summary>
     /// Интерфейс для квартир, по которым можно осуществлять поиск по критериям
@@ -14,5 +16,6 @@
         string ClosestSubwayName { get; set; }
         string HouseAddress { get; set; }
         int? RoomAmount { get; set; }
+        DateTime? CreationDateTime { get; set; }
     }
 }

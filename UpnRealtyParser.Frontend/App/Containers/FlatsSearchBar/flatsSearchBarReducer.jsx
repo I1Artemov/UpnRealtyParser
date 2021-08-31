@@ -1,4 +1,5 @@
-﻿import {
+﻿import moment from "moment";
+import {
     SET_SHOW_ARCHIVED,
     SET_EXCLUDE_FIRST_FLOOR,
     SET_EXCLUDE_LAST_FLOOR,
@@ -9,6 +10,8 @@
     SET_CLOSEST_SUBWAY_STATION_ID,
     SET_ADDRESS_PART,
     SET_SHOW_ROOMS,
+    SET_START_DATE,
+    SET_END_DATE,
     CLEAR_SEARCH_PARAMETERS
 } from './flatsSearchBarConstants.jsx';
 
@@ -23,7 +26,9 @@ const initialState = {
         maxSubwayDistance: null,
         closestSubwayStationId: null,
         addressPart: null,
-        isShowRooms: true
+        isShowRooms: true,
+        startDate: null,
+        endDate: null
     }
 };
 
@@ -59,12 +64,18 @@ export default function searchBar(state = initialState, action) {
         case SET_SHOW_ROOMS:
             return { ...state, filteringInfo: { ...state.filteringInfo, isShowRooms: action.payload } };
 
+        case SET_START_DATE:
+            return { ...state, filteringInfo: { ...state.filteringInfo, startDate: action.payload } };
+
+        case SET_END_DATE:
+            return { ...state, filteringInfo: { ...state.filteringInfo, endDate: action.payload } };
+
         case CLEAR_SEARCH_PARAMETERS:
             return {
                 ...state, filteringInfo: {
                     ...state.filteringInfo, isShowArchived: true, isExcludeFirstFloor: false, isExcludeLastFloor: false,
                     minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null,
-                    addressPart: null, isShowRooms: true
+                    addressPart: null, isShowRooms: true, startDate: null, endDate: null
                 }
             };
 

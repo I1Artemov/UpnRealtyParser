@@ -9,6 +9,8 @@
     SET_CLOSEST_SUBWAY_STATION_ID,
     SET_ADDRESS_PART,
     SET_SHOW_ROOMS,
+    SET_START_DATE,
+    SET_END_DATE,
     CLEAR_SEARCH_PARAMETERS
 } from './flatsSearchBarConstants.jsx';
 
@@ -89,6 +91,22 @@ export function setShowRooms(ev) {
     return {
         type: SET_SHOW_ROOMS,
         payload: isShow
+    };
+}
+
+export function setStartDate(ev) {
+    let dt = ev;
+    return {
+        type: SET_START_DATE,
+        payload: dt
+    };
+}
+
+export function setEndDate(ev) {
+    let dt = ev;
+    return {
+        type: SET_END_DATE,
+        payload: dt
     };
 }
 

@@ -1,14 +1,15 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
+import moment from "moment";
 
 import {
     setShowArchived, setExcludeFirstFloor, setExcludeLastFloor,
     setMinPrice, setMaxPrice, setMinBuildYear, setMaxSubwayDistance, setClosestSubwayStationId,
-    setAddressPart, setShowRooms, clearSearchParameters
+    setAddressPart, setShowRooms, setStartDate, setEndDate, clearSearchParameters
 } from './flatsSearchBarActions.jsx';
 
-import { Checkbox, InputNumber, Select, Button, Input } from 'antd';
+import { Checkbox, InputNumber, Select, Button, Input, DatePicker, Tooltip } from 'antd';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 
 class FlatsSearchBar extends React.Component {
@@ -41,8 +42,15 @@ class FlatsSearchBar extends React.Component {
                     <InputNumber id={"minBuildYearInput"} className="search-bar-input-with-margin"
                         onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2020} />
 
-                    <Button onClick={this.props.handleTableChange} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
-                    <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
+                    <Tooltip title="По умолчанию - текущая дата минус полгода">
+                        <label htmlFor="startDatePicker">Дата создания с </label>
+                    </Tooltip>
+                    <DatePicker id={"startDatePicker"} onChange={this.props.setStartDate.bind(this)} style={{ marginLeft: 6, marginRight: 8 }} />
+
+                    <Tooltip title="По умолчанию - текущая дата">
+                        <label htmlFor="endDatePicker"> по </label>
+                    </Tooltip>
+                    <DatePicker id={"endDatePicker"} onChange={this.props.setEndDate.bind(this)} style={{ marginLeft: 6 }}/>
                 </div>
                 <div style={{ marginTop: "6px" }}>
                     <label htmlFor="closestSubwayStationIdSelect">Ближайшая станция</label>
@@ -71,6 +79,9 @@ class FlatsSearchBar extends React.Component {
                     <Checkbox id={"showRoomsCheckbox"} className="search-bar-input-with-margin"
                         onChange={this.props.setShowRooms.bind(this)} checked={this.props.isShowRooms}
                         disabled={this.props.siteName == "n1"}></Checkbox>
+
+                    <Button onClick={this.props.handleTableChange} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
+                    <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
                 </div>
             </div>
         );
@@ -89,6 +100,8 @@ let mapStateToProps = (state, ownProps) => {
         closestSubwayStationId: state.flatSearchBarReducer.filteringInfo.closestSubwayStationId,
         addressPart: state.flatSearchBarReducer.filteringInfo.addressPart,
         isShowRooms: state.flatSearchBarReducer.filteringInfo.isShowRooms,
+        startDate: state.flatSearchBarReducer.filteringInfo.startDate,
+        endDate: state.flatSearchBarReducer.filteringInfo.endDate,
         siteName: ownProps.siteName
     };
 };
@@ -106,6 +119,8 @@ let mapActionsToProps = (dispatch, ownProps) => {
         setAddressPart: (ev) => dispatch(setAddressPart(ev)),
         clearSearchParameters: () => dispatch(clearSearchParameters()),
         setShowRooms: (ev) => dispatch(setShowRooms(ev)),
+        setStartDate: (ev) => dispatch(setStartDate(ev)),
+        setEndDate: (ev) => dispatch(setEndDate(ev)),
         handleTableChange: ownProps.handleTableChange // Проброс функции из компонента с таблицей квартир
     };
 };

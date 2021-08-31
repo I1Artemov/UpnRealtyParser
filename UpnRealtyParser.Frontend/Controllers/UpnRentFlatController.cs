@@ -42,7 +42,8 @@ namespace UpnRealtyParser.Frontend.Controllers
         [HttpGet]
         public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived, bool? isExcludeFirstFloor,
             bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart, bool? isShowRooms, string sortField, string sortOrder)
+            int? closestSubwayStationId, string addressPart, bool? isShowRooms, string startDate, string endDate,
+            string sortField, string sortOrder)
         {
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(10);
@@ -52,7 +53,7 @@ namespace UpnRealtyParser.Frontend.Controllers
                 _pageLinkRepo, _upnPhotoRepo);
             IQueryable<UpnRentFlatVmForTable> allRentFlats = apartmentHelper.GetFilteredAndOrderedFlats(isShowArchived, isExcludeFirstFloor,
                 isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
-                addressPart, isShowRooms, sortField, sortOrder, _upnRentFlatVmRepo);
+                addressPart, isShowRooms, startDate, endDate, sortField, sortOrder, _upnRentFlatVmRepo);
 
             int totalCount = allRentFlats.Count();
 

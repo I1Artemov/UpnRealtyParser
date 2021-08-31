@@ -33,8 +33,19 @@ export function getQueryTrailerWithFilteringParameters(queryTrailer, filteringIn
         queryTrailer += '&addressPart=' + filteringInfo.addressPart;
     if (filteringInfo.isShowRooms !== null && filteringInfo.isShowRooms !== undefined)
         queryTrailer += '&isShowRooms=' + filteringInfo.isShowRooms;
+    if (filteringInfo.startDate !== null && filteringInfo.startDate !== undefined)
+        queryTrailer += '&startDate=' + getDateFormattedWithSeparator(filteringInfo.startDate);
+    if (filteringInfo.endDate !== null && filteringInfo.endDate !== undefined)
+        queryTrailer += '&endDate=' + getDateFormattedWithSeparator(filteringInfo.endDate);
 
     return queryTrailer;
+}
+
+/**
+ * Делает из даты Moment.js строку формата "год-месяц-день"
+ */
+function getDateFormattedWithSeparator(dateObj) {
+    return dateObj.format("YYYY-MM-DD");
 }
 
 /**
