@@ -40,19 +40,15 @@ namespace UpnRealtyParser.Frontend.Controllers
 
         [Route("getall")]
         [HttpGet]
-        public IActionResult GetAllFlats(int? page, int? pageSize, bool? isShowArchived, bool? isExcludeFirstFloor,
-            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart, string startDate, string endDate, string sortField, string sortOrder)
+        public IActionResult GetAllFlats([FromQuery]FlatsFilterOrderParameters filterParams)
         {
-            int targetPage = page.GetValueOrDefault(1);
-            int targetPageSize = pageSize.GetValueOrDefault(10);
+            int targetPage = filterParams.Page.GetValueOrDefault(1);
+            int targetPageSize = filterParams.PageSize.GetValueOrDefault(10);
 
             N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
                 _pageLinkRepo, _n1PhotoRepo);
 
-            IQueryable<N1FlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedFlats(isShowArchived, isExcludeFirstFloor,
-                isExcludeLastFloor, minPrice, maxPrice, minBuildYear, maxSubwayDistance, closestSubwayStationId,
-                addressPart, true, startDate, endDate, sortField,  sortOrder, _n1FlatVmRepo);
+            IQueryable<N1FlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedFlats(filterParams, _n1FlatVmRepo);
 
             int totalCount = allSellFlats.Count();
 

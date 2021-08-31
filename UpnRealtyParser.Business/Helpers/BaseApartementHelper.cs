@@ -158,23 +158,20 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Применяет сортировку и фильтрацию ко всем квартирам УПН на продажу
         /// </summary>
-        public IQueryable<T> GetFilteredAndOrderedFlats<T>(bool? isShowArchived, bool? isExcludeFirstFloor,
-            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart, bool? isShowRooms, string startDate, string endDate,
-            string sortField, string sortOrder, EFGenericRepo<T, RealtyParserContext> flatVmRepo)
+        public IQueryable<T> GetFilteredAndOrderedFlats<T>(FlatsFilterOrderParameters filterParams,
+            EFGenericRepo<T, RealtyParserContext> flatVmRepo)
             where T : FlatTableVmBase
         {
-            DateTime? startDt = Utils.TryGetDateTimeFromString(startDate, "yyyy-MM-dd");
+            DateTime? startDt = Utils.TryGetDateTimeFromString(filterParams.StartDate, "yyyy-MM-dd");
             if (startDt == null) startDt = DateTime.Now.AddMonths(-6);
-            DateTime? endDt = Utils.TryGetDateTimeFromString(endDate, "yyyy-MM-dd");
+            DateTime? endDt = Utils.TryGetDateTimeFromString(filterParams.EndDate, "yyyy-MM-dd");
             if (endDt == null) endDt = DateTime.Now;
 
             IQueryable<T> allSellFlats = flatVmRepo.GetAllWithoutTracking();
 
-            allSellFlats = applyFiltering(allSellFlats, isShowArchived, isExcludeFirstFloor, isExcludeLastFloor, minPrice, maxPrice, minBuildYear,
-                maxSubwayDistance, closestSubwayStationId, addressPart, isShowRooms, startDt, endDt);
+            allSellFlats = applyFiltering(allSellFlats, filterParams, startDt, endDt);
 
-            allSellFlats = ApplySorting(allSellFlats, sortField, sortOrder);
+            allSellFlats = ApplySorting(allSellFlats, filterParams.SortField, filterParams.SortOrder);
 
             return allSellFlats;
         }
@@ -182,35 +179,34 @@ namespace UpnRealtyParser.Business.Helpers
         /// <summary>
         /// Применяет к квартирам поиск по пользовательским критериям
         /// </summary>
-        protected IQueryable<T> applyFiltering<T>(IQueryable<T> allSellFlats, bool? isShowArchived, bool? isExcludeFirstFloor,
-            bool? isExcludeLastFloor, int? minPrice, int? maxPrice, int? minBuildYear, int? maxSubwayDistance,
-            int? closestSubwayStationId, string addressPart, bool? isShowRooms, DateTime? startDt, DateTime? endDt)
+        protected IQueryable<T> applyFiltering<T>(IQueryable<T> allSellFlats, FlatsFilterOrderParameters filterParams,
+            DateTime? startDt, DateTime? endDt)
             where T : IFilterableFlat
         {
-            if (!isShowArchived.GetValueOrDefault(true))
+            if (!filterParams.IsShowArchived.GetValueOrDefault(true))
                 allSellFlats = allSellFlats.Where(x => x.IsArchived.GetValueOrDefault(0) == 0);
-            if (isExcludeFirstFloor.GetValueOrDefault(false))
+            if (filterParams.IsExcludeFirstFloor.GetValueOrDefault(false))
                 allSellFlats = allSellFlats.Where(x => x.FlatFloor > 1);
-            if (isExcludeLastFloor.GetValueOrDefault(false))
+            if (filterParams.IsExcludeLastFloor.GetValueOrDefault(false))
                 allSellFlats = allSellFlats.Where(x => x.FlatFloor < x.HouseMaxFloor);
-            if (minPrice.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.Price >= minPrice.Value);
-            if (maxPrice.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.Price <= maxPrice.Value);
-            if (minBuildYear.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.HouseBuildYear >= minBuildYear.Value);
-            if (maxSubwayDistance.HasValue)
-                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayStationRange <= maxSubwayDistance.Value);
-            if (closestSubwayStationId.HasValue)
+            if (filterParams.MinPrice.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.Price >= filterParams.MinPrice.Value);
+            if (filterParams.MaxPrice.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.Price <= filterParams.MaxPrice.Value);
+            if (filterParams.MinBuildYear.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.HouseBuildYear >= filterParams.MinBuildYear.Value);
+            if (filterParams.MaxSubwayDistance.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.ClosestSubwayStationRange <= filterParams.MaxSubwayDistance.Value);
+            if (filterParams.ClosestSubwayStationId.HasValue)
             {
                 SubwayStation foundStation = _subwayStationRepo.GetAllWithoutTracking()
-                    .FirstOrDefault(x => x.Id == closestSubwayStationId.Value);
+                    .FirstOrDefault(x => x.Id == filterParams.ClosestSubwayStationId.Value);
                 string stationName = foundStation?.Name;
                 allSellFlats = allSellFlats.Where(x => x.ClosestSubwayName == stationName);
             }
-            if (!string.IsNullOrEmpty(addressPart))
-                allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(addressPart));
-            if (!isShowRooms.GetValueOrDefault(true))
+            if (!string.IsNullOrEmpty(filterParams.AddressPart))
+                allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(filterParams.AddressPart));
+            if (!filterParams.IsShowRooms.GetValueOrDefault(true))
                 allSellFlats = allSellFlats.Where(x => x.RoomAmount.GetValueOrDefault(0) != 0);
             if (startDt.HasValue)
                 allSellFlats = allSellFlats.Where(x => x.CreationDateTime >= startDt);

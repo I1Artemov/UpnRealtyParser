@@ -1,5 +1,8 @@
 ﻿namespace UpnRealtyParser.Business.Models
 {
+    /// <summary>
+    /// Объект с параметрами для сортировки и фильтрации квартир в методах GetAll
+    /// </summary>
     public class FlatsFilterOrderParameters
     {
         public int? Page { get; set; }
