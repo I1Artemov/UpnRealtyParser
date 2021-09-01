@@ -1,6 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import { getAllFlats, startReceivingFlats } from '../Common/anyFlatIndexActions.jsx';
 // Используем те же колонки, что и у квартир на продажу
 import { SELL_FLATS_TABLE_COLUMNS } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
@@ -49,7 +51,9 @@ class UpnRentFlatIndex extends React.Component {
                     <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                     <Breadcrumb.Item>В аренду</Breadcrumb.Item>
                 </Breadcrumb>
-                <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"upn"}/>
+                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                    <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"upn"}/>
+                </ErrorBoundary>
                 <Table
                     dataSource={flatsData}
                     columns={editedColumns}

@@ -1,6 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import {
     getAllFlats, startReceivingFlats, savePagingParameters
 } from '../Common/anyFlatIndexActions.jsx';
@@ -47,7 +49,9 @@ class UpnSellFlatIndex extends React.Component {
                     <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                     <Breadcrumb.Item>На продажу</Breadcrumb.Item>
                 </Breadcrumb>
-                <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"upn"}/>
+                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                    <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"upn"} />
+                </ErrorBoundary>
                 <Table
                     dataSource={flatsData}
                     columns={SELL_FLATS_TABLE_COLUMNS}

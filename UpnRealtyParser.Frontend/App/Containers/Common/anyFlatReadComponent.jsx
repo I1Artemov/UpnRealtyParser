@@ -1,6 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { withRouter } from "react-router-dom";
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import { Divider, Spin, Button, PageHeader } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleFlatInfo from '../../Stateless/singleFlatInfo.jsx';
@@ -77,39 +79,48 @@ class AnyFlatRead extends React.Component {
                             subTitle={"Сайт: " + siteName.toUpperCase() + ". " + breadcrumbHeader}
                         />
                     </div>
-                    <SingleFlatInfo flatData={flatData} siteName={siteName}/>
-                    {/* TODO: Отдельный компонент для отображения фотографий */}
-                    <div style={{ marginTop: "10px", marginBottom: "10px", textAlign: "center"}}>
-                        {
-                            flatData.photoCount > 0 && !isShowPhotos &&
-                            <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
-                                <Button type="primary" onClick={() => this.props.showFlatPhotos()}>Показать фото ({flatData.photoCount})</Button>
-                            </div>
-                        }
-                        {
-                            isShowPhotos &&
-                            flatData.photoHrefs.map((photoHref) => {
-                                return (<img key={photoHref} className="flat-photo-medium" src={photoHref}/>);
-                            })
-                        }
-                    </div>
+
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <SingleFlatInfo flatData={flatData} siteName={siteName} />
+                    </ErrorBoundary>
+
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <div style={{ marginTop: "10px", marginBottom: "10px", textAlign: "center"}}>
+                            {
+                                flatData.photoCount > 0 && !isShowPhotos &&
+                                <div style={{ marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
+                                    <Button type="primary" onClick={() => this.props.showFlatPhotos()}>Показать фото ({flatData.photoCount})</Button>
+                                </div>
+                            }
+                            {
+                                isShowPhotos &&
+                                flatData.photoHrefs.map((photoHref) => {
+                                    return (<img key={photoHref} className="flat-photo-medium" src={photoHref}/>);
+                                })
+                            }
+                        </div>
+                    </ErrorBoundary>
 
                     {
                         flatData.downloadedPhotoHref &&
                         <img style={{ display: "inline-block", maxWidth: "29%", height: "360px", position: "relative", float: "left" }}
                             key={flatData.downloadedPhotoHref} src={flatData.downloadedPhotoHref} />
                     }
-                    <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false}
-                        style={{ height: "360px", width: mapContainerWidth, display: "inline-block", float: "right" }}>
-                        <TileLayer
-                            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                        {
-                        flatData.houseLatitude && flatData.houseLongitude &&
-                        <Marker position={[flatData.houseLatitude, flatData.houseLongitude]} icon={customMarker}></Marker>
-                        }
-                    </MapContainer>
+
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false}
+                            style={{ height: "360px", width: mapContainerWidth, display: "inline-block", float: "right" }}>
+                            <TileLayer
+                                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            {
+                            flatData.houseLatitude && flatData.houseLongitude &&
+                            <Marker position={[flatData.houseLatitude, flatData.houseLongitude]} icon={customMarker}></Marker>
+                            }
+                        </MapContainer>
+                    </ErrorBoundary>
+
                     <div style={{ clear: "both" }}></div>
                     <div style={{ marginTop: "15px", marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>
                         <Button onClick={returnToFlatsPage}>К списку квартир</Button>

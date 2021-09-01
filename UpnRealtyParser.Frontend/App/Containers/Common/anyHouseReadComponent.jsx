@@ -1,6 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { withRouter } from "react-router-dom";
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import { Divider, Spin, Button, PageHeader } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleHouseInfo from '../../Stateless/singleHouseInfo.jsx';
@@ -80,34 +82,46 @@ class AnyHouseRead extends React.Component {
                             subTitle={"Сайт: " + siteName.toUpperCase()}
                             />
                     </div>
-                    <SingleHouseInfo houseData={houseData} siteName={siteName}/>
-                    {
-                        (isStatisticsLoading || !houseStatistics) &&
-                        <div className="centered-content-div-w-margin">
-                            <p>Подсчет статистики...</p>
-                            <Spin size="large" />
-                        </div>
-                    }
-                    {
-                        !isStatisticsLoading && houseStatistics &&
-                        <SingleHouseStatistics houseStatistics={houseStatistics} />
-                    }
-                    <FlatPriceStatisticsPlot houseId={houseId} siteName={siteName} />
 
-                    <div style={{ display: "inline-block", width: "48%", float: "right" }}>
-                        <Divider orientation={"center"}>Расположение дома</Divider>
-                        <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false}
-                            style={{ height: "270px", width: "100%" }}>
-                            <TileLayer
-                                attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                            />
-                            {
-                                centerLatitude && centerLongitude &&
-                                <Marker position={[centerLatitude, centerLongitude]} icon={customMarker}></Marker>
-                            }
-                        </MapContainer>
-                    </div>
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <SingleHouseInfo houseData={houseData} siteName={siteName} />
+                    </ErrorBoundary>
+
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        {
+                            (isStatisticsLoading || !houseStatistics) &&
+                            <div className="centered-content-div-w-margin">
+                                <p>Подсчет статистики...</p>
+                                <Spin size="large" />
+                            </div>
+                        }
+                        {
+                            !isStatisticsLoading && houseStatistics &&
+                            <SingleHouseStatistics houseStatistics={houseStatistics} />
+                        }
+                    </ErrorBoundary>
+
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <FlatPriceStatisticsPlot houseId={houseId} siteName={siteName} />
+                    </ErrorBoundary>
+
+                    <ErrorBoundary FallbackComponent={ErrorFallback}>
+                        <div style={{ display: "inline-block", width: "48%", float: "right" }}>
+                            <Divider orientation={"center"}>Расположение дома</Divider>
+                            <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false}
+                                style={{ height: "270px", width: "100%" }}>
+                                <TileLayer
+                                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+                                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                />
+                                {
+                                    centerLatitude && centerLongitude &&
+                                    <Marker position={[centerLatitude, centerLongitude]} icon={customMarker}></Marker>
+                                }
+                            </MapContainer>
+                        </div>
+                    </ErrorBoundary>
+
                     <div style={{ clear: "both" }}></div>
 
                     <div style={{ marginTop: "15px", marginLeft: "auto", marginRight: "auto", textAlign: "center" }}>

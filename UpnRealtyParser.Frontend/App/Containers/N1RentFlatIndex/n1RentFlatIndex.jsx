@@ -1,6 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import { getAllFlats, startReceivingFlats } from '../Common/anyFlatIndexActions.jsx';
 import { SELL_FLATS_TABLE_COLUMNS } from '../N1SellFlatIndex/n1SellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
@@ -34,7 +36,9 @@ class N1SellFlatIndex extends React.Component {
                     <Breadcrumb.Item>Квартиры</Breadcrumb.Item>
                     <Breadcrumb.Item>В аренду</Breadcrumb.Item>
                 </Breadcrumb>
-                <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"n1"}/>
+                <ErrorBoundary FallbackComponent={ErrorFallback}>
+                    <FlatsSearchBar handleTableChange={this.handleTableChange.bind(this)} siteName={"n1"} />
+                </ErrorBoundary>
                 <Table
                     dataSource={flatsData}
                     columns={SELL_FLATS_TABLE_COLUMNS}

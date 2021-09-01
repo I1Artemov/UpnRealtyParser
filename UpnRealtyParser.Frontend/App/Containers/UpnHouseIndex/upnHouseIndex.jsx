@@ -1,6 +1,8 @@
 ﻿import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
+import { ErrorBoundary } from 'react-error-boundary';
+import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import {
     getAllHouses, startReceivingHouses, setMinBuildYear, setIsShowUpn, setIsShowN1,
     setAddressPart, clearSearchParameters
@@ -43,26 +45,28 @@ class UpnHouseIndex extends React.Component {
             <div>
                 <PageHeader className="site-page-header" backIcon={false} onBack={() => null}
                     title="Дома УПН и N1" />
-            <div className="search-bar-above-table">
-                <label htmlFor="showUpnInput">Из УПН</label>
-                <Checkbox id={"showUpnInput"} className="search-bar-input-with-margin"
-                    onChange={this.props.setShowUpn.bind(this)} checked={this.props.isShowUpn}></Checkbox>
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+                <div className="search-bar-above-table">
+                    <label htmlFor="showUpnInput">Из УПН</label>
+                    <Checkbox id={"showUpnInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setShowUpn.bind(this)} checked={this.props.isShowUpn}></Checkbox>
 
-                <label htmlFor="showN1Input">Из N1</label>
-                <Checkbox id={"showN1Input"} className="search-bar-input-with-margin"
-                    onChange={this.props.setShowN1.bind(this)} checked={this.props.isShowN1}></Checkbox>
+                    <label htmlFor="showN1Input">Из N1</label>
+                    <Checkbox id={"showN1Input"} className="search-bar-input-with-margin"
+                        onChange={this.props.setShowN1.bind(this)} checked={this.props.isShowN1}></Checkbox>
 
-                <label htmlFor="minBuildYearInput">Год постройки от</label>
-                <InputNumber id={"minBuildYearInput"} className="search-bar-input-with-margin"
-                    onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2025} />
+                    <label htmlFor="minBuildYearInput">Год постройки от</label>
+                    <InputNumber id={"minBuildYearInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2025} />
 
-                <label htmlFor="addressPartInput">Улица</label>
-                <Input id={"addressPartInput"} className="search-bar-input-with-margin"
-                    onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ width: 400 }} />
+                    <label htmlFor="addressPartInput">Улица</label>
+                    <Input id={"addressPartInput"} className="search-bar-input-with-margin"
+                        onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ width: 400 }} />
 
-                <Button onClick={this.handleTableChange.bind(this)} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
-                <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
-            </div>
+                    <Button onClick={this.handleTableChange.bind(this)} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
+                    <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
+                </div>
+            </ErrorBoundary>
             <Table
                 dataSource={housesData}
                 columns={HOUSES_TABLE_COLUMNS}
