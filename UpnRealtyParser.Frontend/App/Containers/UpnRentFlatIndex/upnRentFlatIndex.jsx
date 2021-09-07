@@ -5,7 +5,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import { getAllFlats, startReceivingFlats } from '../Common/anyFlatIndexActions.jsx';
 // Используем те же колонки, что и у квартир на продажу
-import { SELL_FLATS_TABLE_COLUMNS } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
+import { sellFlatIndexConst } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
 import { Href_UpnRentFlatController_GetAllFlats } from "../../const.jsx";
 import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
@@ -31,7 +31,7 @@ class UpnRentFlatIndex extends React.Component {
         let isFlatsLoading = this.props.isFlatsLoading;
         let errorMessage = this.props.error;
         // Убираем сортировку у колонок, относящихся к дому, т.к. пока нет дозаполнения информацией о домах
-        let editedColumns = SELL_FLATS_TABLE_COLUMNS.map((item) => {
+        let editedColumns = sellFlatIndexConst.SELL_FLATS_TABLE_COLUMNS.map((item) => {
             if (item.key === "houseBuildYear" || item.key === "subwaySummary")
                 return { ...item, sorter: false }
             return item;

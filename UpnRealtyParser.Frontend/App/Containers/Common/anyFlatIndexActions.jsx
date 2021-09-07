@@ -1,9 +1,4 @@
-﻿import {
-    GET_ALL_FLATS_SUCCESS,
-    GET_ALL_FLATS_ERROR,
-    GET_ALL_FLATS_LOADING_IN_PROGRESS,
-    SAVE_PAGING_PARAMETERS
-} from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
+﻿import { sellFlatIndexConst } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
 import "isomorphic-fetch";
 
 /**
@@ -81,14 +76,14 @@ export function getQueryTrailerWithSortingParameters(queryTrailer, sorting) {
 /** Для редьюсера - старт загрузки квартир с сервера */
 export function startReceivingFlats() {
     return {
-        type: GET_ALL_FLATS_LOADING_IN_PROGRESS
+        type: sellFlatIndexConst.GET_ALL_FLATS_LOADING_IN_PROGRESS
     };
 }
 
 /** Для редьюсера - обработка успешной загрузки квартир с сервера */
 export function receiveAllFlats(data) {
     return {
-        type: GET_ALL_FLATS_SUCCESS,
+        type: sellFlatIndexConst.GET_ALL_FLATS_SUCCESS,
         flatsInfo: data.flatsList,
         totalFlatsCount: data.totalCount
     };
@@ -97,7 +92,7 @@ export function receiveAllFlats(data) {
 /** Для редьюсера - обработка ошибки при загрузке квартир с сервера */
 export function errorReceiveAllFlats(err) {
     return {
-        type: GET_ALL_FLATS_ERROR,
+        type: sellFlatIndexConst.GET_ALL_FLATS_ERROR,
         error: err
     };
 }
@@ -108,7 +103,7 @@ export function errorReceiveAllFlats(err) {
  */
 export function savePagingParameters(pagination) {
     return {
-        type: SAVE_PAGING_PARAMETERS,
+        type: sellFlatIndexConst.SAVE_PAGING_PARAMETERS,
         payload: {
             current: pagination.current,
             pageSize: pagination.pageSize

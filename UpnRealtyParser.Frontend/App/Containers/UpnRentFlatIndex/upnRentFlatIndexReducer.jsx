@@ -1,8 +1,4 @@
-﻿import {
-    GET_ALL_FLATS_SUCCESS,
-    GET_ALL_FLATS_ERROR,
-    GET_ALL_FLATS_LOADING_IN_PROGRESS
-} from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
+﻿import { sellFlatIndexConst } from '../UpnSellFlatIndex/upnSellFlatIndexConstants.jsx';
 
 const initialState = {
     flatsInfo: [{ id: 0, description: '' }],
@@ -13,13 +9,13 @@ const initialState = {
 
 export default function flats(state = initialState, action) {
     switch (action.type) {
-        case GET_ALL_FLATS_LOADING_IN_PROGRESS:
+        case sellFlatIndexConst.GET_ALL_FLATS_LOADING_IN_PROGRESS:
             return { ...state, isFlatsLoading: true };
 
-        case GET_ALL_FLATS_SUCCESS:
+        case sellFlatIndexConst.GET_ALL_FLATS_SUCCESS:
             return { ...state, flatsInfo: action.flatsInfo, totalFlatsCount: action.totalFlatsCount, error: '', isFlatsLoading: false };
 
-        case GET_ALL_FLATS_ERROR:
+        case sellFlatIndexConst.GET_ALL_FLATS_ERROR:
             return { ...state, error: action.error, isFlatsLoading: false };
 
         default:

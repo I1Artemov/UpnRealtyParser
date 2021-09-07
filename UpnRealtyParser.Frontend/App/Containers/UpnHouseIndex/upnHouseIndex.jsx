@@ -7,7 +7,7 @@ import {
     getAllHouses, startReceivingHouses, setMinBuildYear, setIsShowUpn, setIsShowN1,
     setAddressPart, clearSearchParameters
 } from './upnHouseIndexActions.jsx';
-import { HOUSES_TABLE_COLUMNS } from './upnHouseIndexConstants.jsx';
+import { houseIndexConst } from './upnHouseIndexConstants.jsx';
 import { Table, PageHeader, Checkbox, Input, InputNumber, Button } from 'antd';
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 import { SiteTitle } from '../../const.jsx';
@@ -69,7 +69,7 @@ class UpnHouseIndex extends React.Component {
             </ErrorBoundary>
             <Table
                 dataSource={housesData}
-                columns={HOUSES_TABLE_COLUMNS}
+                columns={houseIndexConst.HOUSES_TABLE_COLUMNS}
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{ total: totalHousesCount }}
                 loading={isHousesLoading}

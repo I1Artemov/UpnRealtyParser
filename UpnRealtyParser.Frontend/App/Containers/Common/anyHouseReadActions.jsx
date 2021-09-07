@@ -1,50 +1,43 @@
-﻿import {
-    GET_HOUSE_SUCCESS,
-    GET_HOUSE_ERROR,
-    GET_HOUSE_IN_PROGRESS,
-    GET_STATISTICS_SUCCESS,
-    GET_STATISTICS_ERROR,
-    GET_STATISTICS_IN_PROGRESS
-} from '../Common/anyHouseReadConstants.jsx';
+﻿import { houseReadConst } from '../Common/anyHouseReadConstants.jsx';
 
 import "isomorphic-fetch";
 
 function startReceivingHouse() {
     return {
-        type: GET_HOUSE_IN_PROGRESS
+        type: houseReadConst.GET_HOUSE_IN_PROGRESS
     };
 }
 
 export function receiveHouse(data) {
     return {
-        type: GET_HOUSE_SUCCESS,
+        type: houseReadConst.GET_HOUSE_SUCCESS,
         houseInfo: data.houseInfo
     };
 }
 
 export function errorReceiveHouse(err) {
     return {
-        type: GET_HOUSE_ERROR,
+        type: houseReadConst.GET_HOUSE_ERROR,
         error: err
     };
 }
 
 function startReceivingStatistics() {
     return {
-        type: GET_STATISTICS_IN_PROGRESS
+        type: houseReadConst.GET_STATISTICS_IN_PROGRESS
     };
 }
 
 export function receiveStatistics(data) {
     return {
-        type: GET_STATISTICS_SUCCESS,
+        type: houseReadConst.GET_STATISTICS_SUCCESS,
         houseStatistics: data.houseStatistics
     };
 }
 
 export function errorReceiveStatistics(err) {
     return {
-        type: GET_STATISTICS_ERROR,
+        type: houseReadConst.GET_STATISTICS_ERROR,
         error: err
     };
 }

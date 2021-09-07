@@ -1,8 +1,4 @@
-import {
-    GET_ALL_LOG_ENTRIES_SUCCESS,
-    GET_ALL_LOG_ENTRIES_ERROR,
-    GET_ALL_LOG_ENTRIES_LOADING_IN_PROGRESS
-} from './logEntryIndexConstants.jsx';
+import { logEntryIndexConst } from './logEntryIndexConstants.jsx';
 
 const initialState = {
     logEntryInfo: [{ id: 0, description: '' }],
@@ -13,13 +9,13 @@ const initialState = {
 
 export default function proxies(state = initialState, action) {
     switch (action.type) {
-        case GET_ALL_LOG_ENTRIES_LOADING_IN_PROGRESS:
+        case logEntryIndexConst.GET_ALL_LOG_ENTRIES_LOADING_IN_PROGRESS:
             return { ...state, isLogEntriesLoading: true };
 
-        case GET_ALL_LOG_ENTRIES_SUCCESS:
+        case logEntryIndexConst.GET_ALL_LOG_ENTRIES_SUCCESS:
             return { ...state, logEntryInfo: action.logEntryInfo, totalLogEntriesCount: action.totalLogEntriesCount, error: '', isLogEntriesLoading: false };
 
-        case GET_ALL_LOG_ENTRIES_ERROR:
+        case logEntryIndexConst.GET_ALL_LOG_ENTRIES_ERROR:
             return { ...state, error: action.error, isLogEntriesLoading: false };
 
         default:

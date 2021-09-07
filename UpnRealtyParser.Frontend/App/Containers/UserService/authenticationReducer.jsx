@@ -1,7 +1,4 @@
-﻿import {
-    LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT,
-    SET_LOGIN_FORM_LOGIN, SET_LOGIN_FORM_PASSWORD, SET_LOGIN_FORM_SUBMITTED
-} from './userConstants.jsx';
+﻿import { userConst } from './userConstants.jsx';
 
 let user = JSON.parse(localStorage.getItem('user'));
 
@@ -22,27 +19,27 @@ const initialState = user ?
 
 export default function authentication(state = initialState, action) {
     switch (action.type) {
-        case LOGIN_REQUEST:
+        case userConst.LOGIN_REQUEST:
             return {
                 ...state,
                 loggingIn: true,
                 user: action.user
             };
-        case LOGIN_SUCCESS:
+        case userConst.LOGIN_SUCCESS:
             return {
                 loggedIn: true,
                 isLoginFailed: false,
                 user: action.user
             };
-        case LOGIN_FAILURE:
+        case userConst.LOGIN_FAILURE:
             return { ...state, loginFormSubmitted: false, isLoginFailed: true };
-        case LOGOUT:
+        case userConst.LOGOUT:
             return {};
-        case SET_LOGIN_FORM_LOGIN:
+        case userConst.SET_LOGIN_FORM_LOGIN:
             return {...state, login: action.payload};
-        case SET_LOGIN_FORM_PASSWORD:
+        case userConst.SET_LOGIN_FORM_PASSWORD:
             return { ...state, password: action.payload };
-        case SET_LOGIN_FORM_SUBMITTED:
+        case userConst.SET_LOGIN_FORM_SUBMITTED:
             return { ...state, loginFormSubmitted: action.payload};
         default:
             return state

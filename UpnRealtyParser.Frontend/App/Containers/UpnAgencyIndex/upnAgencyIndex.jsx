@@ -2,7 +2,7 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllAgencies, startReceivingAgencies } from './upnAgencyIndexActions.jsx';
-import { AGENCIES_TABLE_COLUMNS } from './upnAgencyIndexConstants.jsx';
+import { agencyIndexConst } from './upnAgencyIndexConstants.jsx';
 import { Table, PageHeader } from 'antd';
 import { SiteTitle } from '../../const.jsx';
 
@@ -31,7 +31,7 @@ class UpnAgencyIndex extends React.Component {
                     title="Агентства УПН и N1" />
             <Table
                 dataSource={agenciesData}
-                columns={AGENCIES_TABLE_COLUMNS}
+                columns={agencyIndexConst.AGENCIES_TABLE_COLUMNS}
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{ total: totalAgenciesCount }}
                 loading={isAgenciesLoading}

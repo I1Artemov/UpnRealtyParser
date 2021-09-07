@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '../../Stateless/errorFallback.jsx';
 import { getAllFlats, startReceivingFlats } from '../Common/anyFlatIndexActions.jsx';
-import { SELL_FLATS_TABLE_COLUMNS } from '../N1SellFlatIndex/n1SellFlatIndexConstants.jsx';
+import { n1SellFlatIndexConst } from '../N1SellFlatIndex/n1SellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
 import { Href_N1RentFlatController_GetAllFlats } from "../../const.jsx";
 import FlatsSearchBar from '../FlatsSearchBar/flatsSearchBar.jsx';
@@ -41,7 +41,7 @@ class N1SellFlatIndex extends React.Component {
                 </ErrorBoundary>
                 <Table
                     dataSource={flatsData}
-                    columns={SELL_FLATS_TABLE_COLUMNS}
+                    columns={n1SellFlatIndexConst.SELL_FLATS_TABLE_COLUMNS}
                     onChange={this.handleTableChange.bind(this)}
                     pagination={{ total: totalFlatsCount }}
                     loading={isFlatsLoading}

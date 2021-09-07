@@ -1,8 +1,4 @@
-﻿import {
-    GET_POINTS_ALLROOM_SUCCESS,
-    GET_POINTS_ERROR,
-    GET_ALLROOM_POINTS_IN_PROGRESS
-    } from './flatPriceStatisticsPlotConstants.jsx';
+﻿import { flatPricePlotConst } from './flatPriceStatisticsPlotConstants.jsx';
 
 import { Href_HouseController_GetSingleHousePricePlotPoints } from "../../const.jsx";
 import "isomorphic-fetch";
@@ -10,20 +6,20 @@ import "isomorphic-fetch";
 function startReceivingRoomFlatPrices() {
 
     return {
-        type: GET_ALLROOM_POINTS_IN_PROGRESS
+        type: flatPricePlotConst.GET_ALLROOM_POINTS_IN_PROGRESS
     };
 }
 
 function receiveFlatPrices(data) {
     return {
-        type: GET_POINTS_ALLROOM_SUCCESS,
+        type: flatPricePlotConst.GET_POINTS_ALLROOM_SUCCESS,
         points: data.points
     };
 }
 
 function errorReceiveFlatPrices(err) {
     return {
-        type: GET_POINTS_ERROR,
+        type: flatPricePlotConst.GET_POINTS_ERROR,
         error: err
     };
 }

@@ -1,11 +1,4 @@
-﻿import {
-    GET_POINTS_SUCCESS,
-    GET_POINTS_ERROR,
-    GET_POINTS_IN_PROGRESS,
-    SET_PAYBACK_LIMIT,
-    SET_USE_UPN_DATA,
-    SET_USE_N1_DATA
-} from './paybackMapConstants.jsx';
+﻿import { paybackMapConst } from './paybackMapConstants.jsx';
 import { Href_HouseController_GetPaybackMapPoints } from "../../const.jsx";
 
 import "isomorphic-fetch";
@@ -13,27 +6,27 @@ import "isomorphic-fetch";
 export function setPaybackLimit(ev) {
     let paybackLimit = ev;
     return {
-        type: SET_PAYBACK_LIMIT,
+        type: paybackMapConst.SET_PAYBACK_LIMIT,
         payload: paybackLimit
     };
 }
 
 function startReceivingPoints() {
     return {
-        type: GET_POINTS_IN_PROGRESS
+        type: paybackMapConst.GET_POINTS_IN_PROGRESS
     };
 }
 
 export function receivePoints(data) {
     return {
-        type: GET_POINTS_SUCCESS,
+        type: paybackMapConst.GET_POINTS_SUCCESS,
         points: data.points
     };
 }
 
 export function errorReceivePoints(err) {
     return {
-        type: GET_POINTS_ERROR,
+        type: paybackMapConst.GET_POINTS_ERROR,
         error: err
     };
 }
@@ -41,7 +34,7 @@ export function errorReceivePoints(err) {
 export function setUseUpnData(ev) {
     let isUse = ev.target.checked;
     return {
-        type: SET_USE_UPN_DATA,
+        type: paybackMapConst.SET_USE_UPN_DATA,
         payload: isUse
     };
 }
@@ -49,7 +42,7 @@ export function setUseUpnData(ev) {
 export function setUseN1Data(ev) {
     let isUse = ev.target.checked;
     return {
-        type: SET_USE_N1_DATA,
+        type: paybackMapConst.SET_USE_N1_DATA,
         payload: isUse
     };
 }

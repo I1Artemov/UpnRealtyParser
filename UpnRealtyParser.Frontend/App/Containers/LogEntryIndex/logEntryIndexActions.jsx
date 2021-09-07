@@ -1,8 +1,4 @@
-import {
-    GET_ALL_LOG_ENTRIES_SUCCESS,
-    GET_ALL_LOG_ENTRIES_ERROR,
-    GET_ALL_LOG_ENTRIES_LOADING_IN_PROGRESS
-} from './logEntryIndexConstants.jsx';
+import { logEntryIndexConst } from './logEntryIndexConstants.jsx';
 
 import { Href_ParsingStateController_GetAllStates } from "../../const.jsx";
 import { getQueryTrailerWithPagingParameters } from '../Common/anyFlatIndexActions.jsx';
@@ -10,13 +6,13 @@ import "isomorphic-fetch";
 
 export function startReceivingLogEntries() {
     return {
-        type: GET_ALL_LOG_ENTRIES_LOADING_IN_PROGRESS
+        type: logEntryIndexConst.GET_ALL_LOG_ENTRIES_LOADING_IN_PROGRESS
     };
 }
 
 export function receiveAllLogEntries(data) {
     return {
-        type: GET_ALL_LOG_ENTRIES_SUCCESS,
+        type: logEntryIndexConst.GET_ALL_LOG_ENTRIES_SUCCESS,
         logEntryInfo: data.logEntriesList,
         totalLogEntriesCount: data.totalCount
     };
@@ -24,7 +20,7 @@ export function receiveAllLogEntries(data) {
 
 export function errorReceiveAllLogEntries(err) {
     return {
-        type: GET_ALL_LOG_ENTRIES_ERROR,
+        type: logEntryIndexConst.GET_ALL_LOG_ENTRIES_ERROR,
         error: err
     };
 }

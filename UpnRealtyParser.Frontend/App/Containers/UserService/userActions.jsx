@@ -1,20 +1,17 @@
-﻿import {
-    LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_FAILURE, LOGOUT,
-    SET_LOGIN_FORM_LOGIN, SET_LOGIN_FORM_PASSWORD, SET_LOGIN_FORM_SUBMITTED
-} from './userConstants.jsx';
+﻿import { userConst } from './userConstants.jsx';
 import { userService } from './userService.jsx';
 import { createBrowserHistory } from 'history';
 
 const history = createBrowserHistory({ forceRefresh: true });
 
 function loginRequest(user) {
-    return { type: LOGIN_REQUEST, user }
+    return { type: userConst.LOGIN_REQUEST, user }
 }
 function loginSuccess(user) {
-    return { type: LOGIN_SUCCESS, user }
+    return { type: userConst.LOGIN_SUCCESS, user }
 }
 function loginFailure(error) {
-    return { type: LOGIN_FAILURE, error }
+    return { type: userConst.LOGIN_FAILURE, error }
 }
 
 export function doLogin(username, password) {
@@ -37,13 +34,13 @@ export function doLogin(username, password) {
 
 export function doLogout() {
     userService.doLogout();
-    return { type: LOGOUT };
+    return { type: userConst.LOGOUT };
 }
 
 export function setLoginPageLogin(ev) {
     const login = ev.target.value;
     return {
-        type: SET_LOGIN_FORM_LOGIN,
+        type: userConst.SET_LOGIN_FORM_LOGIN,
         payload: login
     };
 }
@@ -51,7 +48,7 @@ export function setLoginPageLogin(ev) {
 export function setLoginPagePassword(ev) {
     const pass = ev.target.value;
     return {
-        type: SET_LOGIN_FORM_PASSWORD,
+        type: userConst.SET_LOGIN_FORM_PASSWORD,
         payload: pass
     };
 }
@@ -59,7 +56,7 @@ export function setLoginPagePassword(ev) {
 export function setLoginPageSubmitted(ev) {
     const isSubmitted = ev;
     return {
-        type: SET_LOGIN_FORM_SUBMITTED,
+        type: userConst.SET_LOGIN_FORM_SUBMITTED,
         payload: isSubmitted
     };
 }

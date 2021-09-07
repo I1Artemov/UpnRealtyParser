@@ -7,7 +7,7 @@ import {
     getAllFlats, startReceivingFlats, savePagingParameters
 } from '../Common/anyFlatIndexActions.jsx';
 
-import { SELL_FLATS_TABLE_COLUMNS } from './upnSellFlatIndexConstants.jsx';
+import { sellFlatIndexConst } from './upnSellFlatIndexConstants.jsx';
 import { Table, Breadcrumb } from 'antd';
 
 import { Href_UpnSellFlatController_GetAllFlats } from "../../const.jsx";
@@ -54,7 +54,7 @@ class UpnSellFlatIndex extends React.Component {
                 </ErrorBoundary>
                 <Table
                     dataSource={flatsData}
-                    columns={SELL_FLATS_TABLE_COLUMNS}
+                    columns={sellFlatIndexConst.SELL_FLATS_TABLE_COLUMNS}
                     onChange={this.handleTableChange.bind(this)}
                     pagination={{ current: this.props.savedGridPage, pageSIze: this.props.savedGridPageSize, total: totalFlatsCount}}
                     loading={isFlatsLoading}

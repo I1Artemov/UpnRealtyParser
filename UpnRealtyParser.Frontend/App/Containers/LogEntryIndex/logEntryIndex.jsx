@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { getAllLogEntries, startReceivingLogEntries } from './logEntryIndexActions.jsx';
-import { LOG_ENTRIES_TABLE_COLUMNS } from './logEntryIndexConstants.jsx';
+import { logEntryIndexConst } from './logEntryIndexConstants.jsx';
 import { Table, PageHeader } from 'antd';
 import { SiteTitle } from '../../const.jsx';
 
@@ -31,7 +31,7 @@ class LogEntryIndex extends React.Component {
                     title="Журнал событий" subTitle="Администрирование"/>
             <Table
                 dataSource={logEntriesData}
-                columns={LOG_ENTRIES_TABLE_COLUMNS}
+                columns={logEntryIndexConst.LOG_ENTRIES_TABLE_COLUMNS}
                 onChange={this.handleTableChange.bind(this)}
                 pagination={{ total: totalLogEntriesCount }}
                 loading={isLogEntriesLoading}

@@ -207,7 +207,7 @@ namespace UpnRealtyParser.Business.Helpers
             if (!string.IsNullOrEmpty(filterParams.AddressPart))
                 allSellFlats = allSellFlats.Where(x => x.HouseAddress.Contains(filterParams.AddressPart));
             if (!filterParams.IsShowRooms.GetValueOrDefault(true))
-                allSellFlats = allSellFlats.Where(x => x.RoomAmount.GetValueOrDefault(0) != 0);
+                allSellFlats = allSellFlats.Where(x => x.RoomAmount != null && x.RoomAmount != 0);
             if (startDt.HasValue)
                 allSellFlats = allSellFlats.Where(x => x.CreationDateTime >= startDt);
             if (endDt.HasValue)
