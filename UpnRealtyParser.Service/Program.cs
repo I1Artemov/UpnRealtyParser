@@ -4,6 +4,7 @@ using UpnRealtyParser.Business;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
+using UpnRealtyParser.Business.Repositories;
 
 namespace UpnRealtyParser.Service
 {
@@ -92,6 +93,8 @@ namespace UpnRealtyParser.Service
                             DistanceCalculator calculator = new DistanceCalculator(realtyContext);
                             calculator.FindSimilarN1ForAllUpnHouses();
                         }
+                        WriteDebugLog("Подсчет окупаемости квартир");
+                        calculateFlatPaybackPeriods();
                         // Если завершился сбор арендных квартир, то выходим из цикла
                         WriteDebugLog("Обработка полностью завершена. Остановка цикла.");
                         break;
@@ -111,6 +114,28 @@ namespace UpnRealtyParser.Service
             }
 
             upnAgent.CloseConnection();
+        }
+
+        private static void calculateFlatPaybackPeriods()
+        {
+            using (var realtyContext = new RealtyParserContext())
+            {
+                EFGenericRepo<UpnFlat, RealtyParserContext> upnFlatRepo =
+                    new EFGenericRepo<UpnFlat, RealtyParserContext>(realtyContext);
+                EFGenericRepo<UpnRentFlat, RealtyParserContext> upnRentFlatRepo =
+                    new EFGenericRepo<UpnRentFlat, RealtyParserContext>(realtyContext);
+                EFGenericRepo<N1RentFlat, RealtyParserContext> n1RentFlatRepo =
+                    new EFGenericRepo<N1RentFlat, RealtyParserContext>(realtyContext);
+                EFGenericRepo<SimilarHouse, RealtyParserContext> similarHouseRepo =
+                    new EFGenericRepo<SimilarHouse, RealtyParserContext>(realtyContext);
+                EFGenericRepo<ApartmentPayback, RealtyParserContext> apartmentPaybackRepo =
+                    new EFGenericRepo<ApartmentPayback, RealtyParserContext>(realtyContext);
+
+                PaybackApartmentCalculator<UpnFlat> calculator = new PaybackApartmentCalculator<UpnFlat>(Const.SiteNameUpn,
+                    upnFlatRepo, upnRentFlatRepo, n1RentFlatRepo, similarHouseRepo, apartmentPaybackRepo, WriteDebugLog);
+
+                calculator.CalculateAllUpnPaybackPeriods().Wait();
+            }
         }
     }
 }

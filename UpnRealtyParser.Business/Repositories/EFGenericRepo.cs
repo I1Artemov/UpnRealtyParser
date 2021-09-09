@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace UpnRealtyParser.Business.Repositories
 {
@@ -22,6 +23,11 @@ namespace UpnRealtyParser.Business.Repositories
         public void Add(TEntity item)
         {
             _dbSet.Add(item);
+        }
+
+        public async Task AddRangeAsync(List<TEntity> items)
+        {
+            await _dbSet.AddRangeAsync(items);
         }
 
         public void Delete(TEntity item)
@@ -57,6 +63,11 @@ namespace UpnRealtyParser.Business.Repositories
         public void Save()
         {
             _context.SaveChanges();
+        }
+
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
         }
 
         public List<TEntity> ApplyPagination(IQueryable<TEntity> allData, int skip, int pageSize)

@@ -629,3 +629,16 @@ create table [UserInfo] (
 );
 
 INSERT INTO [UserInfo]([CreationDateTime], [Login], [FullName], [PasswordHash]) VALUES ('20210815', 'admin', 'Admin', HashBytes('SHA1','nothing'));
+
+-- 09.09.2021 Таблица для статистики окупаемости квартир (не средней по дому!)
+CREATE TABLE [ApartmentPayback] (
+	[Id] int IDENTITY(1,1),
+	[CreationDateTime] datetime,
+	[Site] nvarchar(64),
+	[FlatId] int,
+	[PaybackPeriod] float,
+	[CalculatedFromSite] nvarchar(64),
+	PRIMARY KEY ([Id])
+);
+
+CREATE INDEX idx_ApartmentPayback_FlatId_Site ON [ApartmentPayback] ([FlatId], [Site]);

@@ -76,3 +76,15 @@ where urf.[UpnHouseInfoId] in (select * from houseIds)
 group by urf.[UpnHouseInfoId]
 having AVG(urf.[Price]) < 100000
 order by Ratio;
+
+-- 09.09.2021 Пример расчета окупаемости по квартирам
+select top 1000 
+* ,
+(
+	select usf.Price / (sum(urf.Price) * 12.0 / count(*))
+	from [UpnRentFlat] urf
+	where urf.UpnHouseInfoId = usf.UpnHouseInfoId and urf.RoomAmount = usf.RoomAmount
+) as [PaybackPeriod]
+from [UpnFlat] usf
+where usf.RoomAmount = 1
+order by usf.[CreationDateTime] desc;
