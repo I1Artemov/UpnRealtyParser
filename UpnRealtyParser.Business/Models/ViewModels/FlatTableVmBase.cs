@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using UpnRealtyParser.Business.Interfaces;
 
 namespace UpnRealtyParser.Business.Models
@@ -30,6 +31,9 @@ namespace UpnRealtyParser.Business.Models
         public string FirstPhotoFile { get; set; }
 
         /* ------------------------ Свойства для отображения -------------------------- */
+
+        [NotMapped]
+        public string PaybackYears { get; set; }
 
         public string LastCheckDatePrintable =>
             LastCheckDate == null ? "" : LastCheckDate.Value.ToString("dd.MM.yyyy");

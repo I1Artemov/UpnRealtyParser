@@ -20,18 +20,21 @@ namespace UpnRealtyParser.Business.Helpers
         protected readonly EFGenericRepo<TAgency, RealtyParserContext> _agencyRepo;
         protected readonly EFGenericRepo<PageLink, RealtyParserContext> _pageLinkRepo;
         protected readonly EFGenericRepo<TFlatPhoto, RealtyParserContext> _photoRepo;
+        protected readonly EFGenericRepo<ApartmentPayback, RealtyParserContext> _apartmentPaybackRepo;
 
         public BaseApartementHelper(EFGenericRepo<THouse, RealtyParserContext> houseRepo,
             EFGenericRepo<SubwayStation, RealtyParserContext> subwayStationRepo,
             EFGenericRepo<TAgency, RealtyParserContext> agencyRepo,
             EFGenericRepo<PageLink, RealtyParserContext> pageLinkRepo,
-            EFGenericRepo<TFlatPhoto, RealtyParserContext> photoRepo)
+            EFGenericRepo<TFlatPhoto, RealtyParserContext> photoRepo,
+            EFGenericRepo<ApartmentPayback, RealtyParserContext> apartmentPaybackRepo)
         {
             _houseRepo = houseRepo;
             _agencyRepo = agencyRepo;
             _subwayStationRepo = subwayStationRepo;
             _pageLinkRepo = pageLinkRepo;
             _photoRepo = photoRepo;
+            _apartmentPaybackRepo = apartmentPaybackRepo;
         }
 
         /// <summary>
@@ -63,6 +66,24 @@ namespace UpnRealtyParser.Business.Helpers
             flat.PhotoCount = _photoRepo
                 .GetAllWithoutTracking()
                 .Count(x => x.FlatId == flat.Id);
+        }
+
+        public void FillApartmentsWithPaybackInfo<TFlatVm>(List<TFlatVm> flats, string siteName)
+            where TFlatVm : FlatTableVmBase
+        {
+            if (flats == null || flats.Count == 0)
+                return;
+
+            foreach(var flat in flats)
+            {
+                ApartmentPayback foundStats = _apartmentPaybackRepo.GetAllWithoutTracking()
+                    .FirstOrDefault(x => x.FlatId == flat.Id && x.Site == siteName);
+
+                if (foundStats?.PaybackPeriod == null)
+                    continue;
+
+                flat.PaybackYears = foundStats.PaybackPeriod.Value.ToString("#.##");
+            }
         }
 
         /// <summary>

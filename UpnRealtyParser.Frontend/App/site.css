@@ -186,3 +186,31 @@ div.house-statistics-block p {
     margin-left: 9px;
     margin-right: 28px;
 }
+
+.payback-max {
+    background-color: #ce1a1a;
+    color: white;
+    border-radius: 7px;
+    text-align: center;
+}
+
+.payback-high {
+    background-color: #c66e10;
+    color: white;
+    border-radius: 7px;
+    text-align: center;
+}
+
+.payback-middle {
+    background-color: #aca202;
+    color: white;
+    border-radius: 7px;
+    text-align: center;
+}
+
+.payback-low {
+    background-color: #37ac02;
+    color: white;
+    border-radius: 7px;
+    text-align: center;
+}
