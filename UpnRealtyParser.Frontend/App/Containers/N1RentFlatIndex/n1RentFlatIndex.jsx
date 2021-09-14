@@ -28,6 +28,10 @@ class N1SellFlatIndex extends React.Component {
         let flatsData = this.props.flatsInfo.map(item => ({ ...item, key: item.id }));
         let totalFlatsCount = this.props.totalFlatsCount;
         let isFlatsLoading = this.props.isFlatsLoading;
+        let editedColumns = n1SellFlatIndexConst.SELL_FLATS_TABLE_COLUMNS
+            .filter((item) => {
+                return item.key !== "paybackYears"
+            });
 
         return (
             <div>
@@ -41,7 +45,7 @@ class N1SellFlatIndex extends React.Component {
                 </ErrorBoundary>
                 <Table
                     dataSource={flatsData}
-                    columns={n1SellFlatIndexConst.SELL_FLATS_TABLE_COLUMNS}
+                    columns={editedColumns}
                     onChange={this.handleTableChange.bind(this)}
                     pagination={{ total: totalFlatsCount }}
                     loading={isFlatsLoading}

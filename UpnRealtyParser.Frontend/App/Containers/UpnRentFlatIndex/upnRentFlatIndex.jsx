@@ -35,6 +35,9 @@ class UpnRentFlatIndex extends React.Component {
             if (item.key === "houseBuildYear" || item.key === "subwaySummary")
                 return { ...item, sorter: false }
             return item;
+        })
+        .filter((item) => {
+            return item.key !== "paybackYears"
         });
 
         if (errorMessage !== undefined && errorMessage !== null && errorMessage !== "") {
