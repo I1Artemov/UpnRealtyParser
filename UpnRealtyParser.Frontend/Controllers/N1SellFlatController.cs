@@ -6,6 +6,7 @@ using UpnRealtyParser.Business.Models;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Repositories;
 using UpnRealtyParser.Business.Models.N1;
+using UpnRealtyParser.Business;
 
 namespace UpnRealtyParser.Frontend.Controllers
 {
@@ -58,6 +59,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             List<N1FlatVmForTable> filteredFlats = allSellFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
+
+            apartmentHelper.FillApartmentsWithPaybackInfo(filteredFlats, Const.SiteNameN1);
 
             return Json(new { flatsList = filteredFlats, totalCount = totalCount });
         }

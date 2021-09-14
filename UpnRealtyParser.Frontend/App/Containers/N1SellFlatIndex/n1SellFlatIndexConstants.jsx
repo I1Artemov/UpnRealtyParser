@@ -1,6 +1,17 @@
 ﻿import React from 'react';
 import { Link } from 'react-router-dom';
 
+function getClassnameByPaybackValue(payback) {
+    if (payback > 20)
+        return 'payback-max';
+    if (payback <= 20 && payback > 15)
+        return 'payback-high';
+    if (payback <= 15 && payback > 10)
+        return 'payback-middle';
+
+    return 'payback-low';
+}
+
 export const n1SellFlatIndexConst = {
     GET_ALL_FLATS_SUCCESS: 'GET_ALL_FLATS_SUCCESS',
     GET_ALL_FLATS_ERROR: 'GET_ALL_FLATS_ERROR',
@@ -27,7 +38,7 @@ export const n1SellFlatIndexConst = {
             align: 'center'
         },
         {
-            title: 'Площадь',
+            title: 'Площ.',
             dataIndex: 'spaceSum',
             key: 'spaceSum',
             align: 'center',
@@ -57,7 +68,7 @@ export const n1SellFlatIndexConst = {
             align: 'center'
         },
         {
-            title: 'Построена',
+            title: 'Год',
             dataIndex: 'houseBuildYear',
             key: 'houseBuildYear',
             align: 'center'
@@ -72,6 +83,16 @@ export const n1SellFlatIndexConst = {
             dataIndex: 'price',
             key: 'price',
             sorter: true
+        },
+        {
+            title: 'Окуп. (лет)',
+            dataIndex: 'paybackYears',
+            key: 'paybackYears',
+            render: (text, row) => (
+                (text != null && text != undefined && parseFloat(text)) ?
+                    <p className={getClassnameByPaybackValue(parseFloat(text))}>{text}</p> :
+                    null
+            )
         },
         {
             title: 'Описание',

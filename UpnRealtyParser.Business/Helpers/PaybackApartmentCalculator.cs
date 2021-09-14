@@ -39,13 +39,33 @@ namespace UpnRealtyParser.Business.Helpers
             _writeToLogDelegate = writeToLogDelegate;
         }
 
+        /// <summary>
+        /// Подсчет окупаемости для всех квартир УПН на продажу
+        /// </summary>
         public async Task CalculateAllUpnPaybackPeriods()
+        {
+            await calculateAllAnyPaybackPeriods(Const.SiteNameUpn, Const.SiteNameN1, _upnRentFlatRepo, _n1RentFlatRepo);
+        }
+
+        /// <summary>
+        /// Подсчет окупаемости для всех квартир N1 на продажу
+        /// </summary>
+        public async Task CalculateAllN1PaybackPeriods()
+        {
+            await calculateAllAnyPaybackPeriods(Const.SiteNameN1, Const.SiteNameUpn, _n1RentFlatRepo, _upnRentFlatRepo);
+        }
+
+        protected async Task calculateAllAnyPaybackPeriods<TRentFlatNative, TRentFlatOther>(
+            string nativeSite, string otherSite, EFGenericRepo<TRentFlatNative, RealtyParserContext> nativeRentRepo,
+            EFGenericRepo<TRentFlatOther, RealtyParserContext> otherRentRepo)
+            where TRentFlatNative : FlatCore
+            where TRentFlatOther : FlatCore
         {
             int flatsCount = await _sellFlatRepo.GetAllWithoutTracking().CountAsync();
             const int pageSize = 100;
 
             // Квартиры обрабатываем по 100 штук
-            for(int page = 0; page < (flatsCount / pageSize) + 1; page++)
+            for (int page = 0; page < (flatsCount / pageSize) + 1; page++)
             {
                 List<TSellFlat> sellFlats = await _sellFlatRepo.GetAllWithoutTracking()
                     .Skip(page * pageSize)
@@ -53,17 +73,17 @@ namespace UpnRealtyParser.Business.Helpers
                     .ToListAsync();
 
                 List<ApartmentPayback> paybacksForAddition = new List<ApartmentPayback>(100);
-                foreach(TSellFlat sellFlat in sellFlats)
+                foreach (TSellFlat sellFlat in sellFlats)
                 {
                     bool isAlreadyHaveStatistics = await _apartmentPaybackRepo.GetAllWithoutTracking()
-                        .AnyAsync(x => x.FlatId == sellFlat.Id && x.Site == Const.SiteNameUpn);
+                        .AnyAsync(x => x.FlatId == sellFlat.Id && x.Site == nativeSite);
 
                     if (isAlreadyHaveStatistics)
                         continue;
 
-                    ApartmentPayback calculatedStats = await getSingleFlatPaybackPeriodAsync(sellFlat, Const.SiteNameUpn, Const.SiteNameN1,
-                        _upnRentFlatRepo, _n1RentFlatRepo);
-                    if(calculatedStats != null)
+                    ApartmentPayback calculatedStats = await getSingleFlatPaybackPeriodAsync(sellFlat, nativeSite, otherSite,
+                        nativeRentRepo, otherRentRepo);
+                    if (calculatedStats != null)
                         paybacksForAddition.Add(calculatedStats);
                 }
 
@@ -71,7 +91,7 @@ namespace UpnRealtyParser.Business.Helpers
                 await _apartmentPaybackRepo.SaveAsync();
 
                 if (_writeToLogDelegate != null)
-                    _writeToLogDelegate("Обработано " + (page + 1)*pageSize + " квартир");
+                    _writeToLogDelegate("Обработано " + (page + 1) * pageSize + " квартир");
             }
         }
 
