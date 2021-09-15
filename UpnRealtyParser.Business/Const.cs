@@ -29,5 +29,8 @@
 
         public const string UpnPhotoFolder = "C:\\Docs\\UpnPhotos\\";
         public const string N1PhotoFolder = "C:\\Docs\\N1Photos\\";
+        public const string HousePhotoFolder = "C:\\Docs\\HousePhotos\\";
+
+        public const string ChromeDriverPath = @"C:\Program Files\Google\Chrome\Application";
     }
 }

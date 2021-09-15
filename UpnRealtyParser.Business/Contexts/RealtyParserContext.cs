@@ -32,6 +32,7 @@ namespace UpnRealtyParser.Business.Contexts
         public DbSet<PaybackPeriodPoint> PaybackPeriodPoints { get; set; }
         public DbSet<ApartmentPayback> ApartmentPaybacks { get; set; }
         public DbSet<UserInfo> UserInfos { get; set; }
+        public DbSet<HousePhoto> HousePhotos { get; set; }
 
         public RealtyParserContext(DbContextOptions<RealtyParserContext> options) : base(options) { }
 

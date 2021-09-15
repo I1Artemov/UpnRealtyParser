@@ -642,3 +642,16 @@ CREATE TABLE [ApartmentPayback] (
 );
 
 CREATE INDEX idx_ApartmentPayback_FlatId_Site ON [ApartmentPayback] ([FlatId], [Site]);
+
+-- 15.09.2021 Снова добавляем таблицу для фото домов УПН
+CREATE TABLE [HousePhoto] (
+    [Id] int IDENTITY(1,1),
+    [CreationDateTime] datetime,
+    [FileName] nvarchar(max),
+    [UpnHouseId] int,
+	PRIMARY KEY ([Id])
+);
+
+ALTER TABLE [HousePhoto] ADD CONSTRAINT
+	FK_HousePhoto_UpnHouseInfo_UpnHouseId FOREIGN KEY ([UpnHouseId]) REFERENCES [UpnHouseInfo]([Id]);
+CREATE INDEX idx_HousePhoto_UpnHouseId ON [HousePhoto] ([UpnHouseId]);
