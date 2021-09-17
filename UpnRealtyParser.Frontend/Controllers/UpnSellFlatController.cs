@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using UpnRealtyParser.Business;
 using UpnRealtyParser.Business.Contexts;
 using UpnRealtyParser.Business.Helpers;
 using UpnRealtyParser.Business.Models;
@@ -50,7 +48,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             int targetPageSize = filterParams.PageSize.GetValueOrDefault(10);
 
             UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
-                _pageLinkRepo, _upnPhotoRepo, _apartmentPaybackRepo);
+                _pageLinkRepo, _upnPhotoRepo);
             IQueryable<UpnFlatVmForTable> allSellFlats = apartmentHelper.GetFilteredAndOrderedFlats(filterParams, _upnFlatVmRepo);
 
             int totalCount = allSellFlats.Count();
@@ -58,8 +56,6 @@ namespace UpnRealtyParser.Frontend.Controllers
             List<UpnFlatVmForTable> filteredFlats = allSellFlats
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
-
-            apartmentHelper.FillApartmentsWithPaybackInfo(filteredFlats, Const.SiteNameUpn);
 
             return Json(new {flatsList = filteredFlats, totalCount = totalCount});
         }
@@ -76,7 +72,7 @@ namespace UpnRealtyParser.Frontend.Controllers
                 return makeErrorResult(string.Format("не найдена квартира с ID = {0}", id.Value));
 
             UpnApartmentHelper apartmentHelper = new UpnApartmentHelper(_upnHouseRepo, _subwayStationRepo, _agencyRepo,
-                _pageLinkRepo, _upnPhotoRepo, _apartmentPaybackRepo);
+                _pageLinkRepo, _upnPhotoRepo);
             apartmentHelper.FillSingleApartmentWithAdditionalInfo(foundFlat);
             apartmentHelper.FillSingleApartmentWithPhotoHrefs(foundFlat);
 

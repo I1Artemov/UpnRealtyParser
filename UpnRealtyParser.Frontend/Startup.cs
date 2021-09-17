@@ -75,6 +75,11 @@ namespace UpnRealtyParser.Frontend
                 FileProvider = new PhysicalFileProvider(fileLocationOptions.UpnPhotoFolder),
                 RequestPath = "/images/upnphotos"
             });
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(fileLocationOptions.HousePhotoFolder),
+                RequestPath = "/images/housephotos"
+            });
             app.UseAuthentication();
             app.UseMvc(routes =>
             {

@@ -49,7 +49,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             int targetPageSize = filterParams.PageSize.GetValueOrDefault(10);
 
             N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
-                _pageLinkRepo, _n1PhotoRepo, _apartmentPaybackRepo);
+                _pageLinkRepo, _n1PhotoRepo);
 
             IQueryable<N1RentFlatVmForTable> allRentFlats = apartmentHelper
                 .GetFilteredAndOrderedFlats(filterParams, _n1RentFlatVmRepo);
@@ -75,7 +75,7 @@ namespace UpnRealtyParser.Frontend.Controllers
                 return makeErrorResult(string.Format("не найдена квартира с ID = {0}", id.Value));
 
             N1ApartmentHelper apartmentHelper = new N1ApartmentHelper(_n1HouseRepo, _subwayStationRepo, _agencyRepo,
-                _pageLinkRepo, _n1PhotoRepo, _apartmentPaybackRepo);
+                _pageLinkRepo, _n1PhotoRepo);
             apartmentHelper.FillSingleApartmentWithAdditionalInfo(foundFlat);
             apartmentHelper.FillSingleApartmentWithPhotoHrefs(foundFlat);
 

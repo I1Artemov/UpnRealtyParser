@@ -29,12 +29,12 @@ export const sellFlatIndexConst = {
         },
         {
             title: 'Фото',
-            dataIndex: 'firstPhotoFile',
-            key: 'firstPhotoFile',
+            dataIndex: 'photoUrl',
+            key: 'photoUrl',
             align: 'center',
             render: (text, row) => (
                 (text === null || text === undefined || text === 'ERR') ? <p>--</p> :
-                    <img src={"/images/upnphotos/" + text} width="64" height="64"></img>
+                    <img src={text} width="64" height="64"></img>
             )
         },
         {
@@ -108,8 +108,8 @@ export const sellFlatIndexConst = {
             dataIndex: 'paybackYears',
             key: 'paybackYears',
             render: (text, row) => (
-                (text != null && text != undefined && parseFloat(text)) ?
-                    <p className={getClassnameByPaybackValue(parseFloat(text))}>{text}</p> :
+                (text != null && text != undefined) ?
+                    <p className={getClassnameByPaybackValue(text)}>{Math.round(text * 10) / 10}</p> :
                     null
             )
         },

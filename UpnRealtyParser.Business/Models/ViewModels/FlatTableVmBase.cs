@@ -30,10 +30,8 @@ namespace UpnRealtyParser.Business.Models
         public string Description { get; set; }
         public string FirstPhotoFile { get; set; }
 
-        /* ------------------------ Свойства для отображения -------------------------- */
 
-        [NotMapped]
-        public string PaybackYears { get; set; }
+        /* ------------------------ Свойства для отображения -------------------------- */
 
         public string LastCheckDatePrintable =>
             LastCheckDate == null ? "" : LastCheckDate.Value.ToString("dd.MM.yyyy");

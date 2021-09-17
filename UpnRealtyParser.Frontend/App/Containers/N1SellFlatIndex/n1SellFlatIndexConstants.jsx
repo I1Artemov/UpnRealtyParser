@@ -26,6 +26,16 @@ export const n1SellFlatIndexConst = {
             align: 'center'
         },
         {
+            title: 'Фото',
+            dataIndex: 'photoUrl',
+            key: 'photoUrl',
+            align: 'center',
+            render: (text, row) => (
+                (text === null || text === undefined || text === 'ERR') ? <p>--</p> :
+                    <img src={text} width="64" height="64"></img>
+            )
+        },
+        {
             title: 'Создан/ проверен',
             dataIndex: 'createdCheckedDatesSummary',
             key: 'createdCheckedDatesSummary',
@@ -89,8 +99,8 @@ export const n1SellFlatIndexConst = {
             dataIndex: 'paybackYears',
             key: 'paybackYears',
             render: (text, row) => (
-                (text != null && text != undefined && parseFloat(text)) ?
-                    <p className={getClassnameByPaybackValue(parseFloat(text))}>{text}</p> :
+                (text != null && text != undefined) ?
+                    <p className={getClassnameByPaybackValue(text)}>{Math.round(text * 10) / 10}</p> :
                     null
             )
         },
