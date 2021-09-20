@@ -214,3 +214,10 @@ div.house-statistics-block p {
     border-radius: 7px;
     text-align: center;
 }
+
+#singleHousePhoto {
+    max-height: 128px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}

@@ -27,5 +27,8 @@ namespace UpnRealtyParser.Business.Models
         /// </summary>
         [NotMapped]
         public int? SimilarHouseFromDifferentSiteId { get; set; }
+
+        [NotMapped]
+        public string Photo { get; set; }
     }
 }

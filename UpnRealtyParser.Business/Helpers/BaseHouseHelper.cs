@@ -9,10 +9,16 @@ namespace UpnRealtyParser.Business.Helpers
     public class BaseHouseHelper
     {
         private readonly EFGenericRepo<HouseSitelessVM, RealtyParserContext> _unitedHouseRepo;
+        private readonly EFGenericRepo<HousePhoto, RealtyParserContext> _housePhotoRepo;
+        private readonly EFGenericRepo<SimilarHouse, RealtyParserContext> _similarHouseRepo;
 
-        public BaseHouseHelper(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo)
+        public BaseHouseHelper(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo,
+            EFGenericRepo<HousePhoto, RealtyParserContext> housePhotoRepo,
+            EFGenericRepo<SimilarHouse, RealtyParserContext> similarHouseRepo)
         {
             _unitedHouseRepo = unitedHouseRepo;
+            _housePhotoRepo = housePhotoRepo;
+            _similarHouseRepo = similarHouseRepo;
         }
 
         /// <summary>
@@ -53,6 +59,41 @@ namespace UpnRealtyParser.Business.Helpers
             }
 
             return allHouses;
+        }
+
+        /// <summary>
+        /// Заполняет объединенные дома УПН и N1 фотографиями
+        /// </summary>
+        public void FillHousesWithPhotoInfo(List<HouseSitelessVM> houses)
+        {
+            foreach(var house in houses)
+            {
+                FillSingleHouseWithPhotoInfo(house, house.SourceSite);
+            }
+        }
+
+        public void FillSingleHouseWithPhotoInfo<T>(T house, string sourceSite)
+            where T : HouseInfoCore
+        {
+            HousePhoto foundPhoto = null;
+            if (sourceSite == "UPN")
+            {
+                foundPhoto = _housePhotoRepo.GetAllWithoutTracking()
+                    .FirstOrDefault(x => x.UpnHouseId == house.Id);
+            }
+            else
+            {
+                SimilarHouse foundSimilar = _similarHouseRepo.GetAllWithoutTracking()
+                    .FirstOrDefault(x => x.N1HouseId == house.Id);
+                if (foundSimilar != null)
+                {
+                    foundPhoto = _housePhotoRepo.GetAllWithoutTracking()
+                        .FirstOrDefault(x => x.UpnHouseId == foundSimilar.UpnHouseId);
+                }
+            }
+
+            if (foundPhoto != null)
+                house.Photo = "/images/housephotos/" + foundPhoto.FileName;
         }
     }
 }

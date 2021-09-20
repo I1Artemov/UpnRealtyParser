@@ -62,7 +62,7 @@ class FlatPriceStatisticsPlot extends React.Component {
             );
         } else if (errorMessage === null || errorMessage === "" || errorMessage === undefined) {
             return (
-                <div style={{ display: "inline-block", width: "48%" }}>
+                <div style={{ display: "inline-block", width: "39%" }}>
                     <Divider orientation={"center"}>Изменение средних цен на квартиры в доме</Divider>
                     <ResponsiveContainer width="100%" height={300}>
                         <LineChart width={900} height={250} data={allRoomPrices} margin={{ top: 10, bottom: 10 }}>

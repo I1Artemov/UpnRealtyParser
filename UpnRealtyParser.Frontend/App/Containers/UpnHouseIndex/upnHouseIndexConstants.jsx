@@ -18,6 +18,16 @@ export const houseIndexConst = {
             sorter: true
         },
         {
+            title: 'Фото',
+            dataIndex: 'photo',
+            key: 'photo',
+            align: 'center',
+            render: (text, row) => (
+                (text === null || text === undefined || text.indexOf('ERR') > 0) ? <p>--</p> :
+                    <img src={text} width="64" height="64"></img>
+            )
+        },
+        {
             title: 'Сайт',
             dataIndex: 'sourceSite',
             key: 'sourceSite',

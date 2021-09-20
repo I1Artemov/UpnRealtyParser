@@ -31,7 +31,7 @@ export const n1SellFlatIndexConst = {
             key: 'photoUrl',
             align: 'center',
             render: (text, row) => (
-                (text === null || text === undefined || text === 'ERR') ? <p>--</p> :
+                (text === null || text === undefined || text.indexOf('ERR') > 0) ? <p>--</p> :
                     <img src={text} width="64" height="64"></img>
             )
         },

@@ -23,6 +23,8 @@ namespace UpnRealtyParser.Frontend.Controllers
         private readonly EFGenericRepo<N1RentFlat, RealtyParserContext> _n1RentFlatRepo;
         private readonly EFGenericRepo<AveragePriceStat, RealtyParserContext> _statsRepo;
         private readonly EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> _paybackPointsRepo;
+        private readonly EFGenericRepo<HousePhoto, RealtyParserContext> _housePhotoRepo;
+        private readonly EFGenericRepo<SimilarHouse, RealtyParserContext> _similarHouseRepo;
 
         public HouseController(EFGenericRepo<HouseSitelessVM, RealtyParserContext> unitedHouseRepo,
             EFGenericRepo<UpnHouseInfo, RealtyParserContext> upnHouseRepo,
@@ -32,7 +34,9 @@ namespace UpnRealtyParser.Frontend.Controllers
             EFGenericRepo<N1Flat, RealtyParserContext> n1SellFlatRepo,
             EFGenericRepo<N1RentFlat, RealtyParserContext> n1RentFlatRepo,
             EFGenericRepo<AveragePriceStat, RealtyParserContext> statsRepo,
-            EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> paybackPointsRepo)
+            EFGenericRepo<PaybackPeriodPoint, RealtyParserContext> paybackPointsRepo,
+            EFGenericRepo<HousePhoto, RealtyParserContext> housePhotoRepo,
+            EFGenericRepo<SimilarHouse, RealtyParserContext> similarHouseRepo)
         {
             _unitedHouseRepo = unitedHouseRepo;
             _upnHouseRepo = upnHouseRepo;
@@ -43,6 +47,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             _n1RentFlatRepo = n1RentFlatRepo;
             _statsRepo = statsRepo;
             _paybackPointsRepo = paybackPointsRepo;
+            _housePhotoRepo = housePhotoRepo;
+            _similarHouseRepo = similarHouseRepo;
         }
 
         [Route("getall")]
@@ -53,7 +59,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             int targetPage = page.GetValueOrDefault(1);
             int targetPageSize = pageSize.GetValueOrDefault(20);
 
-            BaseHouseHelper houseHelper = new BaseHouseHelper(_unitedHouseRepo);
+            BaseHouseHelper houseHelper = new BaseHouseHelper(_unitedHouseRepo, _housePhotoRepo, _similarHouseRepo);
             IQueryable<HouseSitelessVM> allHouses = houseHelper
                 .GetFilteredAndOrderedHouses(minBuildYear, isShowUpn, isShowN1, addressPart, sortField, sortOrder);
             int totalCount = allHouses.Count();
@@ -61,6 +67,8 @@ namespace UpnRealtyParser.Frontend.Controllers
             List<HouseSitelessVM> filteredHouses = allHouses
                 .Skip((targetPage - 1) * targetPageSize)
                 .Take(targetPageSize).ToList();
+
+            houseHelper.FillHousesWithPhotoInfo(filteredHouses);
 
             return Json(new { housesList = filteredHouses, totalCount = totalCount });
         }
@@ -72,12 +80,14 @@ namespace UpnRealtyParser.Frontend.Controllers
             if (!id.HasValue)
                 return makeErrorResult("Не указан ID дома");
 
-            if(string.IsNullOrEmpty(siteName) || siteName.ToLower() == "upn")
+            BaseHouseHelper houseHelper = new BaseHouseHelper(_unitedHouseRepo, _housePhotoRepo, _similarHouseRepo);
+            if (string.IsNullOrEmpty(siteName) || siteName.ToLower() == "upn")
             {
                 UpnHouseInfo upnFoundHouse = _upnHouseRepo.GetWithoutTracking(x => x.Id == id.Value);
                 if (upnFoundHouse == null)
                     return makeErrorResult(string.Format("не найден дом UPN с ID = {0}", id.Value));
                 findAndSetSimilarHouseId(upnFoundHouse, siteName.ToUpper());
+                houseHelper.FillSingleHouseWithPhotoInfo(upnFoundHouse, "UPN");
                 return Json(new { houseInfo = upnFoundHouse });
             }
 
@@ -85,6 +95,7 @@ namespace UpnRealtyParser.Frontend.Controllers
             if (n1FoundHouse == null)
                 return makeErrorResult(string.Format("не найден дом N1 с ID = {0}", id.Value));
             findAndSetSimilarHouseId(n1FoundHouse, siteName.ToUpper());
+            houseHelper.FillSingleHouseWithPhotoInfo(n1FoundHouse, "N1");
             return Json(new { houseInfo = n1FoundHouse });
         }
 

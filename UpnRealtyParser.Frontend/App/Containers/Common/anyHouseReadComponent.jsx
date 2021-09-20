@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { withRouter } from "react-router-dom";
 import { ErrorBoundary } from 'react-error-boundary';
 import ErrorFallback from '../../Stateless/errorFallback.jsx';
-import { Divider, Spin, Button, PageHeader } from 'antd';
+import { Divider, Spin, Button, PageHeader, Row, Col } from 'antd';
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import SingleHouseInfo from '../../Stateless/singleHouseInfo.jsx';
 import SingleHouseStatistics from '../../Stateless/singleHouseStatistics.jsx';
@@ -101,12 +101,20 @@ class AnyHouseRead extends React.Component {
                         }
                     </ErrorBoundary>
 
+                    {
+                        houseData.photo &&
+                        <div style={{ display: "inline-block", position: "relative", float: "left", width: "26%" }}>
+                            <Divider orientation={"center"}>Фото дома</Divider>
+                            <img key={houseData.photo} src={houseData.photo} style={{ display: "block", width: "90%", maxHeight: "270px" }} />
+                        </div>
+                    }
+
                     <ErrorBoundary FallbackComponent={ErrorFallback}>
                         <FlatPriceStatisticsPlot houseId={houseId} siteName={siteName} />
                     </ErrorBoundary>
 
                     <ErrorBoundary FallbackComponent={ErrorFallback}>
-                        <div style={{ display: "inline-block", width: "48%", float: "right" }}>
+                        <div style={{ display: "inline-block", width: "31%", float: "right" }}>
                             <Divider orientation={"center"}>Расположение дома</Divider>
                             <MapContainer center={[centerLatitude, centerLongitude]} zoom={13} scrollWheelZoom={false}
                                 style={{ height: "270px", width: "100%" }}>
