@@ -2,6 +2,8 @@
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import moment from "moment";
+import { Row, Col, Space } from 'antd';
+import { HomeOutlined, BankOutlined, BarChartOutlined, ToolOutlined } from '@ant-design/icons';
 
 import {
     setShowArchived, setExcludeFirstFloor, setExcludeLastFloor,
@@ -14,75 +16,133 @@ import { SearchOutlined, CloseOutlined } from '@ant-design/icons';
 
 class FlatsSearchBar extends React.Component {
     render() {
+        const blockHeaderStyle = { textAlign: "center", fontWeight: "bold", marginBottom: "10px", backgroundColor: "#f7f7f7" };
+        const rowInSemanticBlockStyle = { marginTop: "3px", marginBottom: "3px" }
 
         return (
             <div className="search-bar-above-table">
-                <div>
-                    <label htmlFor="showArchivedCheckbox">Отображать архивные</label>
-                    <Checkbox id={"showArchivedCheckbox"} className="search-bar-input-with-margin"
-                        onChange={this.props.setShowArchived.bind(this)} checked={this.props.isShowArchived}></Checkbox>
+                <Row>
+                    <Col span={7} style={blockHeaderStyle}><Space><HomeOutlined /> Дом</Space></Col>
+                    <Col span={4} style={blockHeaderStyle}><Space><BankOutlined /> Квартира</Space></Col>
+                    <Col span={5} style={blockHeaderStyle}><Space><ToolOutlined /> Системное</Space></Col>
+                    <Col span={5} style={blockHeaderStyle}><Space><BarChartOutlined /> Аналитика</Space></Col>
+                    <Col span={3}></Col>
+                </Row>
 
-                    <label htmlFor="minPriceInput">Цена от</label>
-                    <InputNumber id={"minPriceInput"} className="search-bar-input-with-margin"
-                        onChange={this.props.setMinPrice.bind(this)} value={this.props.minPrice} min={0} style={{ width: 110 }} />
+                <Row>
+                    <Col span={7}>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={8}><label htmlFor="minBuildYearInput">Год постройки от</label></Col>
+                            <Col span={16}><InputNumber id={"minBuildYearInput"}
+                                onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2020} /></Col>
+                        </Row>
 
-                    <label htmlFor="maxPriceInput">Цена до</label>
-                    <InputNumber id={"maxPriceInput"} className="search-bar-input-with-margin"
-                        onChange={this.props.setMaxPrice.bind(this)} value={this.props.maxPrice} min={0} style={{ width: 110 }} />
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={8}><label htmlFor="closestSubwayStationIdSelect">Ближайшая станция</label></Col>
+                            <Col span={16}><Select id={"closestSubwayStationIdSelect"} 
+                                onChange={this.props.setClosestSubwayStationId.bind(this)} placeholder="Выберите станцию">
+                                <Select.Option value="1">Проспект космонавтов</Select.Option>
+                                <Select.Option value="2">Уралмаш</Select.Option>
+                                <Select.Option value="3">Машиностроителей</Select.Option>
+                                <Select.Option value="4">Уральская</Select.Option>
+                                <Select.Option value="5">Динамо</Select.Option>
+                                <Select.Option value="6">Площадь 1905 года</Select.Option>
+                                <Select.Option value="7">Геологическая</Select.Option>
+                                <Select.Option value="8">Чкаловская</Select.Option>
+                                <Select.Option value="9">Ботаническая</Select.Option>
+                            </Select></Col>
+                        </Row>
 
-                    <label htmlFor="excludeFirstFloorCheckbox">Не первый этаж</label>
-                    <Checkbox id={"excludeFirstFloorCheckbox"} className="search-bar-input-with-margin"
-                        onChange={this.props.setExcludeFirstFloor.bind(this)} checked={this.props.isExcludeFirstFloor}></Checkbox>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={8}><label htmlFor="maxSubwayDistanceInput">До метро, метров</label></Col>
+                            <Col span={16}><InputNumber id={"maxSubwayDistanceInput"}
+                                onChange={this.props.setMaxSubwayDistance.bind(this)} value={this.props.maxSubwayDistance} /></Col>
+                        </Row>
 
-                    <label htmlFor="excludeLastFloorCheckbox">Не последний этаж</label>
-                    <Checkbox id={"excludeLastFloorCheckbox"} className="search-bar-input-with-margin"
-                        onChange={this.props.setExcludeLastFloor.bind(this)} checked={this.props.isExcludeLastFloor}></Checkbox>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={8}><label htmlFor="addressPartInput">Улица</label></Col>
+                            <Col span={16}><Input id={"addressPartInput"} style={{ maxWidth: "250px" }}
+                                onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} /></Col>
+                        </Row>
+                    </Col>
 
-                    <label htmlFor="minBuildYearInput">Год постройки от</label>
-                    <InputNumber id={"minBuildYearInput"} className="search-bar-input-with-margin"
-                        onChange={this.props.setMinBuildYear.bind(this)} value={this.props.minBuildYear} min={1930} max={2020} />
+                    <Col span={4}>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><label htmlFor="minPriceInput">Цена от</label></Col>
+                            <Col span={12}><InputNumber id={"minPriceInput"}
+                                onChange={this.props.setMinPrice.bind(this)} value={this.props.minPrice} min={0} /></Col>
+                        </Row>
 
-                    <Tooltip title="По умолчанию - текущая дата минус полгода">
-                        <label htmlFor="startDatePicker">Дата создания с </label>
-                    </Tooltip>
-                    <DatePicker id={"startDatePicker"} onChange={this.props.setStartDate.bind(this)} style={{ marginLeft: 6, marginRight: 8 }} />
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><label htmlFor="maxPriceInput">Цена до</label></Col>
+                            <Col span={12}><InputNumber id={"maxPriceInput"}
+                                onChange={this.props.setMaxPrice.bind(this)} value={this.props.maxPrice} min={0} /></Col>
+                        </Row>
 
-                    <Tooltip title="По умолчанию - текущая дата">
-                        <label htmlFor="endDatePicker"> по </label>
-                    </Tooltip>
-                    <DatePicker id={"endDatePicker"} onChange={this.props.setEndDate.bind(this)} style={{ marginLeft: 6 }}/>
-                </div>
-                <div style={{ marginTop: "6px" }}>
-                    <label htmlFor="closestSubwayStationIdSelect">Ближайшая станция</label>
-                    <Select id={"closestSubwayStationIdSelect"} className="search-bar-input-with-margin"
-                        onChange={this.props.setClosestSubwayStationId.bind(this)} style={{ width: 229 }} placeholder="Выберите станцию">
-                        <Select.Option value="1">Проспект космонавтов</Select.Option>
-                        <Select.Option value="2">Уралмаш</Select.Option>
-                        <Select.Option value="3">Машиностроителей</Select.Option>
-                        <Select.Option value="4">Уральская</Select.Option>
-                        <Select.Option value="5">Динамо</Select.Option>
-                        <Select.Option value="6">Площадь 1905 года</Select.Option>
-                        <Select.Option value="7">Геологическая</Select.Option>
-                        <Select.Option value="8">Чкаловская</Select.Option>
-                        <Select.Option value="9">Ботаническая</Select.Option>
-                    </Select>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><label htmlFor="excludeFirstFloorCheckbox">Не первый этаж</label></Col>
+                            <Col span={12}><Checkbox id={"excludeFirstFloorCheckbox"}
+                                onChange={this.props.setExcludeFirstFloor.bind(this)} checked={this.props.isExcludeFirstFloor}></Checkbox></Col>
+                        </Row>
 
-                    <label htmlFor="maxSubwayDistanceInput">Расстояние до метро, м</label>
-                    <InputNumber id={"maxSubwayDistanceInput"} className="search-bar-input-with-margin"
-                        onChange={this.props.setMaxSubwayDistance.bind(this)} value={this.props.maxSubwayDistance} />
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><label htmlFor="excludeLastFloorCheckbox">Не последний этаж</label></Col>
+                            <Col span={12}><Checkbox id={"excludeLastFloorCheckbox"}
+                                onChange={this.props.setExcludeLastFloor.bind(this)} checked={this.props.isExcludeLastFloor}></Checkbox></Col>
+                        </Row>
+                    </Col>
 
-                    <label htmlFor="addressPartInput">Улица</label>
-                    <Input id={"addressPartInput"} className="search-bar-input-with-margin"
-                        onChange={this.props.setAddressPart.bind(this)} value={this.props.addressPart} style={{ width: 240 }} />
+                    <Col span={5}>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><label htmlFor="showArchivedCheckbox">Отображать архивные</label></Col>
+                                <Col span={12}><Checkbox id={"showArchivedCheckbox"}
+                                onChange={this.props.setShowArchived.bind(this)} checked={this.props.isShowArchived}></Checkbox></Col>
+                        </Row>
 
-                    <label htmlFor="showRoomsCheckbox">Отображать комнаты</label>
-                    <Checkbox id={"showRoomsCheckbox"} className="search-bar-input-with-margin"
-                        onChange={this.props.setShowRooms.bind(this)} checked={this.props.isShowRooms}
-                        disabled={this.props.siteName == "n1"}></Checkbox>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><Tooltip title="По умолчанию - текущая дата минус полгода">
+                                <label htmlFor="startDatePicker">Дата создания с </label>
+                            </Tooltip></Col>
+                            <Col span={12}><DatePicker id={"startDatePicker"} onChange={this.props.setStartDate.bind(this)}/></Col>
+                        </Row>
 
-                    <Button onClick={this.props.handleTableChange} type="primary" icon={<SearchOutlined />} style={{ marginRight: "9px" }}>Применить</Button>
-                    <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
-                </div>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><Tooltip title="По умолчанию - текущая дата">
+                                <label htmlFor="endDatePicker">Дата создания по </label>
+                            </Tooltip></Col>
+                            <Col span={12}><DatePicker id={"endDatePicker"} onChange={this.props.setEndDate.bind(this)} /></Col>
+                        </Row>
+
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><label htmlFor="showRoomsCheckbox">Отображать комнаты</label></Col>
+                            <Col span={12}><Checkbox id={"showRoomsCheckbox"}
+                                onChange={this.props.setShowRooms.bind(this)} checked={this.props.isShowRooms}
+                                disabled={this.props.siteName == "n1"}></Checkbox></Col>
+                        </Row>
+                    </Col>
+
+                    <Col span={5}>
+                        <Row style={rowInSemanticBlockStyle}>
+                            <Col span={12}><label htmlFor="maxPaybackInput">Окупаемость до (лет)</label></Col>
+                            <Col span={12}><InputNumber id={"maxPaybackInput"} disabled={true}
+                                 /></Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}><label htmlFor="descriptionContainsInput">Описание содержит</label></Col>
+                            <Col span={12}><Input id={"descriptionContainsInput"} style={{ maxWidth: "250px" }} disabled={true}
+                                 /></Col>
+                        </Row>
+                    </Col>
+
+                    <Col span={3} style={{ textAlign: "center" }}>
+                        <div style={{ marginBottom: "10px", marginTop: "20px" }}>
+                            <Button onClick={this.props.handleTableChange} type="primary" icon={<SearchOutlined />}>Применить</Button>
+                        </div>
+                        <div>
+                            <Button onClick={this.props.clearSearchParameters.bind(this)} icon={<CloseOutlined />}>Сбросить</Button>
+                        </div>
+                    </Col>
+                </Row>
             </div>
         );
     }
