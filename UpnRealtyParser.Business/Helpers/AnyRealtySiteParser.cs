@@ -201,6 +201,7 @@ namespace UpnRealtyParser.Business.Helpers
                 request.Method = "GET";
                 request.Timeout = 60 * 1000;
                 request.ServicePoint.ConnectionLimit = 1600;
+                request.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
 
                 try
                 {
