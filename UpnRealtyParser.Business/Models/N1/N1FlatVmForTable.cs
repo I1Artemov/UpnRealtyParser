@@ -3,7 +3,6 @@
     public class N1FlatVmForTable : FlatTableVmBase
     {
         public string HousePhotoFile { get; set; }
-        public double? PaybackYears { get; set; }
 
         public string PhotoUrl
         {

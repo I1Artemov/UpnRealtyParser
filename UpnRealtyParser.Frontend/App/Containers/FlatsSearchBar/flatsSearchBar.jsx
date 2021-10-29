@@ -8,7 +8,8 @@ import { HomeOutlined, BankOutlined, BarChartOutlined, ToolOutlined } from '@ant
 import {
     setShowArchived, setExcludeFirstFloor, setExcludeLastFloor,
     setMinPrice, setMaxPrice, setMinBuildYear, setMaxSubwayDistance, setClosestSubwayStationId,
-    setAddressPart, setShowRooms, setStartDate, setEndDate, clearSearchParameters
+    setAddressPart, setShowRooms, setStartDate, setEndDate, clearSearchParameters, setMaxPayback,
+    setDescriptionPart
 } from './flatsSearchBarActions.jsx';
 
 import { Checkbox, InputNumber, Select, Button, Input, DatePicker, Tooltip } from 'antd';
@@ -124,13 +125,13 @@ class FlatsSearchBar extends React.Component {
                     <Col span={5}>
                         <Row style={rowInSemanticBlockStyle}>
                             <Col span={12}><label htmlFor="maxPaybackInput">Окупаемость до (лет)</label></Col>
-                            <Col span={12}><InputNumber id={"maxPaybackInput"} disabled={true}
-                                 /></Col>
+                            <Col span={12}><InputNumber id={"maxPaybackInput"}
+                                onChange={this.props.setMaxPayback.bind(this)} value={this.props.maxPayback} /></Col>
                         </Row>
                         <Row>
                             <Col span={12}><label htmlFor="descriptionContainsInput">Описание содержит</label></Col>
-                            <Col span={12}><Input id={"descriptionContainsInput"} style={{ maxWidth: "250px" }} disabled={true}
-                                 /></Col>
+                            <Col span={12}><Input id={"descriptionContainsInput"} style={{ maxWidth: "250px" }}
+                                onChange={this.props.setDescriptionPart.bind(this)} value={this.props.descriptionPart} /></Col>
                         </Row>
                     </Col>
 
@@ -162,6 +163,8 @@ let mapStateToProps = (state, ownProps) => {
         isShowRooms: state.flatSearchBarReducer.filteringInfo.isShowRooms,
         startDate: state.flatSearchBarReducer.filteringInfo.startDate,
         endDate: state.flatSearchBarReducer.filteringInfo.endDate,
+        maxPayback: state.flatSearchBarReducer.filteringInfo.maxPayback,
+        descriptionPart: state.flatSearchBarReducer.filteringInfo.descriptionPart,
         siteName: ownProps.siteName
     };
 };
@@ -181,6 +184,8 @@ let mapActionsToProps = (dispatch, ownProps) => {
         setShowRooms: (ev) => dispatch(setShowRooms(ev)),
         setStartDate: (ev) => dispatch(setStartDate(ev)),
         setEndDate: (ev) => dispatch(setEndDate(ev)),
+        setMaxPayback: (ev) => dispatch(setMaxPayback(ev)),
+        setDescriptionPart: (ev) => dispatch(setDescriptionPart(ev)),
         handleTableChange: ownProps.handleTableChange // Проброс функции из компонента с таблицей квартир
     };
 };

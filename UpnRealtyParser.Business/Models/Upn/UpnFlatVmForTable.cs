@@ -3,7 +3,6 @@
     public class UpnFlatVmForTable : FlatTableVmBase
     {
         public string FlatType { get; set; }
-        public double? PaybackYears { get; set; }
         public string HousePhotoFile { get; set; }
 
         public string PhotoUrl

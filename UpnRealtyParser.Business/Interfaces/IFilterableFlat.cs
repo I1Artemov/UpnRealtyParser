@@ -17,5 +17,7 @@ namespace UpnRealtyParser.Business.Interfaces
         string HouseAddress { get; set; }
         int? RoomAmount { get; set; }
         DateTime? CreationDateTime { get; set; }
+        string Description { get; set; }
+        double? PaybackYears { get; set; }
     }
 }

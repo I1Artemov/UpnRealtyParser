@@ -14,7 +14,9 @@ const initialState = {
         addressPart: null,
         isShowRooms: true,
         startDate: null,
-        endDate: null
+        endDate: null,
+        maxPayback: null,
+        descriptionPart: null
     }
 };
 
@@ -56,12 +58,18 @@ export default function searchBar(state = initialState, action) {
         case flatsSearchBarConst.SET_END_DATE:
             return { ...state, filteringInfo: { ...state.filteringInfo, endDate: action.payload } };
 
+        case flatsSearchBarConst.SET_MAX_PAYBACK:
+            return { ...state, filteringInfo: { ...state.filteringInfo, maxPayback: action.payload } };
+
+        case flatsSearchBarConst.SET_DESCRIPTION_PART:
+            return { ...state, filteringInfo: { ...state.filteringInfo, descriptionPart: action.payload } };
+
         case flatsSearchBarConst.CLEAR_SEARCH_PARAMETERS:
             return {
                 ...state, filteringInfo: {
                     ...state.filteringInfo, isShowArchived: true, isExcludeFirstFloor: false, isExcludeLastFloor: false,
                     minPrice: null, maxPrice: null, minBuildYear: null, maxSubwayDistance: null, closestSubwayStationId: null,
-                    addressPart: null, isShowRooms: true, startDate: null, endDate: null
+                    addressPart: null, isShowRooms: true, startDate: null, endDate: null, maxPayback: null, descriptionPart: null
                 }
             };
 

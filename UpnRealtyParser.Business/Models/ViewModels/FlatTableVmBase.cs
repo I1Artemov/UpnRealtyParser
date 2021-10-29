@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using UpnRealtyParser.Business.Interfaces;
 
 namespace UpnRealtyParser.Business.Models
@@ -29,6 +28,7 @@ namespace UpnRealtyParser.Business.Models
         public double? ClosestSubwayStationRange { get; set; }
         public string Description { get; set; }
         public string FirstPhotoFile { get; set; }
+        public virtual double? PaybackYears { get; set; }
 
 
         /* ------------------------ Свойства для отображения -------------------------- */

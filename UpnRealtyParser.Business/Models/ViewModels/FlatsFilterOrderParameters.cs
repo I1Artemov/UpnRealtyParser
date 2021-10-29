@@ -19,6 +19,8 @@
         public bool? IsShowRooms { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
+        public int? MaxPayback { get; set; }
+        public string DescriptionPart { get; set; }
         public string SortField { get; set; }
         public string SortOrder { get; set; }
     }

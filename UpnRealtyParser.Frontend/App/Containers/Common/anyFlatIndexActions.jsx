@@ -32,6 +32,10 @@ export function getQueryTrailerWithFilteringParameters(queryTrailer, filteringIn
         queryTrailer += '&startDate=' + getDateFormattedWithSeparator(filteringInfo.startDate);
     if (filteringInfo.endDate !== null && filteringInfo.endDate !== undefined)
         queryTrailer += '&endDate=' + getDateFormattedWithSeparator(filteringInfo.endDate);
+    if (filteringInfo.maxPayback !== null && filteringInfo.maxPayback !== undefined)
+        queryTrailer += '&maxPayback=' + filteringInfo.maxPayback;
+    if (filteringInfo.descriptionPart !== null && filteringInfo.descriptionPart !== undefined)
+        queryTrailer += '&descriptionPart=' + filteringInfo.descriptionPart;
 
     return queryTrailer;
 }

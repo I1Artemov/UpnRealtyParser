@@ -98,6 +98,7 @@ div.house-statistics-block p {
     padding-top: 10px;
     padding-left: 8px;
     background-color: rgb(255, 255, 255);
+    min-width: 1300px;
 }
 
 #content .ant-descriptions-item-label {

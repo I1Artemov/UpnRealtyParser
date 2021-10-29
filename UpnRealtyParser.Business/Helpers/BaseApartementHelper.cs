@@ -212,6 +212,10 @@ namespace UpnRealtyParser.Business.Helpers
                 allSellFlats = allSellFlats.Where(x => x.CreationDateTime >= startDt);
             if (endDt.HasValue)
                 allSellFlats = allSellFlats.Where(x => x.CreationDateTime <= endDt);
+            if (filterParams.MaxPayback.HasValue)
+                allSellFlats = allSellFlats.Where(x => x.PaybackYears <= filterParams.MaxPayback.Value);
+            if (!string.IsNullOrEmpty(filterParams.DescriptionPart))
+                allSellFlats = allSellFlats.Where(x => x.Description.Contains(filterParams.DescriptionPart));
 
             return allSellFlats;
         }

@@ -101,3 +101,19 @@ export function clearSearchParameters() {
         type: flatsSearchBarConst.CLEAR_SEARCH_PARAMETERS
     };
 }
+
+export function setMaxPayback(ev) {
+    let maxPayback = ev;
+    return {
+        type: flatsSearchBarConst.SET_MAX_PAYBACK,
+        payload: maxPayback
+    };
+}
+
+export function setDescriptionPart(ev) {
+    let descriptionPart = ev.target.value;
+    return {
+        type: flatsSearchBarConst.SET_DESCRIPTION_PART,
+        payload: descriptionPart
+    };
+}
